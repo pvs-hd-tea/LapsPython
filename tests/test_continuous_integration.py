@@ -2,7 +2,7 @@
 
 import pytest
 
-from dummy.continuous_integration import dummy_function, factorial
+from dummy.continuous_integration import _hidden, dummy_function, factorial
 
 
 class TestFactorial:
@@ -55,3 +55,12 @@ class TestDummyFunction:
         expected_message = 'n_values must be an integer.'
         with pytest.raises(TypeError, match=expected_message):
             dummy_function(float)
+
+
+class TestHidden:
+    """Run tests for dummy._hidden()."""
+
+    def test_hidden(self):
+        """Verify that function does nothing."""
+        assert _hidden() is None
+

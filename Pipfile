@@ -48,6 +48,7 @@ flake8 = "*"
 flake8-awesome = "*"
 flake8-docstrings = "*"
 flake8-quotes = "*"
+flake8-rst-docstrings = "*"
 flake8-simplify = "*"
 flake8-use-fstring = "*"
 isort = "*"
@@ -57,6 +58,8 @@ pytest = "*"
 pytest-cov = "*"
 
 [scripts]
+linting-src = "flake8 --exclude=tests --ignore=I900,W391"
+linting-tests = "flake8 tests --ignore=I900,S101,W391"
 tests = "python -m pytest --cov --cov-report term-missing:skip-covered --cov-report html:coverage"
 
 [requires]

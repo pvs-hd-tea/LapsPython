@@ -6,10 +6,10 @@ from collections import Counter
 def factorial(starting_value: int) -> int:
     """Return the n-th factorial.
 
-    Args:
-        - starting_value: n
-    Returns:
-        - n-th factorial
+    :param starting_value: n
+    :type starting_value: int
+    :returns: n-th factorial
+    :rtype: int
     """
     if not isinstance(starting_value, int):
         raise TypeError('starting_value must be a positive integer.')
@@ -24,10 +24,10 @@ def factorial(starting_value: int) -> int:
 def dummy_function(n_values: int = 3) -> bool:
     """Validate linting workflow using pointless computations.
 
-    Args:
-        - n_values: list length
-    Returns:
-        - True (output should never be False)
+    :param n_values: list length
+    :type n_values: int, optional
+    :returns: True (output should never be False)
+    :rtype: bool
     """
     if not isinstance(n_values, int):
         raise TypeError('n_values must be an integer.')
@@ -40,3 +40,8 @@ def dummy_function(n_values: int = 3) -> bool:
         accumulated_count += list_of_n_counter[value]
 
     return accumulated_count == len(list_of_n)
+
+
+def _hidden():
+    """Get ignored by several calling functions due to underscore."""
+    return
