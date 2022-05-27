@@ -1,4 +1,4 @@
-"""Implements types for parsed primitivies and lambda expressions."""
+"""Implements types for parsed primitives and lambda expressions."""
 
 import re
 
@@ -10,8 +10,11 @@ class ParsedPrimitive:
         """Construct primitive object with parsed function specs.
 
         :param name: function name
+        :type name: string
         :param source: source code (body) of the function
+        :type source: string
         :param args: argument names of the function
+        :type args: list
         """
         if type(name) != str:
             raise TypeError('name must be a non-empty string.')
@@ -30,11 +33,11 @@ class ParsedPrimitive:
         self.source = source
         self.args = args
 
-    # Will later be moved to translation module
-    def resolve(self, args: list) -> str:
+    def resolve_variables_in_source(self, args: list) -> str:
         """Substitute default arguments in source.
 
         :param args: list of argument names (number must be equal)
+        :type args: list
         """
         if type(args) not in (list, tuple):
             raise TypeError('args must be a list or tuple of strings.')
@@ -47,3 +50,4 @@ class ParsedPrimitive:
         for i in range(len(args)):
             new_source = re.sub(self.args[i], args[i], new_source)
         return new_source
+

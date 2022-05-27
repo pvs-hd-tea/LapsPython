@@ -74,35 +74,35 @@ class TestParsedPrimitive:
         pp = ParsedPrimitive('name', source, ['token1', 'token2'])
         new_args = ['mask0', 'mask1']
         new_source = 'token0 mask0 mask1 token3'
-        assert pp.resolve(new_args) == new_source
+        assert pp.resolve_variables_in_source(new_args) == new_source
 
     def test_resolve_identity(self):
         """Resolution using identical arguments."""
         source = 'token0 token1 token2 token3'
         args = ['token1', 'token2']
         pp = ParsedPrimitive('name', source, args)
-        assert pp.resolve(args) == source
+        assert pp.resolve_variables_in_source(args) == source
 
     def test_resolve_empty(self):
         """Resolution using empty arguments."""
         pp = ParsedPrimitive('name', 'source', [])
-        assert pp.resolve([]) == 'source'
+        assert pp.resolve_variables_in_source([]) == 'source'
 
     def test_resolve_invalid_args(self):
         """Resolution using invalid arguments."""
         pp = ParsedPrimitive('name', 'source', [])
         expected_message = 'args must be a list or tuple of strings.'
         with pytest.raises(TypeError, match=expected_message):
-            pp.resolve('mask')
+            pp.resolve_variables_in_source('mask')
         with pytest.raises(TypeError, match=expected_message):
-            pp.resolve(42)
+            pp.resolve_variables_in_source(42)
         with pytest.raises(TypeError, match=expected_message):
-            pp.resolve([42])
+            pp.resolve_variables_in_source([42])
 
     def test_resolve_invalid_length(self):
         """Resolution using incomplete arguments."""
         pp = ParsedPrimitive('name', 'source', ['arg'])
         expected_message = 'args length 2 != 1.'
         with pytest.raises(ValueError, match=expected_message):
-            pp.resolve(['arg0', 'arg1'])
+            pp.resolve_variables_in_source(['arg0', 'arg1'])
 

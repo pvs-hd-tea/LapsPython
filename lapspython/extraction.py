@@ -9,7 +9,7 @@ from lapspython.types import ParsedPrimitive
 class PrimitiveExtractor:
     """Extract, parse, and store all imported primitives."""
 
-    parsed_primitives = {}
+    parsed_primitives: dict = {}
 
     def __init__(self):
         """Construct object and update automatically."""
