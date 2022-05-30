@@ -20,5 +20,4 @@ jobs:
         pip install -r requirements-linting.txt
     - name: Analysing the code with Flake8
       run: |
-        flake8 --exclude=tests --ignore=I900,W391
-        flake8 tests --ignore=I900,S101,W391
+        flake8 --exclude=*Primitives.py --ignore=I900,S101,W391

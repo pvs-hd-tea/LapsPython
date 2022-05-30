@@ -58,8 +58,7 @@ pytest = "*"
 pytest-cov = "*"
 
 [scripts]
-linting-src = "flake8 --exclude=tests --ignore=I900,W391"
-linting-tests = "flake8 tests --ignore=I900,S101,W391"
+linting = "flake8 --exclude=*Primitives.py --ignore=I900,S101,W391"
 tests = "python -m pytest --cov --cov-report term-missing:skip-covered --cov-report html:coverage"
 
 [requires]
