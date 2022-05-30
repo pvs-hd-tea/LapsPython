@@ -33,6 +33,16 @@ class ParsedPrimitive:
         self.source = source
         self.args = args
 
+    def __str__(self):
+        """Construct Python function from object.
+
+        :returns: function source code
+        :rtype: string
+        """
+        header = f'def {self.name}({", ".join(self.args)}):\n'
+        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return header + indented_body
+
     def resolve_variables_in_source(self, args: list) -> str:
         """Substitute default arguments in source.
 

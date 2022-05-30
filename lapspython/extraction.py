@@ -13,12 +13,12 @@ class PrimitiveExtractor:
 
     def extract(self):
         """Collect and parse all primitives in workspace."""
-        primitive_modules = self.extract_imported_primitive_modules()
-        primitives = self.extract_imported_primitives(primitive_modules)
-        self.parsed_primitives = self.parse_primitives(primitives)
+        primitive_modules = self.__extract_imported_primitive_modules()
+        primitives = self.__extract_imported_primitives(primitive_modules)
+        self.parsed_primitives = self.__parse_primitives(primitives)
         return self.parsed_primitives
 
-    def extract_imported_primitive_modules(self) -> list:
+    def __extract_imported_primitive_modules(self) -> list:
         """Return all imported modules implementing primitives.
 
         :returns: A list of matching module objects
@@ -28,7 +28,7 @@ class PrimitiveExtractor:
         pattern = r'^\w+\.domains\.\w+\.\w+Primitives$'
         return [sys.modules[key] for key in keys if re.match(pattern, key)]
 
-    def extract_imported_primitives(self, modules: list) -> list:
+    def __extract_imported_primitives(self, modules: list) -> list:
         """Identify all primitives in given modules.
 
         :param modules: A list of module objects
@@ -44,7 +44,7 @@ class PrimitiveExtractor:
             primitives.extend(module_primitives)
         return primitives
 
-    def parse_primitives(self, primitives: list) -> dict:
+    def __parse_primitives(self, primitives: list) -> dict:
         """Convert function object to ParsedPrimitive object.
 
         :param primitives: A list of function objects

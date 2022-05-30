@@ -68,6 +68,10 @@ class TestParsedPrimitive:
         with pytest.raises(TypeError, match=expected_message):
             ParsedPrimitive('name', 'source', [42])
 
+    def test_str(self):
+        pp = ParsedPrimitive('name', 'line1\nline2', ['arg0', 'arg1'])
+        assert str(pp) == 'def name(arg0, arg1):\n    line1\n    line2'
+
     def test_resolve_valid(self):
         """Resolution using valid parameters."""
         source = 'token0 token1 token2 token3'
