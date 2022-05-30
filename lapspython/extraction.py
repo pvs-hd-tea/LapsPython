@@ -70,7 +70,8 @@ class PrimitiveExtractor:
                 source = re.sub(r'^ {4}', '', source, flags=re.MULTILINE)
             source = re.sub(r'\n$', '', source)
 
-            parsed_primitives[name] = ParsedPrimitive(name, source, args)
+            parsed_primitive = ParsedPrimitive(name, source, args)
+            parsed_primitives[name] = parsed_primitive.resolve_lambdas()
 
         return parsed_primitives
 

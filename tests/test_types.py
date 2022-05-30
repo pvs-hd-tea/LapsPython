@@ -68,10 +68,19 @@ class TestParsedPrimitive:
         with pytest.raises(TypeError, match=expected_message):
             ParsedPrimitive('name', 'source', [42])
 
-    def test_str(self):
+    def test_str_multiline(self):
         """Construct Python function from multiline source."""
         pp = ParsedPrimitive('name', 'line1\nline2', ['arg0', 'arg1'])
         assert str(pp) == 'def name(arg0, arg1):\n    line1\n    line2'
+
+    def test_resolve_lambdas(self):
+        """Simplify primitive returning a lambda function."""
+        pp = ParsedPrimitive('add', 'return lambda y: x + y', ['x'])
+        pp = pp.resolve_lambdas()
+        assert pp.name == 'add'
+        assert pp.source == 'return x + y'
+        assert pp.args == ['x', 'y']
+        assert str(pp) == 'def add(x, y):\n    return x + y'
 
     def test_resolve_valid(self):
         """Resolution using valid parameters."""
@@ -79,35 +88,35 @@ class TestParsedPrimitive:
         pp = ParsedPrimitive('name', source, ['token1', 'token2'])
         new_args = ['mask0', 'mask1']
         new_source = 'token0 mask0 mask1 token3'
-        assert pp.resolve_variables_in_source(new_args) == new_source
+        assert pp.resolve_variables(new_args) == new_source
 
     def test_resolve_identity(self):
         """Resolution using identical arguments."""
         source = 'token0 token1 token2 token3'
         args = ['token1', 'token2']
         pp = ParsedPrimitive('name', source, args)
-        assert pp.resolve_variables_in_source(args) == source
+        assert pp.resolve_variables(args) == source
 
     def test_resolve_empty(self):
         """Resolution using empty arguments."""
         pp = ParsedPrimitive('name', 'source', [])
-        assert pp.resolve_variables_in_source([]) == 'source'
+        assert pp.resolve_variables([]) == 'source'
 
     def test_resolve_invalid_args(self):
         """Resolution using invalid arguments."""
         pp = ParsedPrimitive('name', 'source', [])
         expected_message = 'args must be a list or tuple of strings.'
         with pytest.raises(TypeError, match=expected_message):
-            pp.resolve_variables_in_source('mask')
+            pp.resolve_variables('mask')
         with pytest.raises(TypeError, match=expected_message):
-            pp.resolve_variables_in_source(42)
+            pp.resolve_variables(42)
         with pytest.raises(TypeError, match=expected_message):
-            pp.resolve_variables_in_source([42])
+            pp.resolve_variables([42])
 
     def test_resolve_invalid_length(self):
         """Resolution using incomplete arguments."""
         pp = ParsedPrimitive('name', 'source', ['arg'])
         expected_message = 'args length 2 != 1.'
         with pytest.raises(ValueError, match=expected_message):
-            pp.resolve_variables_in_source(['arg0', 'arg1'])
+            pp.resolve_variables(['arg0', 'arg1'])
 

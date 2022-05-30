@@ -43,7 +43,18 @@ class ParsedPrimitive:
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
         return header + indented_body
 
-    def resolve_variables_in_source(self, args: list) -> str:
+    def resolve_lambdas(self):
+        """Remove lambda functions from source and extend list of arguments.
+
+        :returns: new, cleaner parsed primitive
+        :rtype: ParsedPrimitive
+        """
+        pattern = r'lambda (\S): '
+        args = self.args + re.findall(pattern, self.source)
+        source = re.sub(pattern, '', self.source)
+        return ParsedPrimitive(self.name, source, args)
+
+    def resolve_variables(self, args: list) -> str:
         """Substitute default arguments in source.
 
         :param args: list of argument names (number must be equal)

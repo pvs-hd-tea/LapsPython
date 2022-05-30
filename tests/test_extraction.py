@@ -29,15 +29,15 @@ class TestPrimitiveExtractor:
         assert '_identity' in primitives
         assert '_not' in primitives
 
-        assert primitives['_addition'].source == 'return lambda y: x + y'
-        assert primitives['_subtraction'].source == 'return lambda y: x - y'
-        assert primitives['_division'].source == 'return lambda y: x / y'
+        assert primitives['_addition'].source == 'return x + y'
+        assert primitives['_subtraction'].source == 'return x - y'
+        assert primitives['_division'].source == 'return x / y'
         assert primitives['_identity'].source == 'return x'
         assert primitives['_not'].source == 'return not x'
 
-        assert primitives['_addition'].args == ['x']
-        assert primitives['_subtraction'].args == ['x']
-        assert primitives['_division'].args == ['x']
+        assert primitives['_addition'].args == ['x', 'y']
+        assert primitives['_subtraction'].args == ['x', 'y']
+        assert primitives['_division'].args == ['x', 'y']
         assert primitives['_identity'].args == ['x']
         assert primitives['_not'].args == ['x']
 
