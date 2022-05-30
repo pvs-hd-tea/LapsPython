@@ -1,0 +1,1 @@
+"""Dummy domain for tests."""
