@@ -2,7 +2,7 @@
 
 import pytest
 
-from dummy.continuous_integration import _hidden, dummy_function, factorial
+from ci_dummy.continuous_integration import _hidden, dummy_function, factorial
 
 
 class TestFactorial:

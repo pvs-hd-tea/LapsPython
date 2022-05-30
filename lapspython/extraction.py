@@ -53,13 +53,16 @@ class PrimitiveExtractor:
         :rtype: dict
         """
         parsed_primitives = {}
+
         for primitive in primitives:
             name = primitive.__name__
             args = inspect.getfullargspec(primitive).args
 
             source = inspect.getsource(primitive)
             source = source[source.find(':') + 1:]
+
             indent = re.search(r'\w', source).start()
+
             if indent == 1:
                 source = source[indent:]
             else:
@@ -68,5 +71,6 @@ class PrimitiveExtractor:
             source = re.sub(r'\n$', '', source)
 
             parsed_primitives[name] = ParsedPrimitive(name, source, args)
+
         return parsed_primitives
 

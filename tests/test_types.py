@@ -69,6 +69,7 @@ class TestParsedPrimitive:
             ParsedPrimitive('name', 'source', [42])
 
     def test_str(self):
+        """Construct Python function from multiline source."""
         pp = ParsedPrimitive('name', 'line1\nline2', ['arg0', 'arg1'])
         assert str(pp) == 'def name(arg0, arg1):\n    line1\n    line2'
 

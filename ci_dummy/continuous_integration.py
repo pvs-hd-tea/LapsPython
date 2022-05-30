@@ -45,3 +45,4 @@ def dummy_function(n_values: int = 3) -> bool:
 def _hidden():
     """Get ignored by several calling functions due to underscore."""
     return
+
