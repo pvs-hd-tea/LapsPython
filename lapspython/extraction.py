@@ -45,7 +45,7 @@ class PrimitiveExtractor:
         return primitives
 
     def __parse_primitives(self, primitives: list) -> dict:
-        """Convert function object to ParsedPrimitive object.
+        """Convert function object to simplified ParsedPrimitive object.
 
         :param primitives: A list of function objects
         :type primitives: list
