@@ -20,4 +20,4 @@ jobs:
         pip install -r requirements-testing.txt
     - name: Run tests with pytest
       run: |
-        python -m pytest --cov --cov-report term-missing:skip-covered
+        python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov-report term

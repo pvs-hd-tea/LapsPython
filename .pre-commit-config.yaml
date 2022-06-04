@@ -22,8 +22,8 @@ repos:
             flake8-use-fstring
         ]
         args:
-          - "--exclude=*Primitives.py"
-          - "--ignore=I900,S101,W391"
+          - "--exclude=.venv,*Primitives.py,dreamcoder*"
+          - "--ignore=I900,S101,S301,S403,W391"
 
   # mypy
   - repo: https://github.com/pre-commit/mirrors-mypy
