@@ -15,7 +15,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install pipenv
-      uses: dschep/install-pipenv-action@v1
+      run: |
+        python -m pip --upgrade pip
+        python -m pip install pipenv
     - name: Install dependencies
       run: pipenv install --dev-only
     - name: Analysing the code with Flake8
