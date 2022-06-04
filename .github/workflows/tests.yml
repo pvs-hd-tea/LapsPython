@@ -14,10 +14,14 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install pipenv
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install pipenv
+        - name: Install pipenv
+    - name: Install dependencies
+      run: |
+        python -m pipenv install --dev
     - name: Run tests with pytest
       run: |
-        python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov-report term
+        pipenv run tests
