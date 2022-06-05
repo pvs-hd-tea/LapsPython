@@ -110,7 +110,7 @@ pytest-cov = "*"
 
 [scripts]
 linting = "flake8 --exclude=.venv,*Primitives.py,dreamcoder* --ignore=I900,S101,S301,S403,W391"
-tests = "python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov-report term-missing:skip-covered --cov-report html:coverage"
+tests = "python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov-report term-missing --cov-report html:coverage"
 
 [requires]
 python_version = "3.7"
