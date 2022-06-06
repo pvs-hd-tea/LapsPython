@@ -3,45 +3,26 @@
 import copy
 import inspect
 import re
+from abc import ABC, abstractmethod
 
-from dreamcoder.program import Primitive
+from dreamcoder.program import Invented, Primitive
 from dreamcoder.type import TypeConstructor, TypeVariable
 
 
-class ParsedPrimitive:
-    """Class parsing primitives for translation to clean Python code."""
+class ParsedType(ABC):
+    """Abstract base class for program parsing."""
 
-    def __init__(self, primitive: Primitive):
-        """Construct primitive object with parsed function specs.
-
-        :param primitive: A Primitive object
-        :type primitive: Primitive
-        """
-        implementation = primitive.value
-
-        if inspect.isfunction(implementation):
-            args = inspect.getfullargspec(implementation).args
-            source = inspect.getsource(implementation)
-
-            source = source[source.find(':') + 1:]
-            indent = re.search(r'\w', source).start()
-            if indent == 1:
-                source = source[indent:]
-            else:
-                source = re.sub(r'^\n', '', source)
-                source = re.sub(r'^ {4}', '', source, flags=re.MULTILINE)
-        else:
-            args = []
-            source = implementation
-
-        self.name = primitive.name
-        self.source = source.strip()
-        self.args = args
-        self.arg_types = self.parse_argument_types(primitive.infer())
-        self.return_type = self.arg_types.pop()
+    @abstractmethod
+    def __init__(self):
+        """Parse input primitive and initialize members."""
+        self.name = ''
+        self.source = ''
+        self.args = []
+        self.arg_types = []
+        self.returntype = type
 
     def __str__(self):
-        """Construct Python function from object.
+        """Construct clean Python function from object.
 
         :returns: function source code
         :rtype: string
@@ -94,3 +75,56 @@ class ParsedPrimitive:
             new_source = re.sub(self.args[i], args[i], new_source)
         return new_source
 
+
+class ParsedPrimitive(ParsedType):
+    """Class parsing primitives for translation to clean Python code."""
+
+    def __init__(self, primitive: Primitive):
+        """Construct ParsedPrimitive object with parsed function specs.
+
+        :param primitive: A Primitive object
+        :type primitive: Primitive
+        """
+        implementation = primitive.value
+
+        if inspect.isfunction(implementation):
+            args = inspect.getfullargspec(implementation).args
+            source = inspect.getsource(implementation)
+
+            source = source[source.find(':') + 1:]
+            indent = re.search(r'\w', source).start()
+            if indent == 1:
+                source = source[indent:]
+            else:
+                source = re.sub(r'^\n', '', source)
+                source = re.sub(r'^ {4}', '', source, flags=re.MULTILINE)
+        else:
+            args = []
+            source = implementation
+
+        self.name = primitive.name
+        self.source = source.strip()
+        self.args = args
+        self.arg_types = self.parse_argument_types(primitive.tp)
+        self.return_type = self.arg_types.pop()
+
+
+class ParsedInvented(ParsedType):
+    """Class parsing invented primitives for translation to Python."""
+
+    def __init__(self, invented: Invented, name: str):
+        """Construct ParsedInvented object with parsed specs.
+
+        :param invented: An invented primitive object
+        :type invented: Invented
+        :param name: A custom name since invented primitives are unnamed
+        :type name: string
+        """
+        self.name = name
+
+        # TODO: parse source and arguments when translation is ready
+        self.source = ''
+        self.args = []
+
+        self.arg_types = self.parse_argument_types(invented.tp)
+        self.return_type = self.arg_types.pop()
