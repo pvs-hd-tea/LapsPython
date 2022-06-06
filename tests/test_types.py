@@ -2,8 +2,21 @@
 
 import pytest
 
-from lapspython.types import ParsedPrimitive
+from dreamcoder.type import TypeConstructor
+from lapspython.extraction import GrammarParser, ProgramExtractor
+from lapspython.types import (CompactFrontier, ParsedInvented, ParsedPrimitive,
+                              ParsedType)
 from lapspython.utils import load_checkpoint
+
+
+class TestParsedType:
+    """Run tests for lapspython.types.ParsedType."""
+
+    def test_init(self):
+        """Constructor of abstract base class."""
+        expected_message = "Can't instantiate .* ParsedType .* __init__"
+        with pytest.raises(TypeError, match=expected_message):
+            ParsedType()
 
 
 class TestParsedPrimitive:
@@ -97,3 +110,48 @@ class TestParsedPrimitive:
         expected_message = 'args length 2 != 1.'
         with pytest.raises(ValueError, match=expected_message):
             pp.resolve_variables(['arg0', 'arg1'])
+
+
+class TestParsedInvented:
+    """Run tests for lapspython.types.ParsedInvented."""
+
+    def test_init(self):
+        """Constructor."""
+        grammar = load_checkpoint('re2_test').grammars[-1]
+        parser = GrammarParser(grammar)
+        for name in parser.parsed_invented.keys():
+            invented = parser.parsed_invented[name]
+            assert isinstance(invented, ParsedInvented)
+            assert invented.name != name
+            assert invented.name.find('f') == 0
+            assert str(invented) == 'def f0():\n    '
+            assert isinstance(invented.arg_types[0], TypeConstructor)
+            assert isinstance(invented.return_type, TypeConstructor)
+
+
+class TestParsedProgram:
+    """Run tests for lapspython.types.ParsedProgram."""
+
+    # TODO: implement when translation is ready
+    pass
+
+
+class TestCompactFrontier:
+    """Run tests for lapspython.types.CompactFrontier."""
+
+    def test_init(self):
+        """Constructor."""
+        result = load_checkpoint('re2_test')
+        extractor = ProgramExtractor(result)
+        for frontier in extractor.hit_frontiers.values():
+            assert isinstance(frontier, CompactFrontier)
+            assert isinstance(frontier.name, str)
+            assert isinstance(frontier.annotation, str)
+            assert len(frontier.programs) > 0
+            assert len(frontier.translations) == len(frontier.programs)
+        for frontier in extractor.miss_frontiers.values():
+            assert isinstance(frontier, CompactFrontier)
+            assert isinstance(frontier.name, str)
+            assert isinstance(frontier.annotation, str)
+            assert len(frontier.programs) == 0
+            assert len(frontier.translations) == 0
