@@ -14,7 +14,7 @@ class ParsedType(ABC):
     """Abstract base class for program parsing."""
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         """Parse input primitive and initialize members."""
         self.name = ''
         self.source = ''
@@ -40,7 +40,7 @@ class ParsedType(ABC):
         :returns: Flat list of inferred types.
         :rtype: list
         """
-        if type(arg_types) is not TypeVariable and arg_types.name == '->':
+        if not isinstance(arg_types, TypeVariable) and arg_types.name == '->':
             arguments = arg_types.arguments
             return [arguments[0]] + self.parse_argument_types(arguments[1])
         else:
@@ -94,7 +94,7 @@ class ParsedPrimitive(ParsedType):
 
             source = source[source.find(':') + 1:]
             indent_match = re.search(r'\w', source)
-            if type(indent_match) is re.Match:
+            if isinstance(indent_match, re.Match):
                 indent = indent_match.start()
             if indent == 1:
                 source = source[indent:]
@@ -133,7 +133,7 @@ class ParsedInvented(ParsedType):
         self.return_type = self.arg_types.pop()
 
 
-class TranslatedProgram(ParsedType):
+class ParsedProgram(ParsedType):
     """Class parsing synthesized programs."""
 
     # TODO: finalize when translation is ready
@@ -153,4 +153,4 @@ class CompactFrontier:
         entries = sorted(frontier.entries, key=lambda e: -e.logPosterior)
         self.programs = [entry.program for entry in entries]
         # TODO: finalize when translation is ready
-        self.translations = None
+        self.translations = self.programs

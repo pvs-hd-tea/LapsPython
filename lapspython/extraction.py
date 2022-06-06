@@ -30,14 +30,14 @@ class GrammarParser:
         :rtype: dict
         """
         for _, _, primitive in grammar.productions:
-            if type(primitive) is Primitive:
+            if isinstance(primitive, Primitive):
                 name = primitive.name
                 if name not in self.parsed_primitives:
                     parsed_primitive = ParsedPrimitive(primitive)
                     parsed_primitive = parsed_primitive.resolve_lambdas()
                     self.parsed_primitives[name] = parsed_primitive
 
-            elif type(primitive) is not Invented:
+            elif not isinstance(primitive, Invented):
                 raise TypeError(f'Encountered unknown type {type(primitive)}.')
 
             elif str(primitive) not in self.parsed_invented:
@@ -55,6 +55,15 @@ class ProgramExtractor:
     hit_frontiers: dict = {}
     miss_frontiers: dict = {}
 
+    def __init__(self, result: ECResult = None):
+        """Optionally extract programs if passed during construction.
+
+        :param result: A result produced by LAPS or checkpoint.
+        :type result: dreamcoder.dreamcoder.ECResult, optional
+        """
+        if result is not None:
+            self.extract(result)
+
     def extract(self, result: ECResult) -> dict:
         """Extract all frontiers with descriptions and frontiers.
 
@@ -65,7 +74,7 @@ class ProgramExtractor:
         """
         for frontier in result.allFrontiers.values():
             name = frontier.task.name
-            annotation = result.taskLanguage[name]
+            annotation = result.taskLanguage.get(name, '')[0]
             compact_frontier = CompactFrontier(frontier, annotation)
             if frontier.empty:
                 self.miss_frontiers[name] = compact_frontier
