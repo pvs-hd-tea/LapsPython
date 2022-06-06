@@ -97,4 +97,3 @@ class TestParsedPrimitive:
         expected_message = 'args length 2 != 1.'
         with pytest.raises(ValueError, match=expected_message):
             pp.resolve_variables(['arg0', 'arg1'])
-

@@ -56,8 +56,9 @@ class TestPrimitiveExtractor:
         assert _map.return_type.name == 'list'
 
     def test_parse_grammar_unknown_type(self):
+        """Test grammar with unexpected type."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         grammar.productions = [(None, None, None)]
-        expected_message = 'Encountered unknown type <class \'NoneType\'>.'
+        expected_message = "Encountered unknown type <class 'NoneType'>."
         with pytest.raises(TypeError, match=expected_message):
             GrammarParser(grammar)
