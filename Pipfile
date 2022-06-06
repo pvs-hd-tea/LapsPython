@@ -104,7 +104,6 @@ flake8-simplify = "*"
 flake8-use-fstring = "*"
 isort = "*"
 mypy = "*"
-pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
 
