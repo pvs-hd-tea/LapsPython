@@ -1,5 +1,7 @@
 """Unit tests for module lapspython.extraction."""
 
+import pytest
+
 from lapspython.extraction import GrammarParser
 from lapspython.utils import load_checkpoint
 
@@ -14,13 +16,13 @@ class TestPrimitiveExtractor:
 
     def test_init_re2(self):
         """Construct parser with passed grammar."""
-        grammar = load_checkpoint('re2_test').grammars[0]
+        grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser(grammar)
         assert parser.parsed_primitives != {}
 
     def test_parse_grammar_re2(self):
         """Extract primitives from an re2 grammar."""
-        grammar = load_checkpoint('re2_test').grammars[0]
+        grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
         parser.parse_grammar(grammar)
 
@@ -52,3 +54,11 @@ class TestPrimitiveExtractor:
         assert _map.arg_types[0].name == '->'
         assert _map.arg_types[1].name == 'list'
         assert _map.return_type.name == 'list'
+
+    def test_parse_grammar_unknown_type(self):
+        """Test grammar with unexpected type."""
+        grammar = load_checkpoint('re2_test').grammars[-1]
+        grammar.productions = [(None, None, None)]
+        expected_message = "Encountered unknown type <class 'NoneType'>."
+        with pytest.raises(TypeError, match=expected_message):
+            GrammarParser(grammar)
