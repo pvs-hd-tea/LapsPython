@@ -1,5 +1,7 @@
 """Unit tests for module lapspython.extraction."""
 
+import pytest
+
 from lapspython.extraction import GrammarParser
 from lapspython.utils import load_checkpoint
 
@@ -52,3 +54,10 @@ class TestPrimitiveExtractor:
         assert _map.arg_types[0].name == '->'
         assert _map.arg_types[1].name == 'list'
         assert _map.return_type.name == 'list'
+
+    def test_parse_grammar_unknown_type(self):
+        grammar = load_checkpoint('re2_test').grammars[-1]
+        grammar.productions = [(None, None, None)]
+        expected_message = 'Encountered unknown type <class \'NoneType\'>.'
+        with pytest.raises(TypeError, match=expected_message):
+            GrammarParser(grammar)

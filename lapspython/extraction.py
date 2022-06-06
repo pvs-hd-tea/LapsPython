@@ -1,13 +1,15 @@
 """Implements classes to extract primitives and lambda expressions."""
 
 from dreamcoder.grammar import Grammar
-from lapspython.types import ParsedPrimitive
+from dreamcoder.program import Invented, Primitive
+from lapspython.types import ParsedInvented, ParsedPrimitive
 
 
 class GrammarParser:
     """Extract, parse, and store all primitives from grammar."""
 
     parsed_primitives: dict = {}
+    parsed_invented: dict = {}
 
     def __init__(self, grammar: Grammar = None):
         """Optionally parse grammar if passed during construction.
@@ -27,10 +29,19 @@ class GrammarParser:
         :rtype: dict
         """
         for _, _, primitive in grammar.productions:
-            name = primitive.name
+            if type(primitive) is Primitive:
+                name = primitive.name
+                if name not in self.parsed_primitives:
+                    parsed = ParsedPrimitive(primitive)
+                    self.parsed_primitives[name] = parsed.resolve_lambdas()
 
-            if name not in self.parsed_primitives:
-                parsed = ParsedPrimitive(primitive)
-                self.parsed_primitives[name] = parsed.resolve_lambdas()
+            elif type(primitive) is not Invented:
+                raise TypeError(f'Encountered unknown type {type(primitive)}.')
 
-        return self.parsed_primitives
+            elif str(primitive) not in self.parsed_invented:
+                name = f'f{len(self.parsed_invented)}'
+                parsed = ParsedInvented(primitive, name)
+                self.parsed_invented[str(primitive)] = parsed
+
+        return {'primitives': self.parsed_primitives,
+                'invented': self.parsed_invented, }
