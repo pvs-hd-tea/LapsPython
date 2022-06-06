@@ -1,43 +1,54 @@
 """Unit tests for module lapspython.extraction."""
 
-import lapspython.domains.dummy.dummyPrimitives
-from lapspython.extraction import PrimitiveExtractor
+from lapspython.extraction import GrammarParser
+from lapspython.utils import load_checkpoint
 
 
 class TestPrimitiveExtractor:
     """Run tests for lapspython.extraction.PrimitiveExtractor."""
 
-    def test_module_loaded(self):
-        """Call a primitive function to verify import."""
-        assert lapspython.domains.dummy.dummyPrimitives._identity(True)
+    def test_init_no_grammar(self):
+        """Construct parser with empty grammar."""
+        parser = GrammarParser()
+        assert parser.parsed_primitives == {}
 
-    def test_extract_no_primitives(self):
-        """Extract primitives from a workspace without primitives."""
-        pe = PrimitiveExtractor()
-        assert pe.parsed_primitives == {}
+    def test_init_re2(self):
+        """Construct parser with passed grammar."""
+        grammar = load_checkpoint('re2_test').grammars[0]
+        parser = GrammarParser(grammar)
+        assert parser.parsed_primitives != {}
 
-    def test_extract_dummy_primitives(self):
-        """Extract primitives from a dummy workspace."""
-        pe = PrimitiveExtractor()
-        primitives = pe.extract()
-        assert primitives == pe.parsed_primitives
-        assert len(primitives.keys()) == 5
+    def test_parse_grammar_re2(self):
+        """Extract primitives from an re2 grammar."""
+        grammar = load_checkpoint('re2_test').grammars[0]
+        parser = GrammarParser()
+        parser.parse_grammar(grammar)
 
-        assert '_addition' in primitives
-        assert '_subtraction' in primitives
-        assert '_division' in primitives
-        assert '_identity' in primitives
-        assert '_not' in primitives
+        assert '_rvowel' in parser.parsed_primitives
+        assert '_rconcat' in parser.parsed_primitives
+        assert 'map' in parser.parsed_primitives
 
-        assert primitives['_addition'].source == 'return x + y'
-        assert primitives['_subtraction'].source == 'return x - y'
-        assert primitives['_division'].source == 'return x / y'
-        assert primitives['_identity'].source == 'return x'
-        assert primitives['_not'].source == 'return not x'
+        _rvowel = parser.parsed_primitives['_rvowel']
+        assert _rvowel.name == '_rvowel'
+        assert _rvowel.source == '(a|e|i|o|u)'
+        assert _rvowel.args == []
+        assert _rvowel.arg_types == []
+        assert _rvowel.return_type.name == 'tsubstr'
 
-        assert primitives['_addition'].args == ['x', 'y']
-        assert primitives['_subtraction'].args == ['x', 'y']
-        assert primitives['_division'].args == ['x', 'y']
-        assert primitives['_identity'].args == ['x']
-        assert primitives['_not'].args == ['x']
+        _rconcat = parser.parsed_primitives['_rconcat']
+        assert _rconcat.name == '_rconcat'
+        assert _rconcat.source == 'return s1 + s2'
+        assert _rconcat.args == ['s1', 's2']
+        assert len(_rconcat.arg_types) == 2
+        assert _rconcat.arg_types[0].name == 'tsubstr'
+        assert _rconcat.arg_types[1].name == 'tsubstr'
+        assert _rconcat.return_type.name == 'tsubstr'
 
+        _map = parser.parsed_primitives['map']
+        assert _map.name == 'map'
+        assert _map.source == 'return list(map(f, l))'
+        assert _map.args == ['f', 'l']
+        assert len(_map.arg_types) == 2
+        assert _map.arg_types[0].name == '->'
+        assert _map.arg_types[1].name == 'list'
+        assert _map.return_type.name == 'list'

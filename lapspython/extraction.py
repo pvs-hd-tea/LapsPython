@@ -1,77 +1,36 @@
 """Implements classes to extract primitives and lambda expressions."""
-import inspect
-import re
-import sys
 
+from dreamcoder.grammar import Grammar
 from lapspython.types import ParsedPrimitive
 
 
-class PrimitiveExtractor:
-    """Extract, parse, and store all imported primitives."""
+class GrammarParser:
+    """Extract, parse, and store all primitives from grammar."""
 
     parsed_primitives: dict = {}
 
-    def extract(self):
-        """Collect and parse all primitives in workspace."""
-        primitive_modules = self.__extract_imported_primitive_modules()
-        primitives = self.__extract_imported_primitives(primitive_modules)
-        self.parsed_primitives = self.__parse_primitives(primitives)
-        return self.parsed_primitives
+    def __init__(self, grammar: Grammar = None):
+        """Optionally parse grammar if passed during construction.
 
-    def __extract_imported_primitive_modules(self) -> list:
-        """Return all imported modules implementing primitives.
-
-        :returns: A list of matching module objects
-        :rtype: list
+        :param grammar: A grammar induced inside main() or ecIterator().
+        :type grammar: Grammar, optional
         """
-        keys = sys.modules.keys()
-        pattern = r'^\w+\.domains\.\w+\.\w+Primitives$'
-        return [sys.modules[key] for key in keys if re.match(pattern, key)]
+        if grammar is not None:
+            self.parse_grammar(grammar)
 
-    def __extract_imported_primitives(self, modules: list) -> list:
-        """Identify all primitives in given modules.
+    def parse_grammar(self, grammar: Grammar) -> dict:
+        """Convert Primitive objects to simplified ParsedPrimitive objects.
 
-        :param modules: A list of module objects
-        :type modules: list
-        :returns: A list of function objects
-        :rtype: list
-        """
-        primitives = []
-        for module in modules:
-            function_pairs = inspect.getmembers(module, inspect.isfunction)
-            functions = [f_pair[1] for f_pair in function_pairs]
-            module_primitives = [f for f in functions if f.__name__[0] == '_']
-            primitives.extend(module_primitives)
-        return primitives
-
-    def __parse_primitives(self, primitives: list) -> dict:
-        """Convert function object to ParsedPrimitive object.
-
-        :param primitives: A list of function objects
-        :type primitives: list
+        :param grammar: A grammar induced inside main() or ecIterator().
+        :type grammar: Grammar
         :returns: A dictionary of ParsedPrimitive objects
         :rtype: dict
         """
-        parsed_primitives = {}
+        for _, _, primitive in grammar.productions:
+            name = primitive.name
 
-        for primitive in primitives:
-            name = primitive.__name__
-            args = inspect.getfullargspec(primitive).args
+            if name not in self.parsed_primitives:
+                parsed = ParsedPrimitive(primitive)
+                self.parsed_primitives[name] = parsed.resolve_lambdas()
 
-            source = inspect.getsource(primitive)
-            source = source[source.find(':') + 1:]
-
-            indent = re.search(r'\w', source).start()
-
-            if indent == 1:
-                source = source[indent:]
-            else:
-                source = re.sub(r'^\n', '', source)
-                source = re.sub(r'^ {4}', '', source, flags=re.MULTILINE)
-            source = re.sub(r'\n$', '', source)
-
-            parsed_primitive = ParsedPrimitive(name, source, args)
-            parsed_primitives[name] = parsed_primitive.resolve_lambdas()
-
-        return parsed_primitives
-
+        return self.parsed_primitives

@@ -1,37 +1,44 @@
 """Implements types for parsed primitives and lambda expressions."""
 
+import copy
+import inspect
 import re
+
+from dreamcoder.program import Primitive
+from dreamcoder.type import TypeConstructor, TypeVariable
 
 
 class ParsedPrimitive:
-    """Data class containing name, source and list of args of a function."""
+    """Class parsing primitives for translation to clean Python code."""
 
-    def __init__(self, name: str, source: str, args: list):
+    def __init__(self, primitive: Primitive):
         """Construct primitive object with parsed function specs.
 
-        :param name: function name
-        :type name: string
-        :param source: source code (body) of the function
-        :type source: string
-        :param args: argument names of the function
-        :type args: list
+        :param primitive: A Primitive object
+        :type primitive: Primitive
         """
-        if type(name) != str:
-            raise TypeError('name must be a non-empty string.')
-        if name == '':
-            raise ValueError('name must be a non-empty string.')
-        if type(source) != str:
-            raise TypeError('source must be a non-empty string.')
-        if source == '':
-            raise ValueError('source must be a non-empty string.')
-        if type(args) not in (list, tuple):
-            raise TypeError('args must be a list or tuple of strings.')
-        if not all(type(arg) == str for arg in args):
-            raise TypeError('args must be a list or tuple of strings.')
+        implementation = primitive.value
 
-        self.name = name
-        self.source = source
+        if inspect.isfunction(implementation):
+            args = inspect.getfullargspec(implementation).args
+            source = inspect.getsource(implementation)
+
+            source = source[source.find(':') + 1:]
+            indent = re.search(r'\w', source).start()
+            if indent == 1:
+                source = source[indent:]
+            else:
+                source = re.sub(r'^\n', '', source)
+                source = re.sub(r'^ {4}', '', source, flags=re.MULTILINE)
+        else:
+            args = []
+            source = implementation
+
+        self.name = primitive.name
+        self.source = source.strip()
         self.args = args
+        self.arg_types = self.parse_argument_types(primitive.infer())
+        self.return_type = self.arg_types.pop()
 
     def __str__(self):
         """Construct Python function from object.
@@ -43,16 +50,31 @@ class ParsedPrimitive:
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
         return header + indented_body
 
+    def parse_argument_types(self, arg_types: TypeConstructor) -> list:
+        """Flatten inferred nested type structure of primitive.
+
+        :param arg_types: arg_types: Inferred types.
+        :type arg_types: TypeConstructor
+        :returns: Flat list of inferred types.
+        :rtype: list
+        """
+        if type(arg_types) is not TypeVariable and arg_types.name == '->':
+            arguments = arg_types.arguments
+            return [arguments[0]] + self.parse_argument_types(arguments[1])
+        else:
+            return [arg_types]
+
     def resolve_lambdas(self):
         """Remove lambda functions from source and extend list of arguments.
 
         :returns: new, cleaner parsed primitive
         :rtype: ParsedPrimitive
         """
-        pattern = r'lambda (\S): '
-        args = self.args + re.findall(pattern, self.source)
-        source = re.sub(pattern, '', self.source)
-        return ParsedPrimitive(self.name, source, args)
+        new_primitive = copy.copy(self)
+        pattern = r'lambda (\S+): '
+        new_primitive.args = self.args + re.findall(pattern, self.source)
+        new_primitive.source = re.sub(pattern, '', self.source)
+        return new_primitive
 
     def resolve_variables(self, args: list) -> str:
         """Substitute default arguments in source.
