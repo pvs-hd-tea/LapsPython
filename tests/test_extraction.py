@@ -14,13 +14,13 @@ class TestPrimitiveExtractor:
 
     def test_init_re2(self):
         """Construct parser with passed grammar."""
-        grammar = load_checkpoint('re2_test').grammars[0]
+        grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser(grammar)
         assert parser.parsed_primitives != {}
 
     def test_parse_grammar_re2(self):
         """Extract primitives from an re2 grammar."""
-        grammar = load_checkpoint('re2_test').grammars[0]
+        grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
         parser.parse_grammar(grammar)
 
