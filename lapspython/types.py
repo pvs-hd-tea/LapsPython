@@ -5,6 +5,7 @@ import inspect
 import re
 from abc import ABC, abstractmethod
 
+from dreamcoder.frontier import Frontier
 from dreamcoder.program import Invented, Primitive
 from dreamcoder.type import TypeConstructor, TypeVariable
 
@@ -35,7 +36,7 @@ class ParsedType(ABC):
         """Flatten inferred nested type structure of primitive.
 
         :param arg_types: arg_types: Inferred types.
-        :type arg_types: TypeConstructor
+        :type arg_types: dreamcoder.type.TypeConstructor
         :returns: Flat list of inferred types.
         :rtype: list
         """
@@ -83,7 +84,7 @@ class ParsedPrimitive(ParsedType):
         """Construct ParsedPrimitive object with parsed function specs.
 
         :param primitive: A Primitive object
-        :type primitive: Primitive
+        :type primitive: dreamcoder.program.Primitive
         """
         implementation = primitive.value
 
@@ -92,7 +93,9 @@ class ParsedPrimitive(ParsedType):
             source = inspect.getsource(implementation)
 
             source = source[source.find(':') + 1:]
-            indent = re.search(r'\w', source).start()
+            indent_match = re.search(r'\w', source)
+            if type(indent_match) is re.Match:
+                indent = indent_match.start()
             if indent == 1:
                 source = source[indent:]
             else:
@@ -116,7 +119,7 @@ class ParsedInvented(ParsedType):
         """Construct ParsedInvented object with parsed specs.
 
         :param invented: An invented primitive object
-        :type invented: Invented
+        :type invented: dreamcoder.program.Invented
         :param name: A custom name since invented primitives are unnamed
         :type name: string
         """
@@ -128,3 +131,26 @@ class ParsedInvented(ParsedType):
 
         self.arg_types = self.parse_argument_types(invented.tp)
         self.return_type = self.arg_types.pop()
+
+
+class TranslatedProgram(ParsedType):
+    """Class parsing synthesized programs."""
+
+    # TODO: finalize when translation is ready
+    pass
+
+
+class CompactFrontier:
+    """Data class containing the important specs of extracted frontiers."""
+
+    def __init__(self, frontier: Frontier, annotation: str = ''):
+        """Construct condensed frontier object with optional annotation."""
+        self.annotation = annotation
+        task = frontier.task
+        self.name = task.name
+        self.requested_types = task.request
+        self.examples = task.examples
+        entries = sorted(frontier.entries, key=lambda e: -e.logPosterior)
+        self.programs = [entry.program for entry in entries]
+        # TODO: finalize when translation is ready
+        self.translations = None

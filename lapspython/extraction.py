@@ -1,8 +1,9 @@
 """Implements classes to extract primitives and lambda expressions."""
 
+from dreamcoder.dreamcoder import ECResult
 from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
-from lapspython.types import ParsedInvented, ParsedPrimitive
+from lapspython.types import CompactFrontier, ParsedInvented, ParsedPrimitive
 
 
 class GrammarParser:
@@ -15,7 +16,7 @@ class GrammarParser:
         """Optionally parse grammar if passed during construction.
 
         :param grammar: A grammar induced inside main() or ecIterator().
-        :type grammar: Grammar, optional
+        :type grammar: dreamcoder.grammar.Grammar, optional
         """
         if grammar is not None:
             self.parse_grammar(grammar)
@@ -24,7 +25,7 @@ class GrammarParser:
         """Convert Primitive objects to simplified ParsedPrimitive objects.
 
         :param grammar: A grammar induced inside main() or ecIterator().
-        :type grammar: Grammar
+        :type grammar: dreamcoder.grammar.Grammar
         :returns: A dictionary of ParsedPrimitive objects
         :rtype: dict
         """
@@ -32,16 +33,43 @@ class GrammarParser:
             if type(primitive) is Primitive:
                 name = primitive.name
                 if name not in self.parsed_primitives:
-                    parsed = ParsedPrimitive(primitive)
-                    self.parsed_primitives[name] = parsed.resolve_lambdas()
+                    parsed_primitive = ParsedPrimitive(primitive)
+                    parsed_primitive = parsed_primitive.resolve_lambdas()
+                    self.parsed_primitives[name] = parsed_primitive
 
             elif type(primitive) is not Invented:
                 raise TypeError(f'Encountered unknown type {type(primitive)}.')
 
             elif str(primitive) not in self.parsed_invented:
                 name = f'f{len(self.parsed_invented)}'
-                parsed = ParsedInvented(primitive, name)
-                self.parsed_invented[str(primitive)] = parsed
+                parsed_invented = ParsedInvented(primitive, name)
+                self.parsed_invented[str(primitive)] = parsed_invented
 
         return {'primitives': self.parsed_primitives,
                 'invented': self.parsed_invented, }
+
+
+class ProgramExtractor:
+    """Extract and process synthesized programs."""
+
+    hit_frontiers: dict = {}
+    miss_frontiers: dict = {}
+
+    def extract(self, result: ECResult) -> dict:
+        """Extract all frontiers with descriptions and frontiers.
+
+        :param result: result of dreamcoder execution (checkpoint)
+        :type result: dreamcoder.dreamcoder.ECResult
+        :returns: A dictionary of extracted frontiers
+        :rtype: dict
+        """
+        for frontier in result.allFrontiers.values():
+            name = frontier.task.name
+            annotation = result.taskLanguage[name]
+            compact_frontier = CompactFrontier(frontier, annotation)
+            if frontier.empty:
+                self.miss_frontiers[name] = compact_frontier
+            else:
+                self.hit_frontiers[name] = compact_frontier
+
+        return {'hit': self.hit_frontiers, 'miss': self.miss_frontiers, }
