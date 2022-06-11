@@ -115,15 +115,16 @@ class TestParsedPrimitive:
 class TestParsedInvented:
     """Run tests for lapspython.types.ParsedInvented."""
 
-    def test_init(self):
-        """Constructor."""
+    def test_init_re2(self):
+        """Constructor with re2 checkpoint."""
         grammar = load_checkpoint('re2_test').grammars[-1]
-        parser = GrammarParser(grammar)
-        for name in parser.parsed_invented.keys():
-            invented = parser.parsed_invented[name]
+        parsed_grammar = GrammarParser(grammar).parsed_grammar
+        for handle in parsed_grammar.invented.keys():
+            invented = parsed_grammar.invented[handle]
             assert isinstance(invented, ParsedInvented)
-            assert invented.name != name
+            assert invented.name != handle
             assert invented.name.find('f') == 0
+            assert invented.handle == '#(_rsplit _rdot)'
             assert str(invented) == 'def f0():\n    '
             assert isinstance(invented.arg_types[0], TypeConstructor)
             assert isinstance(invented.return_type, TypeConstructor)
@@ -143,13 +144,14 @@ class TestCompactFrontier:
         """Constructor."""
         result = load_checkpoint('re2_test')
         extractor = ProgramExtractor(result)
-        for frontier in extractor.hit_frontiers.values():
+        compact_result = extractor.compact_result
+        for frontier in compact_result.hit_frontiers.values():
             assert isinstance(frontier, CompactFrontier)
             assert isinstance(frontier.name, str)
             assert isinstance(frontier.annotation, str)
             assert len(frontier.programs) > 0
             assert len(frontier.translations) == len(frontier.programs)
-        for frontier in extractor.miss_frontiers.values():
+        for frontier in compact_result.miss_frontiers.values():
             assert isinstance(frontier, CompactFrontier)
             assert isinstance(frontier.name, str)
             assert isinstance(frontier.annotation, str)
