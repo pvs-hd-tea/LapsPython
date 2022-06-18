@@ -16,10 +16,11 @@ class ParsedType(ABC):
     @abstractmethod
     def __init__(self) -> None:  # pragma: no cover
         """Parse input primitive and initialize members."""
-        self.name = ''
-        self.source = ''
-        self.args = []
-        self.arg_types = []
+        self.name: str = ''
+        self.handle: str = ''
+        self.source: str = ''
+        self.args: list = []
+        self.arg_types: list = []
         self.returntype = type
 
     def __str__(self) -> str:
@@ -75,7 +76,7 @@ class ParsedType(ABC):
         for i in range(len(args)):
             new_source = re.sub(self.args[i], args[i], new_source)
         if return_name != '':
-            new_source = re.sub('return', f'{return_name} =', new_source)
+            return re.sub('return', f'{return_name} =', new_source)
         return new_source
 
 
@@ -100,6 +101,7 @@ class ParsedPrimitive(ParsedType):
         dependencies = self._get_dependencies(implementation)
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.name = primitive.name
+        self.handle = primitive.name
         self.source = source.strip()
         self.args = args
         self.arg_types = self.parse_argument_types(primitive.tp)
@@ -129,13 +131,13 @@ class ParsedPrimitive(ParsedType):
 
         return re.sub(' #.+$', '', source)
 
-    def _get_dependencies(self, implementation) -> dict:
+    def _get_dependencies(self, implementation) -> list:
         """Find functions called by primities that are not built-ins.
 
         :param implementation: The function referenced by a primitive
         :type implementation: function
-        :returns: A (function name, source) dictionary
-        :rtype: dict
+        :returns: A list of (function name, source) tuples
+        :rtype: list
         """
         module = inspect.getmodule(implementation)
         functions = inspect.getmembers(module, inspect.isfunction)
@@ -146,7 +148,7 @@ class ParsedPrimitive(ParsedType):
 class ParsedInvented(ParsedType):
     """Class parsing invented primitives for translation to Python."""
 
-    def __init__(self, invented: Invented, name: str) -> None:
+    def __init__(self, invented: Invented, name: str):
         """Construct ParsedInvented object with parsed specs.
 
         :param invented: An invented primitive object
@@ -156,10 +158,13 @@ class ParsedInvented(ParsedType):
         """
         self.name = name
         self.handle = str(invented)
+        self.program = invented
 
-        # TODO: parse source and arguments when translation is ready
+        # To avoid circular imports, source translation is only handled by
+        # lapspython.extraction.GrammarParser instead of during construction.
         self.source = ''
-        self.args = []
+        self.args = [f'{name}_arg']
+        self.dependencies: list = []
 
         self.arg_types = self.parse_argument_types(invented.tp)
         self.return_type = self.arg_types.pop()
@@ -168,16 +173,42 @@ class ParsedInvented(ParsedType):
 class ParsedProgram(ParsedType):
     """Class parsing synthesized programs."""
 
-    # TODO: finalize when translation is ready
-    pass
+    def __init__(self, name: str, source: str, args: list, dependencies: set):
+        """Store Python program with dependencies, arguments, and name.
+
+        :param name: Task name or invented primitive handle
+        :type name: string
+        :param source: The Python translation of a given program
+        :type source: string
+        :param args: List of arguments to be resolved when used
+        :type args: list
+        :param dependencies: Source codes of called functions
+        :type dependencies: set
+        """
+        self.name = name
+        self.handle = name
+        self.source = source
+        self.args = args
+        self.dependencies = dependencies
+
+    def __str__(self) -> str:
+        """Return dependencies and source code as string.
+
+        :returns: Full source code of translated program
+        :rtype: string
+        """
+        dependencies = '\n'.join(self.dependencies) + '\n'
+        header = f'def {self.name}({", ".join(self.args)}):\n'
+        indent_source = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return dependencies + header + indent_source
 
 
 class ParsedGrammar:
     """Data class containing parsed (invented) primitives."""
 
-    def __init__(self, primitives: dict = {}, invented: dict = {}) -> None:
+    def __init__(self, primitives: dict, invented: dict) -> None:
         """Store parsed (invented) primitives in member variables.
-        
+
         :param primitives: A (name, ParsedPrimitive) dictionary.
         :type primitives: dict
         :param invented: A (name, ParsedInvented) dictionary.
@@ -199,17 +230,18 @@ class CompactFrontier:
         self.examples = task.examples
         entries = sorted(frontier.entries, key=lambda e: -e.logPosterior)
         self.programs = [entry.program for entry in entries]
-        # TODO: finalize when translation is ready
-        self.translations = []
-        self.arguments = []
+        # To avoid circular imports, source translation is only handled by
+        # lapspython.extraction.ProgramExtractor instead of the constructor.
+        self.translations: list = []
+        self.args: list = []
 
 
 class CompactResult:
     """Data class containing (compact) extracted frontiers."""
 
-    def __init__(self, hit: dict = {}, miss: dict = {}) -> None:
+    def __init__(self, hit: dict, miss: dict) -> None:
         """Store HIT and MISS CompactFrontiers in member variables.
-        
+
         :param hit: A (name, HIT CompactFrontier) dictionary.
         :type hit: dict
         :param miss: A (name, MISS CompactFrontier) dictionary.
