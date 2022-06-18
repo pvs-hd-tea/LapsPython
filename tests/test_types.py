@@ -83,22 +83,6 @@ class TestParsedPrimitive:
         args = ['s1', 's2']
         assert pp.resolve_variables(args) == pp.source
 
-    def test_resolve_variables_invalid_args(self):
-        """Resolution using invalid arguments."""
-        grammar = load_checkpoint('re2_test').grammars[-1]
-        for _, _, p in grammar.productions:
-            if str(p) == '_rconcat':
-                primitive = p
-                break
-        pp = ParsedPrimitive(primitive)
-        expected_message = 'args must be a list or tuple of strings.'
-        with pytest.raises(TypeError, match=expected_message):
-            pp.resolve_variables('mask')
-        with pytest.raises(TypeError, match=expected_message):
-            pp.resolve_variables(42)
-        with pytest.raises(TypeError, match=expected_message):
-            pp.resolve_variables([42])
-
     def test_resolve_variables_invalid_length(self):
         """Resolution using incomplete arguments."""
         grammar = load_checkpoint('re2_test').grammars[-1]
@@ -125,7 +109,8 @@ class TestParsedInvented:
             assert invented.name != handle
             assert invented.name.find('f') == 0
             assert invented.handle == '#(_rsplit _rdot)'
-            assert str(invented) == 'def f0():\n    '
+            trans = "def f0(f0_arg):\n    return __regex_split('.', f0_arg)"
+            assert str(invented) == trans
             assert isinstance(invented.arg_types[0], TypeConstructor)
             assert isinstance(invented.return_type, TypeConstructor)
 
