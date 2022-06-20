@@ -53,8 +53,13 @@ class GrammarParser:
 
         translator = Translator(self.parsed_grammar)
         for invented in self.parsed_grammar.invented.values():
-            trans = translator.translate(invented.program, invented.name)
+            try:
+                trans = translator.translate(invented.program, invented.name)
+            except ValueError:
+                # TODO: Delegate nested invented primitives
+                continue
             invented.source = trans.source
+            invented.args = trans.args
             invented.dependencies = trans.dependencies
 
         return self.parsed_grammar
@@ -63,30 +68,33 @@ class GrammarParser:
 class ProgramExtractor:
     """Extract and process synthesized programs."""
 
-    def __init__(self, result: ECResult = None) -> None:
+    def __init__(self, result: ECResult = None,
+                 translator: Translator = None) -> None:
         """Optionally extract programs if passed during construction.
 
         :param result: A result produced by LAPS or checkpoint.
         :type result: dreamcoder.dreamcoder.ECResult, optional
+        :param translator: Translator to translate programs during extraction.
+        :type translator: lapspython.translation.Translator, optional
         """
         if result is not None:
-            self.extract(result)
+            self.extract(result, translator)
         else:
             self.compact_result = CompactResult({}, {})
 
-    def extract(self, result: ECResult) -> CompactResult:
+    def extract(self, result: ECResult,
+                translator: Translator = None) -> CompactResult:
         """Extract all frontiers with descriptions and frontiers.
 
-        :param result: result of dreamcoder execution (checkpoint)
+        :param result: Result of dreamcoder execution (checkpoint)
         :type result: dreamcoder.dreamcoder.ECResult
-        :returns: A CompactResult object
-        :rtype: CompactResult
+        :param translator: Translator to translate programs during extraction.
+        :type translator: lapspython.translation.Translator, optional
+        :returns: A CompactResult object containing programs from checkpoint
+        :rtype: lapspython.types.CompactResult
         """
         hit_frontiers = {}
         miss_frontiers = {}
-
-        grammar = GrammarParser(result.grammars[-1]).parsed_grammar
-        translator = Translator(grammar)
 
         for frontier in result.allFrontiers.values():
             name = frontier.task.name
@@ -96,10 +104,16 @@ class ProgramExtractor:
                 miss_frontiers[name] = compact_frontier
             else:
                 hit_frontiers[name] = compact_frontier
-                for program in compact_frontier.programs:
-                    trans = translator.translate(program, name)
-                    compact_frontier.translations.append(trans.source)
-                    compact_frontier.args.append(trans.args)
+
+                if translator is not None:
+                    for program in compact_frontier.programs:
+                        try:
+                            trans = translator.translate(program, name)
+                        except ValueError:
+                            # TODO: Handle nested invented primitives
+                            continue
+                        compact_frontier.translations.append(trans.source)
+                        compact_frontier.args.append(trans.args)
 
         self.compact_result = CompactResult(hit_frontiers, miss_frontiers)
         return self.compact_result

@@ -163,7 +163,7 @@ class ParsedInvented(ParsedType):
         # To avoid circular imports, source translation is only handled by
         # lapspython.extraction.GrammarParser instead of during construction.
         self.source = ''
-        self.args = [f'{name}_arg']
+        self.args: list = []
         self.dependencies: list = []
 
         self.arg_types = self.parse_argument_types(invented.tp)
@@ -249,3 +249,12 @@ class CompactResult:
         """
         self.hit_frontiers: dict = hit
         self.miss_frontiers: dict = miss
+
+    def best(self):
+        """Return the HIT frontiers with best posteriors.
+
+        :returns: A (name, HIT CompactFrontier) dictionary.
+        :rtype: dict
+        """
+        # TODO: Copy frontiers to only contain 1 program
+        return {k: v for k, v in self.hit_frontiers.items()}

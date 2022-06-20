@@ -34,7 +34,10 @@ class Translator:
         for call in self.call_counts:
             self.call_counts[call] = 0
         self.args = []
-        source = self._translate_program(program).strip()
+        try:
+            source = self._translate_program(program).strip()
+        except (KeyError, ValueError):
+            raise
         last_variable_assignments = re.findall(r'\w+ =', source)
         if len(last_variable_assignments) > 0:
             source = 'return'.join(source.split(last_variable_assignments[-1]))
@@ -48,16 +51,32 @@ class Translator:
         """
         if not isinstance(program, (Abstraction, Invented)):
             raise TypeError(f'Encountered unexpected type {type(program)}.')
-        if not program.body.isApplication:
-            raise TypeError(f'Encountered unexpected type {type(program)}.')
 
-        code, f_parsed, x_args = self._translate_application(program.body)
+        body = program.body
+
+        if not isinstance(body, (Abstraction, Application)):
+            raise TypeError(f'Encountered unexpected type {type(body)}.')
+
+        if body.isAbstraction:
+            return self._translate_program(program.body)
+
+        try:
+            code, f_parsed, x_args = self._translate_application(body)
+        except ValueError:
+            raise
         self.call_counts[f_parsed.handle] += 1
         name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
 
         # Handle invented primitives
-        if len(x_args) == len(f_parsed.args) - 1:
-            x_args.append(f'{self.grammar.invented[str(program)].name}_arg')
+        if not program.isAbstraction:
+            for i in range(len(f_parsed.args) - len(x_args)):
+                handle = str(program)
+                try:
+                    name = self.grammar.invented[handle].name
+                except KeyError:
+                    raise
+                x_args.append(f'{name}_{i + 1}')
+                self.args.append(f'{name}_{i + 1}')
 
         code += f_parsed.resolve_variables(x_args, name) + '\n'
         return code
@@ -83,12 +102,18 @@ class Translator:
                 raise TypeError(f'Encountered unexpected type {type(x)}.')
         elif x.isApplication:
             x_code, x_parsed, x_args = self._translate_application(x)
-            self.call_counts[x_parsed.handle] += 1
-            name = f'{x_parsed.name}_{self.call_counts[x_parsed.handle]}'
-            code += x_code + x_parsed.resolve_variables(x_args, name) + '\n'
-            x_args = [name]
+            if x_parsed is not None:
+                self.call_counts[x_parsed.handle] += 1
+                name = f'{x_parsed.name}_{self.call_counts[x_parsed.handle]}'
+                x_parsed_resolved = x_parsed.resolve_variables(x_args, name)
+                code += x_code + x_parsed_resolved + '\n'
+                x_args = [name]
         elif x.isAbstraction:
-            x_args = ['test']
+            if x.body.isIndex:
+                lambda_body = f'arg{x.body.i}'
+            else:
+                lambda_body = str(x.body)
+            x_args = [f'lambda lx: {lambda_body}']
         else:
             raise TypeError(f'Encountered unexpected type {type(x)}.')
 
@@ -99,15 +124,19 @@ class Translator:
         elif f.isApplication:
             f_code, f_parsed, f_args = self._translate_application(f)
             x_args = f_args + x_args
+        elif f.isIndex:
+            f_parsed = None
+            x_args = [f'arg{f.i}'] + x_args
         elif f.isInvented:
             handle = str(f)
             self.call_counts[handle] += 1
             f_parsed = self.grammar.invented[handle]
+            if f_parsed.source == '':
+                raise ValueError('Invented primitive has no translation')
             self.dependencies.update(f_parsed.dependencies)
             self.dependencies.add(f_parsed.source)
             name = f'{f_parsed.name}_{self.call_counts[handle]}'
             code += f_parsed.resolve_variables(x_args, name) + '\n'
-            x_args = [name]
         else:
             raise TypeError(f'Encountered unexpected type {type(f)}.')
 

@@ -109,7 +109,7 @@ class TestParsedInvented:
             assert invented.name != handle
             assert invented.name.find('f') == 0
             assert invented.handle == '#(_rsplit _rdot)'
-            trans = "def f0(f0_arg):\n    return __regex_split('.', f0_arg)"
+            trans = "def f0(f0_1):\n    return __regex_split('.', f0_1)"
             assert str(invented) == trans
             assert isinstance(invented.arg_types[0], TypeConstructor)
             assert isinstance(invented.return_type, TypeConstructor)
