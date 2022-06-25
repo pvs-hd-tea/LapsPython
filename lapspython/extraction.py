@@ -53,14 +53,11 @@ class GrammarParser:
 
         translator = Translator(self.parsed_grammar)
         for invented in self.parsed_grammar.invented.values():
-            try:
+            if invented.source == '':
                 trans = translator.translate(invented.program, invented.name)
-            except ValueError:
-                # TODO: Delegate nested invented primitives
-                continue
-            invented.source = trans.source
-            invented.args = trans.args
-            invented.dependencies = trans.dependencies
+                invented.source = trans.source
+                invented.args = trans.args
+                invented.dependencies = trans.dependencies
 
         return self.parsed_grammar
 
@@ -107,11 +104,7 @@ class ProgramExtractor:
 
                 if translator is not None:
                     for program in compact_frontier.programs:
-                        try:
-                            trans = translator.translate(program, name)
-                        except ValueError:
-                            # TODO: Handle nested invented primitives
-                            continue
+                        trans = translator.translate(program, name)
                         compact_frontier.translations.append(trans.source)
                         compact_frontier.args.append(trans.args)
 

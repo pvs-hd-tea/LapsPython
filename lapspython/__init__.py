@@ -38,4 +38,4 @@ class Pipeline:
         return cls.extract_translate(result)
 
 
-Pipeline.from_checkpoint('re2_best_dsl_language')
+# debug results = Pipeline.from_checkpoint('re2_best_dsl_language')

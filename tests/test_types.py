@@ -4,6 +4,7 @@ import pytest
 
 from dreamcoder.type import TypeConstructor
 from lapspython.extraction import GrammarParser, ProgramExtractor
+from lapspython.translation import Translator
 from lapspython.types import (CompactFrontier, ParsedInvented, ParsedPrimitive,
                               ParsedType)
 from lapspython.utils import load_checkpoint
@@ -91,7 +92,7 @@ class TestParsedPrimitive:
                 primitive = p
                 break
         pp = ParsedPrimitive(primitive)
-        expected_message = 'args length 2 != 1.'
+        expected_message = r'Wrong number of arguments .+'
         with pytest.raises(ValueError, match=expected_message):
             pp.resolve_variables(['arg0', 'arg1'])
 
@@ -128,7 +129,9 @@ class TestCompactFrontier:
     def test_init(self):
         """Constructor."""
         result = load_checkpoint('re2_test')
-        extractor = ProgramExtractor(result)
+        grammar = GrammarParser(result.grammars[-1]).parsed_grammar
+        translator = Translator(grammar)
+        extractor = ProgramExtractor(result, translator)
         compact_result = extractor.compact_result
         for frontier in compact_result.hit_frontiers.values():
             assert isinstance(frontier, CompactFrontier)

@@ -70,11 +70,14 @@ class ParsedType(ABC):
         :rtype: string
         """
         if len(args) != len(self.args):
-            raise ValueError(f'args length {len(args)} != {len(self.args)}.')
+            func = f'{self.name}({", ".join(self.args)})'
+            raise ValueError(f'Wrong number of arguments for {func}: {args}.')
 
         new_source = self.source
         for i in range(len(args)):
-            new_source = re.sub(self.args[i], args[i], new_source)
+            pattern = fr'(\(| )({self.args[i]})(,| |\)|$)'
+            repl = fr'\1{args[i]}\3'
+            new_source = re.sub(pattern, repl, new_source)
         if return_name != '':
             return re.sub('return', f'{return_name} =', new_source)
         return new_source
@@ -230,7 +233,7 @@ class CompactFrontier:
         self.examples = task.examples
         entries = sorted(frontier.entries, key=lambda e: -e.logPosterior)
         self.programs = [entry.program for entry in entries]
-        # To avoid circular imports, source translation is only handled by
+        # To avoid circular imports, source translation is handled by
         # lapspython.extraction.ProgramExtractor instead of the constructor.
         self.translations: list = []
         self.args: list = []
