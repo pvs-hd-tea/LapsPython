@@ -56,6 +56,7 @@ class Translator:
         :returns:
         :rtype: tuple
         """
+        # debug print(program, type(program), node_type)
         if program.isAbstraction:
             return self._translate_abstraction(program)
         if program.isApplication:
@@ -87,8 +88,8 @@ class Translator:
         f = application.f
         x = application.x
 
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
         _, x_args = self._translate_wrapper(x, 'x')
+        f_parsed, f_args = self._translate_wrapper(f, 'f')
 
         return f_parsed, f_args + x_args
 
@@ -96,8 +97,8 @@ class Translator:
         f = application.f
         x = application.x
 
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
         x_parsed, x_args = self._translate_wrapper(x, 'x')
+        f_parsed, f_args = self._translate_wrapper(f, 'f')
 
         self.call_counts[f_parsed.handle] += 1
         name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
@@ -114,8 +115,8 @@ class Translator:
         f = application.f
         x = application.x
 
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
         x_parsed, x_args = self._translate_wrapper(x, 'x')
+        f_parsed, f_args = self._translate_wrapper(f, 'f')
 
         x_args = f_args + x_args
 
@@ -124,7 +125,7 @@ class Translator:
 
         missing_args = len(f_parsed.args) - len(x_args)
         for i in range(missing_args):
-            new_arg = f'{self.name}_{i + 1}'
+            new_arg = f'arg{i + 1}'
             x_args.append(new_arg)
             self.args.append(new_arg)
 
@@ -133,11 +134,13 @@ class Translator:
         return None, [name]
 
     def _translate_index(self, index: Index) -> tuple:
-        return None, [f'arg{index.i + 1}']
+        arg = f'arg{index.i + 1}'
+        if arg not in self.args:
+            self.args.append(arg)
+        return None, [arg]
 
     def _translate_invented(self, invented: Invented) -> tuple:
         handle = str(invented)
-        self.call_counts[handle] += 1
         f_parsed = self.grammar.invented[handle]
         if f_parsed.source == '':
             translator = Translator(self.grammar)
@@ -146,10 +149,9 @@ class Translator:
             f_parsed.args = f_trans.args
             f_parsed.dependencies = f_trans.dependencies
         self.dependencies.update(f_parsed.dependencies)
-        self.dependencies.add(f_parsed.source)
+        self.dependencies.add(str(f_parsed))
         name = f'{f_parsed.name}_{self.call_counts[handle]}'
         x_args = [name]
-        self.code += f_parsed.resolve_variables(x_args, name) + '\n'
 
         return f_parsed, x_args
 
@@ -162,4 +164,4 @@ class Translator:
         return None, [f"'{primitive.value}'"]
 
     def _translate_primitive_body(self, primitive: Primitive) -> tuple:
-        return None, [f"lambda x: '{primitive.value}'"]
+        return None, [f"'{primitive.value}'"]

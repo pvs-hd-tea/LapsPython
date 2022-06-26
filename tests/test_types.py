@@ -46,7 +46,7 @@ class TestParsedPrimitive:
                 primitive = p
                 break
         pp = ParsedPrimitive(primitive)
-        assert str(pp) == 'def _rconcat(s1):\n    return lambda s2: s1 + s2'
+        assert str(pp) == 'def _rconcat(s1):\n    return lambda s2: s1 + s2\n'
 
     def test_resolve_lambdas(self):
         """Simplify primitive returning a lambda function."""
@@ -59,7 +59,7 @@ class TestParsedPrimitive:
         assert pp.name == '_rconcat'
         assert pp.source == 'return s1 + s2'
         assert pp.args == ['s1', 's2']
-        assert str(pp) == 'def _rconcat(s1, s2):\n    return s1 + s2'
+        assert str(pp) == 'def _rconcat(s1, s2):\n    return s1 + s2\n'
 
     def test_resolve_variables_valid(self):
         """Resolution using valid parameters."""
@@ -110,7 +110,7 @@ class TestParsedInvented:
             assert invented.name != handle
             assert invented.name.find('f') == 0
             assert invented.handle == '#(_rsplit _rdot)'
-            trans = "def f0(f0_1):\n    return __regex_split('.', f0_1)"
+            trans = "def f0(arg1):\n    return __regex_split('.', arg1)\n"
             assert str(invented) == trans
             assert isinstance(invented.arg_types[0], TypeConstructor)
             assert isinstance(invented.return_type, TypeConstructor)
@@ -138,7 +138,8 @@ class TestCompactFrontier:
             assert isinstance(frontier.name, str)
             assert isinstance(frontier.annotation, str)
             assert len(frontier.programs) > 0
-            assert len(frontier.translations) == len(frontier.programs)
+            total_attempts = len(frontier.translations) + len(frontier.failed)
+            assert total_attempts == len(frontier.programs)
         for frontier in compact_result.miss_frontiers.values():
             assert isinstance(frontier, CompactFrontier)
             assert isinstance(frontier.name, str)

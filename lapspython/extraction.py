@@ -104,9 +104,15 @@ class ProgramExtractor:
 
                 if translator is not None:
                     for program in compact_frontier.programs:
-                        trans = translator.translate(program, name)
-                        compact_frontier.translations.append(trans.source)
-                        compact_frontier.args.append(trans.args)
+                        transl = translator.translate(program, name)
+                        try:
+                            if transl.verify(compact_frontier.examples):
+                                compact_frontier.translations.append(transl)
+                            else:
+                                compact_frontier.failed.append(transl)
+                        except TypeError:
+                            # debug print(program)
+                            compact_frontier.failed.append(transl)
 
         self.compact_result = CompactResult(hit_frontiers, miss_frontiers)
         return self.compact_result

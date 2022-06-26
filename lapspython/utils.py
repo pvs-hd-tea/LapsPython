@@ -66,3 +66,24 @@ def testa(i):
         if not i:
             break
     return _hit.programs[0]
+
+
+def testr():
+    """Extract a sample result."""
+    result = load_checkpoint('re2_test')
+    grammar = GrammarParser(result.grammars[-1]).parsed_grammar
+    translator = Translator(grammar)
+    return ProgramExtractor(result, translator).compact_result
+
+
+def testf():
+    """Example a sample frontier."""
+    result = testr()
+    hf = result.hit_frontiers
+    return hf[list(hf.keys())[0]]
+
+
+def testv():
+    """Test code validation."""
+    f = testf()
+    return f.translations[0].verify(f.examples)

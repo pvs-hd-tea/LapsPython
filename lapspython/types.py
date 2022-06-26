@@ -31,7 +31,7 @@ class ParsedType(ABC):
         """
         header = f'def {self.name}({", ".join(self.args)}):\n'
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
-        return header + indented_body
+        return header + indented_body + '\n'
 
     def parse_argument_types(self, arg_types: TypeConstructor) -> list:
         """Flatten inferred nested type structure of primitive.
@@ -75,9 +75,11 @@ class ParsedType(ABC):
 
         new_source = self.source
         for i in range(len(args)):
-            pattern = fr'(\(| )({self.args[i]})(,| |\)|$)'
+            pattern = fr'(\(|\[| )({self.args[i]})(,| |\)|\[|\]|$)'
+            fstring_pattern = '{' + str(self.args[i]) + '}'
             repl = fr'\1{args[i]}\3'
             new_source = re.sub(pattern, repl, new_source)
+            new_source = re.sub(fstring_pattern, str(args[i]), new_source)
         if return_name != '':
             return re.sub('return', f'{return_name} =', new_source)
         return new_source
@@ -176,6 +178,8 @@ class ParsedInvented(ParsedType):
 class ParsedProgram(ParsedType):
     """Class parsing synthesized programs."""
 
+    imports = ['re']
+
     def __init__(self, name: str, source: str, args: list, dependencies: set):
         """Store Python program with dependencies, arguments, and name.
 
@@ -200,10 +204,38 @@ class ParsedProgram(ParsedType):
         :returns: Full source code of translated program
         :rtype: string
         """
+        imports = '\n'.join([f'import {module}' for module in self.imports])
         dependencies = '\n'.join(self.dependencies) + '\n'
         header = f'def {self.name}({", ".join(self.args)}):\n'
         indent_source = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
-        return dependencies + header + indent_source
+        return imports + '\n\n' + dependencies + header + indent_source
+
+    def verify(self, examples: list) -> bool:
+        """Verify code for a list of examples from task.
+
+        :param examples: A list of (input, output) tuples
+        :type examples: list
+        :returns: Whether the translated program is correct.
+        :rtype: bool
+        """
+        exec_translation = str(self) + '\n\n'
+
+        for example in examples:
+            example_inputs = [f"'{x}'" for x in example[0]]
+            example_output = str(example[1])
+
+            joined_inputs = ', '.join(example_inputs)
+            exec_example = f'python_output = {self.name}({joined_inputs})'
+            exec_string = exec_translation + exec_example
+
+            loc: dict = {}
+            try:
+                exec(exec_string, loc)
+                if loc['python_output'] != example_output:
+                    return False
+            except TypeError:
+                raise
+        return True
 
 
 class ParsedGrammar:
@@ -236,7 +268,7 @@ class CompactFrontier:
         # To avoid circular imports, source translation is handled by
         # lapspython.extraction.ProgramExtractor instead of the constructor.
         self.translations: list = []
-        self.args: list = []
+        self.failed: list = []
 
 
 class CompactResult:
