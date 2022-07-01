@@ -6,8 +6,6 @@ from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
 from lapspython.types import ParsedGrammar, ParsedProgram
 
-from pprint import pprint
-
 
 class Translator:
     """Translate lambda programs to Python code."""
@@ -21,7 +19,7 @@ class Translator:
         self.grammar = grammar
         self.call_counts = {p: 0 for p in self.grammar.primitives}
         self.call_counts.update({i: 0 for i in self.grammar.invented})
-        self.code = ''
+        self.code: list = []
         self.args: list = []
         self.dependencies: set = set()
         self.debug_stack: list = []
@@ -50,10 +48,6 @@ class Translator:
         last_variable_assignments = re.findall(r'\w+ =', source)
         if len(last_variable_assignments) > 0:
             source = 'return'.join(source.split(last_variable_assignments[-1]))
-
-        print()
-        pprint(self.debug_stack)
-        print()
 
         return ParsedProgram(name, source, self.args, self.dependencies)
 
@@ -193,6 +187,7 @@ class Translator:
         return None, [f"'{primitive.value}'"]
 
     def contains_index(self, program: Program) -> bool:
+        """Test whether the subprogram contains a de Bruijin index."""
         if program.isIndex:
             return True
         if program.isPrimitive:
@@ -205,4 +200,5 @@ class Translator:
             return (f or x)
 
     def get_last_variable(self) -> str:
+        """Return the declared variable in the last line of code."""
         return self.code[-1].split(' = ')[0]

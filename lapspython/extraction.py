@@ -110,7 +110,6 @@ class ProgramExtractor:
                                 compact_frontier.translations.append(transl)
                             else:
                                 compact_frontier.failed.append(transl)
-                                print(transl)
                         except TypeError:
                             compact_frontier.failed.append(transl)
 

@@ -233,9 +233,8 @@ class ParsedProgram(ParsedType):
                 exec(exec_string, loc)
                 if loc['python_output'] != example_output:
                     return False
-            except:
-                print(exec_string)
-                raise
+            except BaseException:
+                raise BaseException('\n' + exec_string)
         return True
 
 
