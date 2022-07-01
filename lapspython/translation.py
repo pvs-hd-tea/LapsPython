@@ -1,6 +1,8 @@
 """Implements functions for translation from lambda calculus to Python."""
 
+import logging
 import re
+import traceback
 
 from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
@@ -23,6 +25,17 @@ class Translator:
         self.args: list = []
         self.dependencies: set = set()
         self.debug_stack: list = []
+        self.logger = self.setup_logger()
+
+    def setup_logger(self) -> logging.Logger:
+        """Write debug stack into translation.log in case of exception."""
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+        ch = logging.FileHandler('translation.log', 'w')
+        formatter = logging.Formatter('%(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+        return logger
 
     def translate(self, program: Program, name: str) -> ParsedProgram:
         """Init variables and call recursive translation function.
@@ -43,7 +56,17 @@ class Translator:
         self.name = name
         self.debug_stack = []
 
-        self._translate_wrapper(program)
+        try:
+            self._translate_wrapper(program)
+        except BaseException:
+            self.logger.debug(f'{name}\n')
+            for entry in self.debug_stack:
+                self.logger.debug(entry)
+            if len(self.code) > 0:
+                code = '\n'.join(self.code)
+                self.logger.debug(f'\n{code}')
+            self.logger.debug(f'\n{traceback.format_exc()}\n')
+
         source = '\n'.join(self.code)
         last_variable_assignments = re.findall(r'\w+ =', source)
         if len(last_variable_assignments) > 0:
@@ -59,7 +82,9 @@ class Translator:
         :returns:
         :rtype: tuple
         """
-        self.debug_stack.append((program, type(program), node_type))
+        debug = (str(program), str(type(program)), node_type)
+        self.debug_stack.append(', '.join(debug))
+
         if program.isAbstraction:
             if node_type == 'x':
                 return self._translate_abstraction_x(program)
@@ -92,11 +117,11 @@ class Translator:
     def _translate_abstraction_x(self, abstraction: Abstraction) -> tuple:
         parsed, args = self._translate_wrapper(abstraction.body)
 
-        if self.contains_index(abstraction):
-            last_row = self.code.pop()
-            body = last_row.split(' = ')[-1]
-            body = re.sub(r'arg\d', 'x', body)
-            args = [f'lambda x: {body}']
+        if self.contains_index(abstraction) and len(self.code) > 0:
+            last_row = self.code[-1]
+            body = last_row.split(' = ')[1]
+            body = re.sub(r'arg\d', 'lx', body)
+            args = [f'lambda lx: {body}']
         else:
             args = [f'lambda x: {args[0]}']
 

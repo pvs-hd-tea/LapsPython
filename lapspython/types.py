@@ -174,6 +174,15 @@ class ParsedInvented(ParsedType):
         self.arg_types = self.parse_argument_types(invented.tp)
         self.return_type = self.arg_types.pop()
 
+    def resolve_variables(self, args: list, return_name: str = '') -> str:
+        """Instead arguments in function call rather than definition."""
+        if return_name == '':
+            head = 'return '
+        else:
+            head = f'{return_name} = '
+        body = f'{self.name}({", ".join(args)})'
+        return f'{head}{body}'
+
 
 class ParsedProgram(ParsedType):
     """Class parsing synthesized programs."""

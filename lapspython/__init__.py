@@ -2,6 +2,7 @@
 
 from dreamcoder.dreamcoder import ECResult
 from lapspython.extraction import GrammarParser, ProgramExtractor
+from lapspython.stats import Statistics
 from lapspython.translation import Translator
 from lapspython.types import CompactResult
 from lapspython.utils import load_checkpoint
@@ -38,4 +39,6 @@ class Pipeline:
         return cls.extract_translate(result)
 
 
-results = Pipeline.from_checkpoint('re2_test')
+results_test = Pipeline.from_checkpoint('re2_test')
+stats_test = Statistics()
+stats_test.summarize(results_test)
