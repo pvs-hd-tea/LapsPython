@@ -44,7 +44,7 @@ re2_rconcat = Primitive("_rconcat", arrow(tsubstr, tsubstr, tsubstr), _rconcat)
 def __ismatch(s1, s2):
     try:
         return re.fullmatch(re.compile(s1), s2) is not None 
-    except e:
+    except:
         return False
 def __regex_split(s1, s2):
     # Splits s2 on regex s1 as delimiter, including the matches
@@ -65,7 +65,7 @@ def __regex_split(s1, s2):
         if len(remaining) > 0:
             ret.append(remaining)
         return ret        
-    except e:
+    except:
         return [s2]
 def _rmatch(s1) : return lambda s2: __ismatch(s1, s2)
 def _rsplit(s1) : return lambda s2: __regex_split(s1, s2)
