@@ -6,6 +6,8 @@ from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
 from lapspython.types import ParsedGrammar, ParsedProgram
 
+from pprint import pprint
+
 
 class Translator:
     """Translate lambda programs to Python code."""
@@ -22,6 +24,7 @@ class Translator:
         self.code = ''
         self.args: list = []
         self.dependencies: set = set()
+        self.debug_stack: list = []
 
     def translate(self, program: Program, name: str) -> ParsedProgram:
         """Init variables and call recursive translation function.
@@ -35,16 +38,22 @@ class Translator:
         """
         for call in self.call_counts:
             self.call_counts[call] = 0
-        self.code = ''
-        self.args = []
+        self.code = []
+        n_args = len(program.infer().arguments) - 1
+        self.args = [f'arg{i + 1}' for i in range(n_args)]
         self.dependencies = set()
         self.name = name
+        self.debug_stack = []
 
         self._translate_wrapper(program)
-        source = self.code.strip()
+        source = '\n'.join(self.code)
         last_variable_assignments = re.findall(r'\w+ =', source)
         if len(last_variable_assignments) > 0:
             source = 'return'.join(source.split(last_variable_assignments[-1]))
+
+        print()
+        pprint(self.debug_stack)
+        print()
 
         return ParsedProgram(name, source, self.args, self.dependencies)
 
@@ -56,9 +65,11 @@ class Translator:
         :returns:
         :rtype: tuple
         """
-        # debug print(program, type(program), node_type)
+        self.debug_stack.append((program, type(program), node_type))
         if program.isAbstraction:
-            return self._translate_abstraction(program)
+            if node_type == 'x':
+                return self._translate_abstraction_x(program)
+            return self._translate_abstraction_body(program)
         if program.isApplication:
             if node_type == 'f':
                 return self._translate_application_f(program)
@@ -70,7 +81,7 @@ class Translator:
         if program.isInvented:
             if node_type == 'f':
                 return self._translate_invented(program)
-            return self._translate_abstraction(program)
+            return self._translate_abstraction_body(program)
         if program.isPrimitive:
             if node_type == 'f':
                 return self._translate_primitive_f(program)
@@ -79,9 +90,22 @@ class Translator:
             return self._translate_primitive_body(program)
         raise ValueError(f'{node_type} node of type {type(program)}')
 
-    def _translate_abstraction(self, abstraction: Abstraction) -> tuple:
+    def _translate_abstraction_body(self, abstraction: Abstraction) -> tuple:
         parsed, args = self._translate_wrapper(abstraction.body)
         args = [f'lambda x: {args[0]}']
+        return parsed, args
+
+    def _translate_abstraction_x(self, abstraction: Abstraction) -> tuple:
+        parsed, args = self._translate_wrapper(abstraction.body)
+
+        if self.contains_index(abstraction):
+            last_row = self.code.pop()
+            body = last_row.split(' = ')[-1]
+            body = re.sub(r'arg\d', 'x', body)
+            args = [f'lambda x: {body}']
+        else:
+            args = [f'lambda x: {args[0]}']
+
         return parsed, args
 
     def _translate_application_f(self, application: Application) -> tuple:
@@ -100,6 +124,9 @@ class Translator:
         x_parsed, x_args = self._translate_wrapper(x, 'x')
         f_parsed, f_args = self._translate_wrapper(f, 'f')
 
+        if x_args[-1][:3] == 'arg' and x_args[-1] not in self.args:
+            x_args[-1] = self.get_last_variable()
+
         self.call_counts[f_parsed.handle] += 1
         name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
 
@@ -107,7 +134,7 @@ class Translator:
             x_args = f_args + x_args
 
         f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
-        self.code += f_parsed_resolved + '\n'
+        self.code.append(f_parsed_resolved)
 
         return f_parsed, [name]
 
@@ -126,17 +153,16 @@ class Translator:
         missing_args = len(f_parsed.args) - len(x_args)
         for i in range(missing_args):
             new_arg = f'arg{i + 1}'
-            x_args.append(new_arg)
-            self.args.append(new_arg)
+            if new_arg in self.args:
+                x_args.append(new_arg)
 
-        self.code += f_parsed.resolve_variables(x_args, name) + '\n'
+        f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
+        self.code.append(f_parsed_resolved)
 
         return None, [name]
 
     def _translate_index(self, index: Index) -> tuple:
         arg = f'arg{index.i + 1}'
-        if arg not in self.args:
-            self.args.append(arg)
         return None, [arg]
 
     def _translate_invented(self, invented: Invented) -> tuple:
@@ -165,3 +191,18 @@ class Translator:
 
     def _translate_primitive_body(self, primitive: Primitive) -> tuple:
         return None, [f"'{primitive.value}'"]
+
+    def contains_index(self, program: Program) -> bool:
+        if program.isIndex:
+            return True
+        if program.isPrimitive:
+            return False
+        if 'body' in dir(program):
+            return self.contains_index(program.body)
+        else:
+            f = self.contains_index(program.f)
+            x = self.contains_index(program.x)
+            return (f or x)
+
+    def get_last_variable(self) -> str:
+        return self.code[-1].split(' = ')[0]
