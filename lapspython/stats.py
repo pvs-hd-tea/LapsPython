@@ -32,7 +32,6 @@ class Statistics:
         self.stats.update({'var': var})
         self.stats.update({'std': np.sqrt(var)})
         self.stats.update({'skewness': skew})
-        self.stats.update({'kurtosis': kurtosis})
 
         return self.stats
 
