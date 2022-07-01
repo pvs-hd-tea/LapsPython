@@ -39,6 +39,6 @@ class Pipeline:
         return cls.extract_translate(result)
 
 
-results_test = Pipeline.from_checkpoint('re2_test')
+results_test = Pipeline.from_checkpoint('re2_best_dsl_language')
 stats_test = Statistics()
 stats_test.summarize(results_test)

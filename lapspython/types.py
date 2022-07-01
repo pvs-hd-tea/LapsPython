@@ -33,7 +33,8 @@ class ParsedType(ABC):
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
         return header + indented_body + '\n'
 
-    def parse_argument_types(self, arg_types: TypeConstructor) -> list:
+    @classmethod
+    def parse_argument_types(cls, arg_types: TypeConstructor) -> list:
         """Flatten inferred nested type structure of primitive.
 
         :param arg_types:Inferred types.
@@ -43,7 +44,7 @@ class ParsedType(ABC):
         """
         if not isinstance(arg_types, TypeVariable) and arg_types.name == '->':
             arguments = arg_types.arguments
-            return [arguments[0]] + self.parse_argument_types(arguments[1])
+            return [arguments[0]] + cls.parse_argument_types(arguments[1])
         else:
             return [arg_types]
 

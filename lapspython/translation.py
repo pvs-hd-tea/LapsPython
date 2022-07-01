@@ -6,7 +6,7 @@ import traceback
 
 from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
-from lapspython.types import ParsedGrammar, ParsedProgram
+from lapspython.types import ParsedType, ParsedGrammar, ParsedProgram
 
 
 class Translator:
@@ -37,6 +37,15 @@ class Translator:
         logger.addHandler(ch)
         return logger
 
+    def log_exception(self):
+        self.logger.debug(f'{self.name}\n')
+        for entry in self.debug_stack:
+            self.logger.debug(entry)
+        if len(self.code) > 0:
+            code = '\n'.join(self.code)
+            self.logger.debug(f'\n{code}')
+        self.logger.debug(f'\n{traceback.format_exc()}\n')
+
     def translate(self, program: Program, name: str) -> ParsedProgram:
         """Init variables and call recursive translation function.
 
@@ -50,22 +59,15 @@ class Translator:
         for call in self.call_counts:
             self.call_counts[call] = 0
         self.code = []
-        n_args = len(program.infer().arguments) - 1
+        self.name = name
+        arg_types = ParsedType.parse_argument_types(program.infer())
+        n_args = len(arg_types) - 1
         self.args = [f'arg{i + 1}' for i in range(n_args)]
         self.dependencies = set()
         self.name = name
         self.debug_stack = []
 
-        try:
-            self._translate_wrapper(program)
-        except BaseException:
-            self.logger.debug(f'{name}\n')
-            for entry in self.debug_stack:
-                self.logger.debug(entry)
-            if len(self.code) > 0:
-                code = '\n'.join(self.code)
-                self.logger.debug(f'\n{code}')
-            self.logger.debug(f'\n{traceback.format_exc()}\n')
+        self._translate_wrapper(program)
 
         source = '\n'.join(self.code)
         last_variable_assignments = re.findall(r'\w+ =', source)
@@ -144,18 +146,26 @@ class Translator:
         f_parsed, f_args = self._translate_wrapper(f, 'f')
 
         if x_args[-1][:3] == 'arg' and x_args[-1] not in self.args:
-            x_args[-1] = self.get_last_variable()
-
-        self.call_counts[f_parsed.handle] += 1
-        name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
+            new_x_arg = self.get_last_variable()
+            if new_x_arg != 'x':
+                x_args[-1] = new_x_arg
 
         if not f.isInvented:
             x_args = f_args + x_args
 
-        f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
-        self.code.append(f_parsed_resolved)
+        if not f.isIndex:
+            self.call_counts[f_parsed.handle] += 1
+            name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
+            try:
+                
+                f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
+            except ValueError:
+                self.log_exception()
+                f_parsed_resolved = f'{name} = None'
+            self.code.append(f_parsed_resolved)
+            x_args = name
 
-        return f_parsed, [name]
+        return f_parsed, [x_args]
 
     def _translate_application_body(self, application: Application) -> tuple:
         f = application.f
@@ -175,14 +185,20 @@ class Translator:
             if new_arg in self.args:
                 x_args.append(new_arg)
 
-        f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
+        try:
+            f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
+        except ValueError:
+            self.log_exception()
+            f_parsed_resolved = f'{name} = None'
+
         self.code.append(f_parsed_resolved)
 
         return None, [name]
 
     def _translate_index(self, index: Index) -> tuple:
         arg = f'arg{index.i + 1}'
-        return None, [arg]
+        f_parsed = f'lambda lx: {arg}'
+        return f_parsed, [arg]
 
     def _translate_invented(self, invented: Invented) -> tuple:
         handle = str(invented)
@@ -226,4 +242,6 @@ class Translator:
 
     def get_last_variable(self) -> str:
         """Return the declared variable in the last line of code."""
+        if len(self.code) == 0:
+            return ''
         return self.code[-1].split(' = ')[0]
