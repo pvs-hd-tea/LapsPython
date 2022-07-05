@@ -29,7 +29,8 @@ class TestGrammarParser:
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
         _rvowel = parser.parse(grammar).primitives['_rvowel']
-        assert _rvowel.name == '_rvowel'
+        assert _rvowel.handle == '_rvowel'
+        assert _rvowel.name == 'rvowel'
         assert _rvowel.source == '(a|e|i|o|u)'
         assert _rvowel.args == []
         assert _rvowel.arg_types == []
@@ -40,7 +41,8 @@ class TestGrammarParser:
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
         _rconcat = parser.parse(grammar).primitives['_rconcat']
-        assert _rconcat.name == '_rconcat'
+        assert _rconcat.handle == '_rconcat'
+        assert _rconcat.name == 'rconcat'
         assert _rconcat.source == 'return s1 + s2'
         assert _rconcat.args == ['s1', 's2']
         assert len(_rconcat.arg_types) == 2

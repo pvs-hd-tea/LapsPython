@@ -6,7 +6,7 @@ import traceback
 
 from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
-from lapspython.types import ParsedType, ParsedGrammar, ParsedProgram
+from lapspython.types import ParsedGrammar, ParsedProgram, ParsedType
 
 
 class Translator:
@@ -38,6 +38,7 @@ class Translator:
         return logger
 
     def log_exception(self):
+        """Write logging message into translation.log."""
         self.logger.debug(f'{self.name}\n')
         for entry in self.debug_stack:
             self.logger.debug(entry)
@@ -157,7 +158,6 @@ class Translator:
             self.call_counts[f_parsed.handle] += 1
             name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
             try:
-                
                 f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
             except ValueError:
                 self.log_exception()

@@ -31,7 +31,8 @@ class TestParsedPrimitive:
                 primitive = p
                 break
         pp = ParsedPrimitive(primitive)
-        assert pp.name == '_rconcat'
+        assert pp.handle == '_rconcat'
+        assert pp.name == 'rconcat'
         assert pp.source == 'return lambda s2: s1 + s2'
         assert pp.args == ['s1']
         assert pp.arg_types[0].name == 'tsubstr'
@@ -46,7 +47,7 @@ class TestParsedPrimitive:
                 primitive = p
                 break
         pp = ParsedPrimitive(primitive)
-        assert str(pp) == 'def _rconcat(s1):\n    return lambda s2: s1 + s2\n'
+        assert str(pp) == 'def rconcat(s1):\n    return lambda s2: s1 + s2\n'
 
     def test_resolve_lambdas(self):
         """Simplify primitive returning a lambda function."""
@@ -56,10 +57,11 @@ class TestParsedPrimitive:
                 primitive = p
                 break
         pp = ParsedPrimitive(primitive).resolve_lambdas()
-        assert pp.name == '_rconcat'
+        assert pp.handle == '_rconcat'
+        assert pp.name == 'rconcat'
         assert pp.source == 'return s1 + s2'
         assert pp.args == ['s1', 's2']
-        assert str(pp) == 'def _rconcat(s1, s2):\n    return s1 + s2\n'
+        assert str(pp) == 'def rconcat(s1, s2):\n    return s1 + s2\n'
 
     def test_resolve_variables_valid(self):
         """Resolution using valid parameters."""

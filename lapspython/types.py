@@ -106,8 +106,8 @@ class ParsedPrimitive(ParsedType):
 
         dependencies = self._get_dependencies(implementation)
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
-        self.name = primitive.name
         self.handle = primitive.name
+        self.name = re.sub(r'^[^a-z]+', '', self.handle)
         self.source = source.strip()
         self.args = args
         self.arg_types = self.parse_argument_types(primitive.tp)
