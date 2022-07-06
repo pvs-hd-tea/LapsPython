@@ -70,7 +70,7 @@ ror <- function(s1, s2) {
 }
 
 rconcat <- function(s1, s2) {
-    c(s1, s2)
+    paste(s1, s2, sep="")
 }
 
 ismatch <- function(s1, s2) {

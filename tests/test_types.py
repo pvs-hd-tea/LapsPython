@@ -72,8 +72,8 @@ class TestParsedPrimitive:
                 break
         pp = ParsedPrimitive(primitive).resolve_lambdas()
         new_args = ['mask0', 'mask1']
-        new_source = 'return mask0 + mask1'
-        assert pp.resolve_variables(new_args) == new_source
+        new_source = 'masked = mask0 + mask1'
+        assert pp.resolve_variables(new_args, 'masked') == new_source
 
     def test_resolve_variables_identity(self):
         """Resolution using identical arguments."""
@@ -84,7 +84,8 @@ class TestParsedPrimitive:
                 break
         pp = ParsedPrimitive(primitive).resolve_lambdas()
         args = ['s1', 's2']
-        assert pp.resolve_variables(args) == pp.source
+        new_source = 's1s2 = s1 + s2'
+        assert pp.resolve_variables(args, 's1s2') == new_source
 
     def test_resolve_variables_invalid_length(self):
         """Resolution using incomplete arguments."""
@@ -96,7 +97,7 @@ class TestParsedPrimitive:
         pp = ParsedPrimitive(primitive)
         expected_message = r'Wrong number of arguments .+'
         with pytest.raises(ValueError, match=expected_message):
-            pp.resolve_variables(['arg0', 'arg1'])
+            pp.resolve_variables(['arg0', 'arg1'], 'return_name')
 
 
 class TestParsedInvented:

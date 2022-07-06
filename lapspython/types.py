@@ -60,7 +60,7 @@ class ParsedType(ABC):
         new_primitive.source = re.sub(pattern, '', self.source)
         return new_primitive
 
-    def resolve_variables(self, args: list, return_name: str = '') -> str:
+    def resolve_variables(self, args: list, return_name: str) -> str:
         """Substitute default arguments in source.
 
         :param args: List of new argument names (number must be equal)
@@ -151,6 +151,55 @@ class ParsedPrimitive(ParsedType):
         return [(f[0], inspect.getsource(f[1])) for f in dependent_functions]
 
 
+class ParsedRPrimitive(ParsedType):
+    """Abstract base class for R program parsing."""
+
+    def __init__(self, primitive: Primitive):
+        """Extract name, path and source of R primitive.
+
+        :param primitive: A primitive extracted from LAPS.
+        :type primitive: dreamcoder.program.Primitive
+        """
+        self.handle = primitive.name
+        self.name = re.sub(r'^[^a-z]+', '', self.handle)
+        path_py = inspect.getsourcefile(primitive.value)
+        if not isinstance(path_py, str):
+            raise ValueError(f'Cannot get source of primitive {self.name}.')
+        self.path = path_py[:-2] + 'R'
+        self.source = self.extract_source()
+
+    def __str__(self) -> str:
+        """Return parsed primitive as R code.
+
+        :returns: R source code
+        :rtype: string
+        """
+        header = f'{self.name} <- function({", ".join(self.args)} \u007b\n'
+        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return header + indented_body + '\n\007d\n'
+
+    def extract_source(self) -> str:
+        """Extract source code of primitive from R file."""
+        with open(self.path, 'r') as r_file:
+            lines = r_file.readlines()
+
+        pattern = f'{self.name} <- '
+
+        for i in range(len(lines)):
+            line = lines[i]
+            if line.startswith(pattern):
+                if not line.endswith('{\n'):
+                    return re.sub(pattern, '', line)
+                cutoff_lines = lines[i:]
+                break
+
+        for j in range(len(cutoff_lines)):
+            if cutoff_lines[j] == '}\n':
+                return '\n'.join(cutoff_lines[:j]).strip()
+
+        raise ValueError(f'No primitive {self.name} found in {self.path}.')
+
+
 class ParsedInvented(ParsedType):
     """Class parsing invented primitives for translation to Python."""
 
@@ -175,12 +224,9 @@ class ParsedInvented(ParsedType):
         self.arg_types = self.parse_argument_types(invented.tp)
         self.return_type = self.arg_types.pop()
 
-    def resolve_variables(self, args: list, return_name: str = '') -> str:
+    def resolve_variables(self, args: list, return_name: str) -> str:
         """Instead arguments in function call rather than definition."""
-        if return_name == '':
-            head = 'return '
-        else:
-            head = f'{return_name} = '
+        head = f'{return_name} = '
         body = f'{self.name}({", ".join(args)})'
         return f'{head}{body}'
 
