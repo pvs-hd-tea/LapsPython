@@ -385,14 +385,18 @@ class CompactResult:
         hits_best = []
 
         for hit in self.hit_frontiers.values():
+            best_valid = best_invalid = None
+
             if len(hit.translations) > 0:
-                translation = hit.translations[0]
-            else:
-                translation = hit.failed[0]
+                best_valid = hit.translations[0].as_dict()
+            if len(hit.failed) > 0:
+                best_invalid = hit.failed[0].as_dict()
+
             hit_best = {
                 'annotation': hit.annotation,
-                'program': str(hit.programs[0]),
-                'translation': translation.as_dict()
+                'best_program': str(hit.programs[0]),
+                'best_valid_translation': best_valid,
+                'best_invalid_translation': best_invalid
             }
             hits_best.append(hit_best)
 
