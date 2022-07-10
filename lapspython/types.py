@@ -4,6 +4,7 @@ import copy
 import inspect
 import re
 from abc import ABC, abstractmethod
+from typing import Dict, List
 
 from dreamcoder.frontier import Frontier
 from dreamcoder.program import Invented, Primitive
@@ -20,18 +21,25 @@ class ParsedType(ABC):
         self.handle: str = ''
         self.source: str = ''
         self.args: list = []
+        self.dependencies: set = set()
         self.arg_types: list = []
-        self.returntype = type
+        self.return_type = type
 
-    def __str__(self) -> str:
-        """Construct clean Python function from object.
+    @abstractmethod
+    def __str__(self) -> str:  # pragma: no cover
+        """Convert object to clean code."""
+        pass
 
-        :returns: Function source code
-        :rtype: string
-        """
-        header = f'def {self.name}({", ".join(self.args)}):\n'
-        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
-        return header + indented_body + '\n'
+
+    def as_dict(self) -> dict:
+        """Return member attributes as dict for json dumping."""
+        return {
+            'name': self.name,
+            'handle': self.handle,
+            'source': self.source,
+            'args': self.args,
+            'dependencies': list(self.dependencies)
+        }
 
     @classmethod
     def parse_argument_types(cls, arg_types: TypeConstructor) -> list:
@@ -47,18 +55,6 @@ class ParsedType(ABC):
             return [arguments[0]] + cls.parse_argument_types(arguments[1])
         else:
             return [arg_types]
-
-    def resolve_lambdas(self) -> Primitive:
-        """Remove lambda functions from source and extend list of arguments.
-
-        :returns: New, cleaner parsed primitive
-        :rtype: ParsedPrimitive
-        """
-        new_primitive = copy.copy(self)
-        pattern = r'lambda (\S+): '
-        new_primitive.args = self.args + re.findall(pattern, self.source)
-        new_primitive.source = re.sub(pattern, '', self.source)
-        return new_primitive
 
     def resolve_variables(self, args: list, return_name: str) -> str:
         """Substitute default arguments in source.
@@ -86,7 +82,39 @@ class ParsedType(ABC):
         return new_source
 
 
-class ParsedPrimitive(ParsedType):
+class ParsedPythonType(ParsedType):
+    """Abstract base class for python parsing."""
+
+    def __str__(self) -> str:
+        """Construct clean Python function from object.
+
+        :returns: Function source code
+        :rtype: string
+        """
+        header = f'def {self.name}({", ".join(self.args)}):\n'
+        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return header + indented_body + '\n'
+
+    def resolve_lambdas(self) -> Primitive:
+        """Remove lambda functions from source and extend list of arguments.
+
+        :returns: New, cleaner parsed primitive
+        :rtype: ParsedPrimitive
+        """
+        new_primitive = copy.copy(self)
+        pattern = r'lambda (\S+): '
+        new_primitive.args = self.args + re.findall(pattern, self.source)
+        new_primitive.source = re.sub(pattern, '', self.source)
+        return new_primitive
+
+
+class ParsedRType(ParsedType):
+    """Abstract base class for python parsing."""
+
+    pass
+
+
+class ParsedPrimitive(ParsedPythonType):
     """Class parsing primitives for translation to clean Python code."""
 
     def __init__(self, primitive: Primitive) -> None:
@@ -112,6 +140,7 @@ class ParsedPrimitive(ParsedType):
         self.args = args
         self.arg_types = self.parse_argument_types(primitive.tp)
         self.return_type = self.arg_types.pop()
+    
 
     def _parse_source(self, implementation) -> str:
         """Resolve lambdas and arguments to produce cleaner Python code.
@@ -151,7 +180,7 @@ class ParsedPrimitive(ParsedType):
         return [(f[0], inspect.getsource(f[1])) for f in dependent_functions]
 
 
-class ParsedRPrimitive(ParsedType):
+class ParsedRPrimitive(ParsedRType):
     """Abstract base class for R program parsing."""
 
     def __init__(self, primitive: Primitive):
@@ -200,7 +229,7 @@ class ParsedRPrimitive(ParsedType):
         raise ValueError(f'No primitive {self.name} found in {self.path}.')
 
 
-class ParsedInvented(ParsedType):
+class ParsedInvented(ParsedPythonType):
     """Class parsing invented primitives for translation to Python."""
 
     def __init__(self, invented: Invented, name: str):
@@ -211,18 +240,17 @@ class ParsedInvented(ParsedType):
         :param name: A custom name since invented primitives are unnamed
         :type name: string
         """
-        self.name = name
         self.handle = str(invented)
+        self.name = name
         self.program = invented
+        self.arg_types = self.parse_argument_types(invented.tp)
+        self.return_type = self.arg_types.pop()
 
         # To avoid circular imports, source translation is only handled by
         # lapspython.extraction.GrammarParser instead of during construction.
         self.source = ''
         self.args: list = []
-        self.dependencies: list = []
-
-        self.arg_types = self.parse_argument_types(invented.tp)
-        self.return_type = self.arg_types.pop()
+        self.dependencies: set = set()
 
     def resolve_variables(self, args: list, return_name: str) -> str:
         """Instead arguments in function call rather than definition."""
@@ -248,8 +276,8 @@ class ParsedProgram(ParsedType):
         :param dependencies: Source codes of called functions
         :type dependencies: set
         """
-        self.name = name
         self.handle = name
+        self.name = name
         self.source = source
         self.args = args
         self.dependencies = dependencies
@@ -308,6 +336,15 @@ class ParsedGrammar:
         self.primitives: dict = primitives
         self.invented: dict = invented
 
+    def as_dict(self):
+        """Return member attributes as dict for json dumping."""
+        primitive_dicts = [p.as_dict() for p in self.primitives.values()]
+        invented_dicts = [i.as_dict() for i in self.invented.values()]
+        return {
+            'primitives': primitive_dicts,
+            'invented': invented_dicts
+        }
+
 
 class CompactFrontier:
     """Data class containing the important specs of extracted frontiers."""
@@ -328,7 +365,7 @@ class CompactFrontier:
 
 
 class CompactResult:
-    """Data class containing (compact) extracted frontiers."""
+    """Class containing (compact) extracted frontiers."""
 
     def __init__(self, hit: dict, miss: dict) -> None:
         """Store HIT and MISS CompactFrontiers in member variables.
@@ -341,11 +378,24 @@ class CompactResult:
         self.hit_frontiers: dict = hit
         self.miss_frontiers: dict = miss
 
-    def best(self):
-        """Return the HIT frontiers with best posteriors.
+    def get_best(self) -> List[Dict]:
+        """Return the HIT frontiers as dict with best posteriors.
 
         :returns: A (name, HIT CompactFrontier) dictionary.
-        :rtype: dict
+        :rtype: List[Dict]
         """
-        # TODO: Copy frontiers to only contain 1 program
-        return {k: v for k, v in self.hit_frontiers.items()}
+        hits_best = []
+
+        for hit in self.hit_frontiers.values():
+            if len(hit.translations) > 0:
+                translation = hit.translations[0]
+            else:
+                translation = hit.failed[0]
+            hit_best = {
+                'annotation': hit.annotation,
+                'program': str(hit.programs[0]),
+                'translation': translation.as_dict()
+            }
+            hits_best.append(hit_best)
+
+        return hits_best

@@ -30,11 +30,10 @@ class Translator:
     def setup_logger(self) -> logging.Logger:
         """Write debug stack into translation.log in case of exception."""
         logger = logging.getLogger(__name__)
-        logger.setLevel(logging.DEBUG)
-        ch = logging.FileHandler('translation.log', 'w')
-        formatter = logging.Formatter('%(message)s')
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
+        handler = logging.FileHandler('translation.log', 'w')
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        logger.addHandler(handler)
         return logger
 
     def log_exception(self):

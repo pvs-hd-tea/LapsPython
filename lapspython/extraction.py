@@ -61,6 +61,9 @@ class GrammarParser:
 
         return self.parsed_grammar
 
+    def fix_invented(self, other_grammar: ParsedGrammar):
+        invented = self.parsed_grammar.invented
+
 
 class ProgramExtractor:
     """Extract and process synthesized programs."""
