@@ -336,11 +336,11 @@ class ParsedGrammar:
 
     def as_dict(self):
         """Return member attributes as dict for json dumping."""
-        primitive_dicts = [p.as_dict() for p in self.primitives.values()]
-        invented_dicts = [i.as_dict() for i in self.invented.values()]
+        primitives = {p.handle: p.as_dict() for p in self.primitives.values()}
+        invented = {i.handle: i.as_dict() for i in self.invented.values()}
         return {
-            'primitives': primitive_dicts,
-            'invented': invented_dicts
+            'primitives': primitives,
+            'invented': invented
         }
 
 

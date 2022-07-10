@@ -36,7 +36,8 @@ class Pipeline:
         parser = GrammarParser(result.grammars[-1])
         json = json_read(json_path)
         if json != {}:
-            parser.fix_invented(json['grammar'])
+            new_invented = json['grammar'].invented
+            parser.fix_invented(new_invented)
         grammar = parser.parsed_grammar
         translator = Translator(grammar)
         extractor = ProgramExtractor(result, translator)

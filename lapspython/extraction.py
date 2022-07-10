@@ -61,13 +61,22 @@ class GrammarParser:
 
         return self.parsed_grammar
 
-    def fix_invented(self, other_grammar: ParsedGrammar):
+    def fix_invented(self, new_invented: dict) -> None:
         """Replace invented primitives implementations.
 
-        :param other_grammar: Grammar to take new implementations from.
-        :type other_grammar: ParsedGrammar
+        :param new_invented: Invented primitives from JSON file.
+        :type new_invented: dict
         """
-        pass
+        this_invented = self.parsed_grammar.invented
+        if set(this_invented.keys()) != set(new_invented.keys()):
+            raise ValueError('Keys of the two grammars are not equal.')
+
+        for handle in this_invented:
+            new_data = new_invented[handle]
+            this_invented[handle].name = new_data['name']
+            this_invented[handle].source = new_data['source']
+            this_invented[handle].args = new_data['args']
+            this_invented[handle].dependencies = new_data['dependencies']
 
 
 class ProgramExtractor:
