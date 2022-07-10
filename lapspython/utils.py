@@ -27,7 +27,7 @@ def load_checkpoint(filename: str) -> ECResult:
 def json_dump(
     filename: str,
     grammar: ParsedGrammar,
-    result: CompactResult = None
+    result: CompactResult  # = None
 ) -> None:
     """Store grammar and best results in json file.
 
@@ -68,7 +68,7 @@ def json_read(filename: str) -> dict:
         json_dict['grammar'] = parsed
         return json_dict
     except FileNotFoundError:
-        return None
+        return {}
 
 
 def get_source_similarity(source1: str, source2: str) -> float:

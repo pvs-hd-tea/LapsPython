@@ -14,6 +14,7 @@ class Pipeline:
     """Pipelines the entire extraction/translation process of LapsPython."""
 
     def __init__(self):
+        """Construct Pipeline object and setup logger."""
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
@@ -34,7 +35,7 @@ class Pipeline:
         """
         parser = GrammarParser(result.grammars[-1])
         json = json_read(json_path)
-        if json is not None:
+        if json != {}:
             parser.fix_invented(json['grammar'])
         grammar = parser.parsed_grammar
         translator = Translator(grammar)
@@ -60,9 +61,3 @@ class Pipeline:
         result = load_checkpoint(filepath)
         logging.info('Checkpoint loaded.')
         return cls.extract_translate(result, filepath)
-
-
-#results_test = Pipeline.from_checkpoint('re2_test')
-results_test = Pipeline.from_checkpoint('re2_best_dsl_language')
-stats_test = Statistics()
-stats_test.summarize(results_test)

@@ -62,7 +62,12 @@ class GrammarParser:
         return self.parsed_grammar
 
     def fix_invented(self, other_grammar: ParsedGrammar):
-        invented = self.parsed_grammar.invented
+        """Replace invented primitives implementations.
+
+        :param other_grammar: Grammar to take new implementations from.
+        :type other_grammar: ParsedGrammar
+        """
+        pass
 
 
 class ProgramExtractor:

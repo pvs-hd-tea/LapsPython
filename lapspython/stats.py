@@ -1,7 +1,9 @@
 """Collect statistics for program translations."""
 
-import numpy as np
 import logging
+from typing import List
+
+import numpy as np
 import uniplot
 from scipy import stats
 
@@ -33,8 +35,13 @@ class Statistics:
         self.logger.info(f'Summary:\n{self.__str__()}')
 
     def summarize(self, result: CompactResult) -> dict:
-        """Descriptive statistics for result."""
+        """Descriptive statistics for result.
 
+        :param result: Translated checkpoint.
+        :type result: CompactResult
+        :returns: Descriptive statistics.
+        :rtype: dict
+        """
         program_count = self.count_programs(result)
         self.stats.update({'programs': program_count})
         translation_count = self.count_translations(result)
@@ -52,7 +59,12 @@ class Statistics:
 
         return self.stats
 
-    def plot_histogram(self, result: CompactResult):
+    def plot_histogram(self, result: CompactResult) -> None:
+        """Print histogram of percentages to terminal.
+
+        :param result: Translated checkpoint.
+        :type result: CompactResult
+        """
         percentages = self.percentages_result(result)
         uniplot.histogram(percentages)
 
@@ -70,13 +82,25 @@ class Statistics:
             translation_count += len(frontier.translations)
         return translation_count
 
-    def percentages_result(self, result: CompactResult) -> list:
-        """Return percentage of correctly translated programs per frontier."""
+    def percentages_result(self, result: CompactResult) -> List[float]:
+        """Return percentage of correctly translated programs per frontier.
+
+        :param result: Translated checkpoint.
+        :type result: CompactResult
+        :returns: Percentage of correct translations per frontier.
+        :rtype: List[float]
+        """
         percentages: list = []
         for frontier in result.hit_frontiers.values():
             percentages.append(self.percentage_frontier(frontier))
         return percentages
 
     def percentage_frontier(self, frontier: CompactFrontier) -> float:
-        """Return percentage of correctly translated programs."""
+        """Return percentage of correctly translated programs.
+
+        :param result: Translated frontier (task).
+        :type result: CompactFrontier
+        :returns: Percentage of correct translations.
+        :rtype: float
+        """
         return len(frontier.translations) / len(frontier.programs) * 100

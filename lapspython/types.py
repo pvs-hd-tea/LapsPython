@@ -30,7 +30,6 @@ class ParsedType(ABC):
         """Convert object to clean code."""
         pass
 
-
     def as_dict(self) -> dict:
         """Return member attributes as dict for json dumping."""
         return {
@@ -140,7 +139,6 @@ class ParsedPrimitive(ParsedPythonType):
         self.args = args
         self.arg_types = self.parse_argument_types(primitive.tp)
         self.return_type = self.arg_types.pop()
-    
 
     def _parse_source(self, implementation) -> str:
         """Resolve lambdas and arguments to produce cleaner Python code.
