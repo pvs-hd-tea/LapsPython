@@ -44,10 +44,11 @@ class Pipeline:
         extractor = ProgramExtractor(result, translator)
         result = extractor.compact_result
 
-        print('\nCollecting descriptive statistics:')
-        stats = Statistics(result)
-        print(stats)
-        stats.plot_histogram(result)
+        if mode == 'python':
+            print('\nCollecting descriptive statistics:')
+            stats = Statistics(result)
+            print(stats)
+            stats.plot_histogram(result)
         
         print('\nSampling 1 valid translation:')
         sample = result.sample()

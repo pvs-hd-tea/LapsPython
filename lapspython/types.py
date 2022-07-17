@@ -253,7 +253,7 @@ class ParsedRPrimitive(ParsedRType):
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.source = source.strip()
 
-    def parse_source(self, name: str, path: str) -> str:
+    def parse_source(self, name: str, path: str, is_dep=False) -> str:
         """Extract source code of primitive from R file.
 
         :param handle: Function name in source file.
@@ -273,12 +273,12 @@ class ParsedRPrimitive(ParsedRType):
                     self.args = []
                     return re.sub(pattern, '', line)
                 self.args = self.get_args(lines[i])
-                cutoff_lines = lines[i + 1:]
+                cutoff_lines = lines[i + 1 - is_dep:]
                 break
 
         for j in range(len(cutoff_lines)):
             if cutoff_lines[j] == '}\n':
-                return '\n'.join(cutoff_lines[:j])
+                return ''.join(cutoff_lines[:j + is_dep])
 
         raise ValueError(f'No primitive {self.name} found in {self.path}.')
 
@@ -304,14 +304,17 @@ class ParsedRPrimitive(ParsedRType):
         """
         module = inspect.getmodule(implementation)
         functions = inspect.getmembers(module, inspect.isfunction)
-        dependent_functions = [f[0][2:] for f in functions if f[0][:2] == '__']
+        dependent_functions = [(f[0], f[1])
+                               for f in functions if f[0][:2] == '__']
         dependencies = []
         for f in dependent_functions:
             if inspect.isfunction(f[1]):
-                path = inspect.getsourcefile(f[1])
-                dependencies.append((f[0], self.parse_source(f[0], path)))
+                path = inspect.getsourcefile(f[1])[:-2] + 'R'
+                dependencies.append(
+                    (f[0][2:], self.parse_source(f[0][2:], path, True)))
             else:
-                dependencies.append((f[0], f[1]))
+                dependencies.append((f[0][2:], f[1]))
+
         return dependencies
 
     def get_args(self, header: str):

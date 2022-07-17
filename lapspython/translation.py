@@ -84,20 +84,11 @@ class Translator:
         source = '\n'.join(self.code)
 
         if self.mode == 'python':
-            pattern = r'\w+ = '
-            return_start = 'return '
-            return_end = ''
-        else:
-            pattern = r'\w+ <- '
-            return_start = 'return('
-            return_end = ')'
+            last_variable_assignments = re.findall(r'\w+ = ', source)
+            if len(last_variable_assignments) > 0:
+                split = source.split(last_variable_assignments[-1])
+                source = 'return '.join(split)
 
-        last_variable_assignments = re.findall(pattern, source)
-        if len(last_variable_assignments) > 0:
-            source_split = source.split(last_variable_assignments[-1])
-            source = return_start.join(source_split) + return_end
-
-        if self.mode == 'python':
             return ParsedProgram(
                 name,
                 source,
