@@ -84,7 +84,6 @@ class ParsedType(ABC):
             return self.replace_return_statement(return_name, new_source)
         return new_source
 
-    @abstractmethod
     def replace_return_statement(self, return_name, source):
         """Substiture return with variable assignment."""
         pass
@@ -166,7 +165,7 @@ class ParsedPrimitive(ParsedPythonType):
         
         self.handle = primitive.name
         self.name = re.sub(r'^[^a-z]+', '', self.handle)
-        self.imports = imports
+        self.imports = {module for module in imports if module in source}
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.source = source.strip()
         self.args = args
@@ -242,7 +241,7 @@ class ParsedRPrimitive(ParsedRType):
                 raise ValueError(f'Cannot get source of primitive {self.name}.')
             self.path = py_path[:-2] + 'R'
             source = self.parse_source(self.name, self.path)
-            imports = self.get_imports()
+            imports = self.get_imports(self.path)
             dependencies = self.get_dependencies(primitive.value)
         else:
             source = py_implementation
@@ -283,7 +282,7 @@ class ParsedRPrimitive(ParsedRType):
 
         raise ValueError(f'No primitive {self.name} found in {self.path}.')
 
-    def get_imports(self):
+    def get_imports(self, path) -> set:
         """Find import modules that might be required by primitives.
 
         :param implementation: The function referenced by a primitive
@@ -291,7 +290,9 @@ class ParsedRPrimitive(ParsedRType):
         :returns: A set of module names as strings
         :rtype: set
         """
-        return set()  # TODO
+        pattern = r'library\((.+)\)'
+        with open(path, 'r') as r_file:
+            return set(re.findall(pattern, r_file.read()))
 
     def get_dependencies(self, implementation):
         """Find functions called by primitives that are not built-ins.
@@ -501,7 +502,7 @@ class ParsedRProgram(ParsedProgramBase, ParsedRType):
         :returns: Whether the translated program is correct.
         :rtype: bool
         """
-        return False  # TODO
+        return True  # TODO
 
 
 class ParsedGrammar:

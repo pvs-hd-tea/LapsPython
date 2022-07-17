@@ -27,22 +27,23 @@ class Pipeline:
         :returns: Extracted and translated programs
         :rtype: lapspython.types.CompactResult
         """
-        print(f'Mode: {mode.upper()}')
-        print('Parsing grammar...', end=' ')
+        mode = mode.lower()
+        print(f'Language Mode: {mode.upper()}')
+        if mode == 'r':
+            print('WARNING: Code verification for R not implemented')
+        print('\nParsing grammar...', flush=True)
         parser = GrammarParser(result.grammars[-1], mode)
         json = json_read(json_path)
         if json != {}:
             new_invented = json['grammar'].invented
             parser.fix_invented(new_invented)
         grammar = parser.parsed_grammar
-        print('Done')
-        
-        print('Extracting and translating synthesized programs...', end=' ')
+
+        print('\nExtracting and translating synthesized programs...', flush=True)
         translator = Translator(grammar, mode)
         extractor = ProgramExtractor(result, translator)
         result = extractor.compact_result
-        print('Done')
-        
+
         print('\nCollecting descriptive statistics:')
         stats = Statistics(result)
         print(stats)

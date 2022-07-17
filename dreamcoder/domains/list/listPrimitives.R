@@ -7,16 +7,12 @@ range <- function(n) {
 }
 
 if <- function(c, t, f) {
-    if(c)
-        return(t)
-    else
-        return(f)
+    if(c) return(t) else return(f)
 }
 
 and <- function(x, y) {
     return(x && y)
 }
-
 
 or <- function(x, y) {
     return(x || y)

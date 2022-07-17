@@ -1,5 +1,7 @@
 """Implements classes to extract primitives and lambda expressions."""
 
+from tqdm import tqdm
+
 from dreamcoder.dreamcoder import ECResult
 from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
@@ -40,7 +42,7 @@ class GrammarParser:
         parsed_primitives: dict = {}
         parsed_invented: dict = {}
 
-        for _, _, primitive in grammar.productions:
+        for _, _, primitive in tqdm(grammar.productions):
             if isinstance(primitive, Primitive):
                 name = primitive.name
                 if name not in parsed_primitives:
@@ -123,7 +125,7 @@ class ProgramExtractor:
         hit_frontiers = {}
         miss_frontiers = {}
 
-        for frontier in result.allFrontiers.values():
+        for frontier in tqdm(result.allFrontiers.values()):
             name = frontier.task.name
             annotation = result.taskLanguage.get(name, '')[0]
             compact_frontier = CompactFrontier(frontier, annotation)

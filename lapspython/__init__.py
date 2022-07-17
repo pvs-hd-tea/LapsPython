@@ -3,4 +3,4 @@
 from lapspython.pipeline import Pipeline
 from lapspython.stats import Statistics
 
-results_test = Pipeline.from_checkpoint('re2_best_dsl_language', 'R')
+results_test = Pipeline.from_checkpoint('re2_test', 'r')
