@@ -2,8 +2,10 @@
 
 import copy
 import inspect
+import random
 import re
 from abc import ABC, abstractmethod
+from sys import implementation
 from typing import Dict, List
 
 from dreamcoder.frontier import Frontier
@@ -79,8 +81,13 @@ class ParsedType(ABC):
             new_source = re.sub(pattern, repl, new_source)
             new_source = re.sub(fstring_pattern, str(args[i]), new_source)
         if return_name != '':
-            return re.sub('return', f'{return_name} =', new_source)
+            return self.replace_return_statement(return_name, new_source)
         return new_source
+
+    @abstractmethod
+    def replace_return_statement(self, return_name, source):
+        """Substiture return with variable assignment."""
+        pass
 
 
 class ParsedPythonType(ParsedType):
@@ -108,6 +115,10 @@ class ParsedPythonType(ParsedType):
         new_primitive.source = re.sub(pattern, '', self.source)
         return new_primitive
 
+    def replace_return_statement(self, return_name, source):
+        """Substiture return with variable assignment."""
+        return re.sub('return', f'{return_name} =', source)
+
 
 class ParsedRType(ParsedType):
     """Abstract base class for R parsing."""
@@ -120,7 +131,15 @@ class ParsedRType(ParsedType):
         """
         header = f'{self.name} <- function({", ".join(self.args)} \u007b\n'
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
-        return header + indented_body + '\n\007d\n'
+        return header + indented_body + '\n}\n'
+
+    def resolve_lambdas(self):
+        """No lambdas in R, but required for backwards compatibility."""
+        return self
+
+    def replace_return_statement(self, return_name, source):
+        """Substiture return with variable assignment."""
+        return re.sub(r'return\((.+)\)', fr'{return_name} <- \1', source)
 
 
 class ParsedPrimitive(ParsedPythonType):
@@ -137,15 +156,18 @@ class ParsedPrimitive(ParsedPythonType):
         if inspect.isfunction(implementation):
             args = inspect.getfullargspec(implementation).args
             source = self.parse_source(implementation)
+            imports = self.get_imports(implementation)
+            dependencies = self.get_dependencies(implementation)
         else:
             args = []
             source = implementation
-
-        self.imports = self.get_imports(implementation)
-        dependencies = self.get_dependencies(implementation)
-        self.dependencies = {d[1] for d in dependencies if d[0] in source}
+            imports = set()
+            dependencies = set()
+        
         self.handle = primitive.name
         self.name = re.sub(r'^[^a-z]+', '', self.handle)
+        self.imports = imports
+        self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.source = source.strip()
         self.args = args
         self.arg_types = self.parse_argument_types(primitive.tp)
@@ -212,17 +234,27 @@ class ParsedRPrimitive(ParsedRType):
         """
         self.handle = primitive.name
         self.name = re.sub(r'^[^a-z]+', '', self.handle)
-        path_py = inspect.getsourcefile(primitive.value)
-        if not isinstance(path_py, str):
-            raise ValueError(f'Cannot get source of primitive {self.name}.')
-        self.path = path_py[:-2] + 'R'
-        source = self.parse_source(self.handle)
-        self.source = source.strip()
-        self.imports = self.get_imports()
-        dependencies = self.get_dependencies(primitive.value)
-        self.dependencies = {d[1] for d in dependencies if d[0] in source}
+        py_implementation = primitive.value
 
-    def parse_source(self, handle: str) -> str:
+        if inspect.isfunction(py_implementation):
+            py_path = inspect.getsourcefile(py_implementation)
+            if not isinstance(py_path, str):
+                raise ValueError(f'Cannot get source of primitive {self.name}.')
+            self.path = py_path[:-2] + 'R'
+            source = self.parse_source(self.name, self.path)
+            imports = self.get_imports()
+            dependencies = self.get_dependencies(primitive.value)
+        else:
+            source = py_implementation
+            imports = set()
+            dependencies = set()
+            self.args = []
+
+        self.imports = imports
+        self.dependencies = {d[1] for d in dependencies if d[0] in source}
+        self.source = source.strip()
+
+    def parse_source(self, name: str, path: str) -> str:
         """Extract source code of primitive from R file.
 
         :param handle: Function name in source file.
@@ -230,17 +262,19 @@ class ParsedRPrimitive(ParsedRType):
         :returns: Source code of corresponding function.
         :rtype: string
         """
-        with open(self.path, 'r') as r_file:
+        with open(path, 'r') as r_file:
             lines = r_file.readlines()
 
-        pattern = f'{self.name} <- '
+        pattern = f'{name} <- '
 
         for i in range(len(lines)):
             line = lines[i]
             if line.startswith(pattern):
                 if not line.endswith('{\n'):
+                    self.args = []
                     return re.sub(pattern, '', line)
-                cutoff_lines = lines[i:]
+                self.args = self.get_args(lines[i])
+                cutoff_lines = lines[i + 1:]
                 break
 
         for j in range(len(cutoff_lines)):
@@ -257,7 +291,7 @@ class ParsedRPrimitive(ParsedRType):
         :returns: A set of module names as strings
         :rtype: set
         """
-        pass  # TODO
+        return set()  # TODO
 
     def get_dependencies(self, implementation):
         """Find functions called by primitives that are not built-ins.
@@ -269,8 +303,24 @@ class ParsedRPrimitive(ParsedRType):
         """
         module = inspect.getmodule(implementation)
         functions = inspect.getmembers(module, inspect.isfunction)
-        dependent_functions = [f[2:] for f in functions if f[0][:2] == '__']
-        return [(f[0], self.extract_source(f[1])) for f in dependent_functions]
+        dependent_functions = [f[0][2:] for f in functions if f[0][:2] == '__']
+        dependencies = []
+        for f in dependent_functions:
+            if inspect.isfunction(f[1]):
+                path = inspect.getsourcefile(f[1])
+                dependencies.append((f[0], self.parse_source(f[0], path)))
+            else:
+                dependencies.append((f[0], f[1]))
+        return dependencies
+
+    def get_args(self, header: str):
+        """Get list of arguments from function code.
+
+        :param source: Function code
+        :type source: string
+        """
+        args = re.search(r'\(.+\)', header)[0][1:-1]
+        return args.split(', ')
 
 
 class ParsedInvented(ParsedPythonType):
@@ -300,6 +350,37 @@ class ParsedInvented(ParsedPythonType):
     def resolve_variables(self, args: list, return_name: str) -> str:
         """Instead arguments in function call rather than definition."""
         head = f'{return_name} = '
+        body = f'{self.name}({", ".join(args)})'
+        return f'{head}{body}'
+
+
+class ParsedRInvented(ParsedRType):
+    """Class parsing invented primitives for translation to R."""
+
+    def __init__(self, invented: Invented, name: str):
+        """Construct ParsedRInvented object with parsed specs.
+
+        :param invented: An invented primitive object
+        :type invented: dreamcoder.program.Invented
+        :param name: A custom name since invented primitives are unnamed
+        :type name: string
+        """
+        self.handle = str(invented)
+        self.name = name
+        self.program = invented
+        self.arg_types = self.parse_argument_types(invented.tp)
+        self.return_type = self.arg_types.pop()
+
+        # To avoid circular imports, source translation is only handled by
+        # lapspython.extraction.GrammarParser instead of during construction.
+        self.source = ''
+        self.args: list = []
+        self.imports: set = set()
+        self.dependencies: set = set()
+
+    def resolve_variables(self, args: list, return_name: str) -> str:
+        """Instead arguments in function call rather than definition."""
+        head = f'{return_name} <- '
         body = f'{self.name}({", ".join(args)})'
         return f'{head}{body}'
 
@@ -354,7 +435,7 @@ class ParsedProgramBase(ParsedType):
         pass
 
 
-class ParsedProgram(ParsedProgramBase):
+class ParsedProgram(ParsedProgramBase, ParsedType):
     """Class parsing synthesized programs."""
 
     def __str__(self) -> str:
@@ -397,7 +478,7 @@ class ParsedProgram(ParsedProgramBase):
         return True
 
 
-class ParsedRProgram(ParsedProgramBase):
+class ParsedRProgram(ParsedProgramBase, ParsedRType):
     """Class parsing synthesized programs."""
 
     def __str__(self) -> str:
@@ -420,7 +501,7 @@ class ParsedRProgram(ParsedProgramBase):
         :returns: Whether the translated program is correct.
         :rtype: bool
         """
-        return True  # TODO
+        return False  # TODO
 
 
 class ParsedGrammar:
@@ -482,7 +563,7 @@ class CompactResult:
     def get_best(self) -> List[Dict]:
         """Return the HIT frontiers as dict with best posteriors.
 
-        :returns: A (name, HIT CompactFrontier) dictionary.
+        :returns: A list of minimal CompactFrontier dictionaries.
         :rtype: List[Dict]
         """
         hits_best = []
@@ -491,9 +572,9 @@ class CompactResult:
             best_valid = best_invalid = None
 
             if len(hit.translations) > 0:
-                best_valid = hit.translations[0].as_dict()
+                best_valid = str(hit.translations[0])
             if len(hit.failed) > 0:
-                best_invalid = hit.failed[0].as_dict()
+                best_invalid = str(hit.failed[0])
 
             hit_best = {
                 'annotation': hit.annotation,
@@ -504,3 +585,16 @@ class CompactResult:
             hits_best.append(hit_best)
 
         return hits_best
+
+    def sample(self) -> dict:
+        """Return a random HIT frontier with valid translation.
+
+        :returns: A minimal CompactFrontier dictionary.
+        :rtype: dict
+        """
+        best_valid = [best for best in self.get_best()
+                      if best['best_valid_translation'] is not None]
+        if len(best_valid) > 0:
+            return random.choice(best_valid)
+        else:
+            return {}

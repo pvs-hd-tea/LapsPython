@@ -109,7 +109,7 @@ pytest = "*"
 pytest-cov = "*"
 
 [scripts]
-linting = "flake8 --exclude=.venv,dreamcoder --ignore=I900,S101,S102,S301,S403,W391"
+linting = "flake8 --exclude=.venv,dreamcoder --ignore=I900,S101,S102,S301,S311,S403,W391"
 tests = "python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov-report term-missing --cov-report html:coverage --disable-warnings"
 typechecks = "mypy lapspython --ignore-missing-imports --follow-imports skip"
 

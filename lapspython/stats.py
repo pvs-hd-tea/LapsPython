@@ -1,6 +1,5 @@
 """Collect statistics for program translations."""
 
-import logging
 from typing import List
 
 import numpy as np
@@ -21,18 +20,12 @@ class Statistics:
         :param result: Extracted and translated programs.
         :type result: CompactResult, optional
         """
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
         if result is not None:
             self.summarize(result)
 
     def __str__(self) -> str:
         """Convert summary to string."""
         return '\n'.join([f'{k}:\t{v}' for k, v in self.stats.items()])
-
-    def log(self) -> None:
-        """Log summary."""
-        self.logger.info(f'Summary:\n{self.__str__()}')
 
     def summarize(self, result: CompactResult) -> dict:
         """Descriptive statistics for result.

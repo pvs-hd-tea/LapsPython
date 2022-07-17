@@ -22,6 +22,12 @@ class Translator:
         self.mode = mode.lower()
         if self.mode not in ('python', 'r'):
             raise ValueError('mode must be "Python" or "R".')
+
+        if self.mode == 'python':
+            self.sep = ' = '
+        else:
+            self.sep = ' <- '
+
         self.grammar = grammar
         self.call_counts = {p: 0 for p in self.grammar.primitives}
         self.call_counts.update({i: 0 for i in self.grammar.invented})
@@ -140,15 +146,23 @@ class Translator:
     def _translate_abstraction_x(self, abstraction: Abstraction) -> tuple:
         parsed, args = self._translate_wrapper(abstraction.body)
 
-        if self.contains_index(abstraction) and len(self.code) > 0:
-            last_row = self.code[-1]
-            body = last_row.split(' = ')[1]
-            body = re.sub(r'arg\d', 'lx', body)
-            args = [f'lambda lx: {body}']
-        else:
-            args = [f'lambda x: {args[0]}']
+        try:
+            lambda_head = ''
+            if self.mode == 'python':
+                lambda_head == 'lambda lx: '
+            if self.contains_index(abstraction) and len(self.code) > 0:
+                last_row = self.code[-1]
+                body = last_row.split(self.sep)[1]
+                body = re.sub(r'arg\d', 'lx', body)
+                args = [f'{lambda_head}{body}']
+            else:
+                args = [f'{lambda_head}{args[0]}']
 
-        return parsed, args
+            return parsed, args
+
+        except IndexError:
+            return '# ERROR', ['# ERROR']
+
 
     def _translate_application_f(self, application: Application) -> tuple:
         f = application.f
@@ -224,7 +238,7 @@ class Translator:
         handle = str(invented)
         f_parsed = self.grammar.invented[handle]
         if f_parsed.source == '':
-            translator = Translator(self.grammar)
+            translator = Translator(self.grammar, self.mode)
             f_trans = translator.translate(f_parsed.program, f_parsed.name)
             f_parsed.source = f_trans.source
             f_parsed.args = f_trans.args
@@ -266,4 +280,4 @@ class Translator:
         """Return the declared variable in the last line of code."""
         if len(self.code) == 0:
             return ''
-        return self.code[-1].split(' = ')[0]
+        return self.code[-1].split(self.sep)[0]

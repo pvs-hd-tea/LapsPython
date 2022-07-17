@@ -62,19 +62,19 @@ y <- "y"
 z <- "z"
 
 rnot <- function(s) {
-    glue("[^{s}]")
+    return(glue("[^{s}]"))
 }
 
 ror <- function(s1, s2) {
-    glue("(({s1}|{s2}))")
+    return(glue("(({s1}|{s2}))"))
 }
 
 rconcat <- function(s1, s2) {
-    paste(s1, s2, sep="")
+    return(paste(s1, s2, sep = ""))
 }
 
 ismatch <- function(s1, s2) {
-    str_match(s1, s2) == s1
+    return(str_match(s1, s2) == s1)
 }
 
 regex_split <- function(s1, s2) {
@@ -84,11 +84,11 @@ regex_split <- function(s1, s2) {
     remaining <- s2
     m <- str_locate(remaining, s1)
     while (!is.na(m[1])) {
-        prefix <- substr(remaining, 1, m[1]-1)
+        prefix <- substr(remaining, 1, m[1] - 1)
         if (nchar(prefix) > 0)
             ret <- c(ret, prefix)
         ret <- c(ret, substr(remaining, m[1], m[2]))
-        remaining <- substr(remaining, m[2]+1, nchar(remaining))
+        remaining <- substr(remaining, m[2] + 1, nchar(remaining))
         m <- str_locate(remaining, s1)
     }
     if (nchar(remaining) > 0)
@@ -97,25 +97,25 @@ regex_split <- function(s1, s2) {
 }
 
 rmatch <- function(s1, s2) {
-    ismatch(s1, s2)
+    return(ismatch(s1, s2))
 }
 
 rsplit <- function(s1, s2) {
-    regex_split(s1, s2)
+    return(regex_split(s1, s2))
 }
 
 rflatten <- function(l) {
-    paste(l, collapse="")
+    return(paste(l, collapse = ""))
 }
 
 rtail <- function(l) {
-    l[length(l)]
+    return(l[length(l)])
 }
 
 rappend <- function(x, l) {
-    c(x, l)
+    return(c(x, l))
 }
 
 rrevcdr <- function(l) {
-    l[-length(l)]
+    return(l[-length(l)])
 }

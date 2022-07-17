@@ -5,7 +5,7 @@ from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
 from lapspython.translation import Translator
 from lapspython.types import (CompactFrontier, CompactResult, ParsedGrammar,
-                              ParsedInvented, ParsedPrimitive,
+                              ParsedInvented, ParsedRInvented, ParsedPrimitive,
                               ParsedRPrimitive)
 
 
@@ -57,11 +57,14 @@ class GrammarParser:
             elif str(primitive) not in parsed_invented:
                 handle = str(primitive)
                 name = f'f{len(parsed_invented)}'
-                parsed_invented[handle] = ParsedInvented(primitive, name)
+                if self.mode == 'python':
+                    parsed_invented[handle] = ParsedInvented(primitive, name)
+                else:
+                    parsed_invented[handle] = ParsedRInvented(primitive, name)
 
         self.parsed_grammar = ParsedGrammar(parsed_primitives, parsed_invented)
 
-        translator = Translator(self.parsed_grammar)
+        translator = Translator(self.parsed_grammar, self.mode)
         for invented in self.parsed_grammar.invented.values():
             if invented.source == '':
                 trans = translator.translate(invented.program, invented.name)
