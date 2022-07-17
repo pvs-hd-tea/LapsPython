@@ -7,7 +7,7 @@ from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
 from lapspython.translation import Translator
 from lapspython.types import (CompactFrontier, CompactResult, ParsedGrammar,
-                              ParsedInvented, ParsedRInvented, ParsedPrimitive,
+                              ParsedInvented, ParsedPrimitive, ParsedRInvented,
                               ParsedRPrimitive)
 
 

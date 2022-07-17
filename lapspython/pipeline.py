@@ -39,7 +39,7 @@ class Pipeline:
             parser.fix_invented(new_invented)
         grammar = parser.parsed_grammar
 
-        print('\nExtracting and translating synthesized programs...', flush=True)
+        print('\nTranslating synthesized programs...', flush=True)
         translator = Translator(grammar, mode)
         extractor = ProgramExtractor(result, translator)
         result = extractor.compact_result
@@ -49,7 +49,7 @@ class Pipeline:
             stats = Statistics(result)
             print(stats)
             stats.plot_histogram(result)
-        
+
         print('\nSampling 1 valid translation:')
         sample = result.sample()
         if len(sample) > 0:

@@ -165,7 +165,6 @@ class Translator:
         except IndexError:
             return '# ERROR', ['# ERROR']
 
-
     def _translate_application_f(self, application: Application) -> tuple:
         f = application.f
         x = application.x

@@ -5,7 +5,6 @@ import inspect
 import random
 import re
 from abc import ABC, abstractmethod
-from sys import implementation
 from typing import Dict, List
 
 from dreamcoder.frontier import Frontier
@@ -161,8 +160,8 @@ class ParsedPrimitive(ParsedPythonType):
             args = []
             source = implementation
             imports = set()
-            dependencies = set()
-        
+            dependencies = []
+
         self.handle = primitive.name
         self.name = re.sub(r'^[^a-z]+', '', self.handle)
         self.imports = {module for module in imports if module in source}
@@ -238,7 +237,8 @@ class ParsedRPrimitive(ParsedRType):
         if inspect.isfunction(py_implementation):
             py_path = inspect.getsourcefile(py_implementation)
             if not isinstance(py_path, str):
-                raise ValueError(f'Cannot get source of primitive {self.name}.')
+                msg = f'Cannot get source of primitive {self.name}.'
+                raise ValueError(msg)
             self.path = py_path[:-2] + 'R'
             source = self.parse_source(self.name, self.path)
             imports = self.get_imports(self.path)
@@ -323,7 +323,10 @@ class ParsedRPrimitive(ParsedRType):
         :param source: Function code
         :type source: string
         """
-        args = re.search(r'\(.+\)', header)[0][1:-1]
+        match = re.search(r'\(.+\)', header)
+        if match is None:
+            return []
+        args = match[0][1:-1]
         return args.split(', ')
 
 
