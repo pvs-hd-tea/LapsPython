@@ -1,0 +1,558 @@
+{
+    "grammar": {
+        "primitives": {
+            "_rdot": {
+                "name": "rdot",
+                "handle": "_rdot",
+                "source": ".",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rempty": {
+                "name": "rempty",
+                "handle": "_rempty",
+                "source": "",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_a": {
+                "name": "a",
+                "handle": "_a",
+                "source": "a",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_b": {
+                "name": "b",
+                "handle": "_b",
+                "source": "b",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_c": {
+                "name": "c",
+                "handle": "_c",
+                "source": "c",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_d": {
+                "name": "d",
+                "handle": "_d",
+                "source": "d",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_e": {
+                "name": "e",
+                "handle": "_e",
+                "source": "e",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_f": {
+                "name": "f",
+                "handle": "_f",
+                "source": "f",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_g": {
+                "name": "g",
+                "handle": "_g",
+                "source": "g",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_h": {
+                "name": "h",
+                "handle": "_h",
+                "source": "h",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_i": {
+                "name": "i",
+                "handle": "_i",
+                "source": "i",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_j": {
+                "name": "j",
+                "handle": "_j",
+                "source": "j",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_k": {
+                "name": "k",
+                "handle": "_k",
+                "source": "k",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_l": {
+                "name": "l",
+                "handle": "_l",
+                "source": "l",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_m": {
+                "name": "m",
+                "handle": "_m",
+                "source": "m",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_n": {
+                "name": "n",
+                "handle": "_n",
+                "source": "n",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_o": {
+                "name": "o",
+                "handle": "_o",
+                "source": "o",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_p": {
+                "name": "p",
+                "handle": "_p",
+                "source": "p",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_q": {
+                "name": "q",
+                "handle": "_q",
+                "source": "q",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_r": {
+                "name": "r",
+                "handle": "_r",
+                "source": "r",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_s": {
+                "name": "s",
+                "handle": "_s",
+                "source": "s",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_t": {
+                "name": "t",
+                "handle": "_t",
+                "source": "t",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_u": {
+                "name": "u",
+                "handle": "_u",
+                "source": "u",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_v": {
+                "name": "v",
+                "handle": "_v",
+                "source": "v",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_w": {
+                "name": "w",
+                "handle": "_w",
+                "source": "w",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_x": {
+                "name": "x",
+                "handle": "_x",
+                "source": "x",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_y": {
+                "name": "y",
+                "handle": "_y",
+                "source": "y",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_z": {
+                "name": "z",
+                "handle": "_z",
+                "source": "z",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rnot": {
+                "name": "rnot",
+                "handle": "_rnot",
+                "source": "return(glue(\"[^{s}]\"))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "_ror": {
+                "name": "ror",
+                "handle": "_ror",
+                "source": "return(glue(\"(({s1}|{s2}))\"))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "_rconcat": {
+                "name": "rconcat",
+                "handle": "_rconcat",
+                "source": "return(paste(s1, s2, sep = \"\"))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "_rmatch": {
+                "name": "rmatch",
+                "handle": "_rmatch",
+                "source": "return(ismatch(s1, s2))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": [
+                    "ismatch <- function(s1, s2) {\n    return(str_match(s1, s2) == s1)\n}\n"
+                ]
+            },
+            "_rsplit": {
+                "name": "rsplit",
+                "handle": "_rsplit",
+                "source": "return(regex_split(s1, s2))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": [
+                    "regex_split <- function(s1, s2) {\n    if (nchar(s2) == 0)\n        s1 <- \".\"\n    ret <- c()\n    remaining <- s2\n    m <- str_locate(remaining, s1)\n    while (!is.na(m[1])) {\n        prefix <- substr(remaining, 1, m[1] - 1)\n        if (nchar(prefix) > 0)\n            ret <- c(ret, prefix)\n        ret <- c(ret, substr(remaining, m[1], m[2]))\n        remaining <- substr(remaining, m[2] + 1, nchar(remaining))\n        m <- str_locate(remaining, s1)\n    }\n    if (nchar(remaining) > 0)\n        ret <- c(ret, remaining)\n    return(ret)\n}\n"
+                ]
+            },
+            "_rflatten": {
+                "name": "rflatten",
+                "handle": "_rflatten",
+                "source": "return(paste(l, collapse = \"\"))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "_rtail": {
+                "name": "rtail",
+                "handle": "_rtail",
+                "source": "return(l[length(l)])",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "_rappend": {
+                "name": "rappend",
+                "handle": "_rappend",
+                "source": "return(c(x, l))",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "_rrevcdr": {
+                "name": "rrevcdr",
+                "handle": "_rrevcdr",
+                "source": "return(l[-length(l)])",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "glue",
+                    "stringr"
+                ],
+                "dependencies": []
+            },
+            "if": {
+                "name": "if",
+                "handle": "if",
+                "source": "if(c) return(t) else return(f)",
+                "args": [
+                    "x",
+                    "p",
+                    "h",
+                    "n"
+                ],
+                "imports": [],
+                "dependencies": []
+            },
+            "cons": {
+                "name": "cons",
+                "handle": "cons",
+                "source": "return(c(x, y))",
+                "args": [
+                    "x",
+                    "y"
+                ],
+                "imports": [],
+                "dependencies": []
+            },
+            "car": {
+                "name": "car",
+                "handle": "car",
+                "source": "return(x[1])",
+                "args": [
+                    "x"
+                ],
+                "imports": [],
+                "dependencies": []
+            },
+            "cdr": {
+                "name": "cdr",
+                "handle": "cdr",
+                "source": "return(x[-1])",
+                "args": [
+                    "x"
+                ],
+                "imports": [],
+                "dependencies": []
+            },
+            "map": {
+                "name": "map",
+                "handle": "map",
+                "source": "return(sapply(l, f))",
+                "args": [
+                    "x",
+                    "p",
+                    "h",
+                    "n"
+                ],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rvowel": {
+                "name": "rvowel",
+                "handle": "_rvowel",
+                "source": "(a|e|i|o|u)",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rconsonant": {
+                "name": "rconsonant",
+                "handle": "_rconsonant",
+                "source": "[^aeiou]",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            }
+        },
+        "invented": {
+            "#(_rsplit _rdot)": {
+                "name": "f0",
+                "handle": "#(_rsplit _rdot)",
+                "source": "rsplit_1 <- regex_split('.', arg1)",
+                "args": [
+                    "arg1"
+                ],
+                "imports": [],
+                "dependencies": [
+                    "s",
+                    "e"
+                ]
+            }
+        }
+    },
+    "result": [
+        {
+            "annotation": "if the word ends with any letter add w after that",
+            "best_program": "(lambda (_rflatten (_rappend _w (_rsplit _d $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nregex_split <- function(s1, s2) {\n    if (nchar(s2) == 0)\n        s1 <- \".\"\n    ret <- c()\n    remaining <- s2\n    m <- str_locate(remaining, s1)\n    while (!is.na(m[1])) {\n        prefix <- substr(remaining, 1, m[1] - 1)\n        if (nchar(prefix) > 0)\n            ret <- c(ret, prefix)\n        ret <- c(ret, substr(remaining, m[1], m[2]))\n        remaining <- substr(remaining, m[2] + 1, nchar(remaining))\n        m <- str_locate(remaining, s1)\n    }\n    if (nchar(remaining) > 0)\n        ret <- c(ret, remaining)\n    return(ret)\n}\n\nre2_train_0_if_the_word_ends_with_any_letter_add_w_after_that <- function(arg1) {\n    rsplit_1 <- regex_split('d', arg1)\n    rappend_1 <- c(x, l)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with k",
+            "best_program": "(lambda (_rflatten (map (lambda _k) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_23_if_there_is_any_letter_replace_that_with_k <- function(arg1) {\n    f0_1 <- f0(arg1)\n    map_1 = None\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter replace that with r",
+            "best_program": "(lambda (_rflatten (_rappend _r (_rrevcdr (#(_rsplit _rdot) $0)))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_26_if_the_word_ends_with_any_letter_replace_that_with_r <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rrevcdr_1 = None\n    rappend_1 <- c(x, l)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter any letter replace that with o u",
+            "best_program": "(lambda (_rflatten (_rappend (_rconcat _o _u) (_rrevcdr (_rrevcdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_29_if_the_word_ends_with_any_letter_any_letter_replace_that_with_o_u <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rrevcdr_1 = None\n    rrevcdr_2 = None\n    rconcat_1 <- paste('o', 'u', sep = \"\")\n    rappend_1 <- c(x, l)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter add d after that",
+            "best_program": "(lambda (_rflatten (_rappend _d (_rsplit _a $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nregex_split <- function(s1, s2) {\n    if (nchar(s2) == 0)\n        s1 <- \".\"\n    ret <- c()\n    remaining <- s2\n    m <- str_locate(remaining, s1)\n    while (!is.na(m[1])) {\n        prefix <- substr(remaining, 1, m[1] - 1)\n        if (nchar(prefix) > 0)\n            ret <- c(ret, prefix)\n        ret <- c(ret, substr(remaining, m[1], m[2]))\n        remaining <- substr(remaining, m[2] + 1, nchar(remaining))\n        m <- str_locate(remaining, s1)\n    }\n    if (nchar(remaining) > 0)\n        ret <- c(ret, remaining)\n    return(ret)\n}\n\nre2_train_34_if_the_word_ends_with_any_letter_add_d_after_that <- function(arg1) {\n    rsplit_1 <- regex_split('a', arg1)\n    rappend_1 <- c(x, l)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with q j",
+            "best_program": "(lambda (_rflatten (map (lambda (_rconcat _q _j)) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_35_if_there_is_any_letter_replace_that_with_q_j <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rconcat_1 <- paste('q', 'j', sep = \"\")\n    map_1 = None\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter add v after that",
+            "best_program": "(lambda (_rflatten (map (lambda (_rconcat $0 _v)) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_41_if_there_is_any_letter_add_v_after_that <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rconcat_1 <- paste(arg1, 'v', sep = \"\")\n    map_1 = None\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter replace that with f",
+            "best_program": "(lambda (_rflatten (_rappend _f (_rrevcdr (#(_rsplit _rdot) $0)))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_52_if_the_word_ends_with_any_letter_replace_that_with_f <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rrevcdr_1 = None\n    rappend_1 <- c(x, l)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter replace that with t m",
+            "best_program": "(lambda (_rflatten (_rappend _m (_rappend _t (_rrevcdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_53_if_the_word_ends_with_any_letter_replace_that_with_t_m <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rrevcdr_1 = None\n    rappend_1 <- c(x, l)\n    rappend_2 <- c(x, l)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter s replace that with f",
+            "best_program": "(lambda (if (_rmatch (_rtail (#(_rsplit _rdot) $0)) _s) (_rflatten (_rappend _f (_rrevcdr (_rrevcdr (#(_rsplit _rdot) $0))))) $0))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nismatch <- function(s1, s2) {\n    return(str_match(s1, s2) == s1)\n}\n\nre2_train_61_if_the_word_ends_with_any_letter_s_replace_that_with_f <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rrevcdr_1 = None\n    rrevcdr_2 = None\n    rappend_1 <- c(x, l)\n    rflatten_1 = None\n    f0_2 <- f0(arg1)\n    rtail_1 = None\n    rmatch_1 <- ismatch(rtail_1, 's')\n    if(c) if_1 <- t) else return(f\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with any letter any letter add j before that",
+            "best_program": "(lambda (_rflatten (cons _j (_rsplit _r $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nregex_split <- function(s1, s2) {\n    if (nchar(s2) == 0)\n        s1 <- \".\"\n    ret <- c()\n    remaining <- s2\n    m <- str_locate(remaining, s1)\n    while (!is.na(m[1])) {\n        prefix <- substr(remaining, 1, m[1] - 1)\n        if (nchar(prefix) > 0)\n            ret <- c(ret, prefix)\n        ret <- c(ret, substr(remaining, m[1], m[2]))\n        remaining <- substr(remaining, m[2] + 1, nchar(remaining))\n        m <- str_locate(remaining, s1)\n    }\n    if (nchar(remaining) > 0)\n        ret <- c(ret, remaining)\n    return(ret)\n}\n\nre2_train_66_if_the_word_starts_with_any_letter_any_letter_add_j_before_that <- function(arg1) {\n    rsplit_1 <- regex_split('r', arg1)\n    cons_1 <- c('j', rsplit_1)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with j",
+            "best_program": "(lambda (_rflatten (map (lambda _j) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_67_if_there_is_any_letter_replace_that_with_j <- function(arg1) {\n    f0_1 <- f0(arg1)\n    map_1 = None\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with h s",
+            "best_program": "(lambda (_rflatten (map (lambda (_rconcat _h _s)) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_68_if_there_is_any_letter_replace_that_with_h_s <- function(arg1) {\n    f0_1 <- f0(arg1)\n    rconcat_1 <- paste('h', 's', sep = \"\")\n    map_1 = None\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with consonant vowel add t before that",
+            "best_program": "(lambda (if (_rmatch _rvowel (car (cdr (#(_rsplit _rdot) $0)))) (_rflatten (cons _t (#(_rsplit _rdot) $0))) $0))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nismatch <- function(s1, s2) {\n    return(str_match(s1, s2) == s1)\n}\n\nre2_train_91_if_the_word_starts_with_consonant_vowel_add_t_before_that <- function(arg1) {\n    f0_1 <- f0(arg1)\n    cons_1 <- c('t', f0_1)\n    rflatten_1 = None\n    f0_2 <- f0(arg1)\n    cdr_1 <- f0_2[-1]\n    car_1 <- cdr_1[1]\n    rmatch_1 <- ismatch('(a|e|i|o|u)', car_1)\n    if(c) if_1 <- t) else return(f\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with consonant replace that with n",
+            "best_program": "(lambda (if (_rmatch _rconsonant (car (#(_rsplit _rdot) $0))) (_rflatten (cons _n (cdr (#(_rsplit _rdot) $0)))) $0))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nismatch <- function(s1, s2) {\n    return(str_match(s1, s2) == s1)\n}\n\nre2_train_101_if_the_word_starts_with_consonant_replace_that_with_n <- function(arg1) {\n    f0_1 <- f0(arg1)\n    cdr_1 <- f0_1[-1]\n    cons_1 <- c('n', cdr_1)\n    rflatten_1 = None\n    f0_2 <- f0(arg1)\n    car_1 <- f0_2[1]\n    rmatch_1 <- ismatch('[^aeiou]', car_1)\n    if(c) if_1 <- t) else return(f\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with any letter replace that with q a",
+            "best_program": "(lambda (_rflatten (cons _q (cons _a (cdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_103_if_the_word_starts_with_any_letter_replace_that_with_q_a <- function(arg1) {\n    f0_1 <- f0(arg1)\n    cdr_1 <- f0_1[-1]\n    cons_1 <- c('a', cdr_1)\n    cons_2 <- c('q', cons_1)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with any letter replace that with g a",
+            "best_program": "(lambda (_rflatten (cons _g (cons _a (cdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_111_if_the_word_starts_with_any_letter_replace_that_with_g_a <- function(arg1) {\n    f0_1 <- f0(arg1)\n    cdr_1 <- f0_1[-1]\n    cons_1 <- c('a', cdr_1)\n    cons_2 <- c('g', cons_1)\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with p",
+            "best_program": "(lambda (_rflatten (map (lambda _p) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "library(glue)\nlibrary(stringr)\n\nf0 <- function(arg1 {\n    rsplit_1 <- regex_split('.', arg1)\n}\n\ne\ns\nre2_train_113_if_there_is_any_letter_replace_that_with_p <- function(arg1) {\n    f0_1 <- f0(arg1)\n    map_1 = None\n    rflatten_1 <- paste(l, collapse = \"\")\n}",
+            "best_invalid_translation": null
+        }
+    ]
+}
