@@ -21,6 +21,7 @@ class ParsedType(ABC):
         self.handle: str = ''
         self.source: str = ''
         self.args: list = []
+        self.imports: set = set()
         self.dependencies: set = set()
         self.arg_types: list = []
         self.return_type = type
@@ -37,6 +38,7 @@ class ParsedType(ABC):
             'handle': self.handle,
             'source': self.source,
             'args': self.args,
+            'imports': list(self.imports),
             'dependencies': list(self.dependencies)
         }
 
@@ -108,9 +110,17 @@ class ParsedPythonType(ParsedType):
 
 
 class ParsedRType(ParsedType):
-    """Abstract base class for python parsing."""
+    """Abstract base class for R parsing."""
 
-    pass
+    def __str__(self) -> str:
+        """Return parsed primitive as R code.
+
+        :returns: R source code
+        :rtype: string
+        """
+        header = f'{self.name} <- function({", ".join(self.args)} \u007b\n'
+        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return header + indented_body + '\n\007d\n'
 
 
 class ParsedPrimitive(ParsedPythonType):
@@ -126,12 +136,13 @@ class ParsedPrimitive(ParsedPythonType):
 
         if inspect.isfunction(implementation):
             args = inspect.getfullargspec(implementation).args
-            source = self._parse_source(implementation)
+            source = self.parse_source(implementation)
         else:
             args = []
             source = implementation
 
-        dependencies = self._get_dependencies(implementation)
+        self.imports = self.get_imports(implementation)
+        dependencies = self.get_dependencies(implementation)
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.handle = primitive.name
         self.name = re.sub(r'^[^a-z]+', '', self.handle)
@@ -140,11 +151,11 @@ class ParsedPrimitive(ParsedPythonType):
         self.arg_types = self.parse_argument_types(primitive.tp)
         self.return_type = self.arg_types.pop()
 
-    def _parse_source(self, implementation) -> str:
+    def parse_source(self, implementation) -> str:
         """Resolve lambdas and arguments to produce cleaner Python code.
 
         :param implementation: The function referenced by primitive
-        :type implementation: function
+        :type implementation: callable
         :returns: New source code
         :rtype: string
         """
@@ -164,8 +175,20 @@ class ParsedPrimitive(ParsedPythonType):
 
         return re.sub(' #.+$', '', source)
 
-    def _get_dependencies(self, implementation) -> list:
-        """Find functions called by primities that are not built-ins.
+    def get_imports(self, implementation) -> set:
+        """Find import modules that might be required by primitives.
+
+        :param implementation: The function referenced by a primitive
+        :type implementation: function
+        :returns: A set of module names as strings
+        :rtype: set
+        """
+        main_module = inspect.getmodule(implementation)
+        imports = inspect.getmembers(main_module, inspect.ismodule)
+        return {module[0] for module in imports}
+
+    def get_dependencies(self, implementation) -> list:
+        """Find functions called by primitives that are not built-ins.
 
         :param implementation: The function referenced by a primitive
         :type implementation: function
@@ -193,20 +216,20 @@ class ParsedRPrimitive(ParsedRType):
         if not isinstance(path_py, str):
             raise ValueError(f'Cannot get source of primitive {self.name}.')
         self.path = path_py[:-2] + 'R'
-        self.source = self.extract_source()
+        source = self.parse_source(self.handle)
+        self.source = source.strip()
+        self.imports = self.get_imports()
+        dependencies = self.get_dependencies(primitive.value)
+        self.dependencies = {d[1] for d in dependencies if d[0] in source}
 
-    def __str__(self) -> str:
-        """Return parsed primitive as R code.
+    def parse_source(self, handle: str) -> str:
+        """Extract source code of primitive from R file.
 
-        :returns: R source code
+        :param handle: Function name in source file.
+        :type handle: string
+        :returns: Source code of corresponding function.
         :rtype: string
         """
-        header = f'{self.name} <- function({", ".join(self.args)} \u007b\n'
-        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
-        return header + indented_body + '\n\007d\n'
-
-    def extract_source(self) -> str:
-        """Extract source code of primitive from R file."""
         with open(self.path, 'r') as r_file:
             lines = r_file.readlines()
 
@@ -222,9 +245,32 @@ class ParsedRPrimitive(ParsedRType):
 
         for j in range(len(cutoff_lines)):
             if cutoff_lines[j] == '}\n':
-                return '\n'.join(cutoff_lines[:j]).strip()
+                return '\n'.join(cutoff_lines[:j])
 
         raise ValueError(f'No primitive {self.name} found in {self.path}.')
+
+    def get_imports(self):
+        """Find import modules that might be required by primitives.
+
+        :param implementation: The function referenced by a primitive
+        :type implementation: function
+        :returns: A set of module names as strings
+        :rtype: set
+        """
+        pass  # TODO
+
+    def get_dependencies(self, implementation):
+        """Find functions called by primitives that are not built-ins.
+
+        :param implementation: The function referenced by a primitive
+        :type implementation: function
+        :returns: A list of (function name, source) tuples
+        :rtype: list
+        """
+        module = inspect.getmodule(implementation)
+        functions = inspect.getmembers(module, inspect.isfunction)
+        dependent_functions = [f[2:] for f in functions if f[0][:2] == '__']
+        return [(f[0], self.extract_source(f[1])) for f in dependent_functions]
 
 
 class ParsedInvented(ParsedPythonType):
@@ -248,6 +294,7 @@ class ParsedInvented(ParsedPythonType):
         # lapspython.extraction.GrammarParser instead of during construction.
         self.source = ''
         self.args: list = []
+        self.imports: set = set()
         self.dependencies: set = set()
 
     def resolve_variables(self, args: list, return_name: str) -> str:
@@ -257,12 +304,17 @@ class ParsedInvented(ParsedPythonType):
         return f'{head}{body}'
 
 
-class ParsedProgram(ParsedType):
+class ParsedProgramBase(ParsedType):
     """Class parsing synthesized programs."""
 
-    imports = ['re']
-
-    def __init__(self, name: str, source: str, args: list, dependencies: set):
+    def __init__(
+        self,
+        name: str,
+        source: str,
+        args: list,
+        imports: set,
+        dependencies: set
+    ):
         """Store Python program with dependencies, arguments, and name.
 
         :param name: Task name or invented primitive handle
@@ -278,7 +330,32 @@ class ParsedProgram(ParsedType):
         self.name = name
         self.source = source
         self.args = args
+        self.imports = imports
         self.dependencies = dependencies
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """Return imports, dependencies and source code as string.
+
+        :returns: Full source code of translated program
+        :rtype: string
+        """
+        pass
+
+    @abstractmethod
+    def verify(self, examples: list) -> bool:
+        """Verify code for a list of examples from task.
+
+        :param examples: A list of (input, output) tuples
+        :type examples: list
+        :returns: Whether the translated program is correct.
+        :rtype: bool
+        """
+        pass
+
+
+class ParsedProgram(ParsedProgramBase):
+    """Class parsing synthesized programs."""
 
     def __str__(self) -> str:
         """Return dependencies and source code as string.
@@ -318,6 +395,32 @@ class ParsedProgram(ParsedType):
             except BaseException:
                 raise BaseException('\n' + exec_string)
         return True
+
+
+class ParsedRProgram(ParsedProgramBase):
+    """Class parsing synthesized programs."""
+
+    def __str__(self) -> str:
+        """Return dependencies and source code as string.
+
+        :returns: Full source code of translated program
+        :rtype: string
+        """
+        imports = '\n'.join([f'library({module})' for module in self.imports])
+        dependencies = '\n'.join(self.dependencies) + '\n'
+        header = f'{self.name} <- function({", ".join(self.args)}) \u007b\n'
+        indent_source = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return imports + '\n\n' + dependencies + header + indent_source + '\n}'
+
+    def verify(self, examples: list) -> bool:
+        """Verify code for a list of examples from task.
+
+        :param examples: A list of (input, output) tuples
+        :type examples: list
+        :returns: Whether the translated program is correct.
+        :rtype: bool
+        """
+        return True  # TODO
 
 
 class ParsedGrammar:

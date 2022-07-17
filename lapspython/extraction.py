@@ -5,18 +5,25 @@ from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
 from lapspython.translation import Translator
 from lapspython.types import (CompactFrontier, CompactResult, ParsedGrammar,
-                              ParsedInvented, ParsedPrimitive)
+                              ParsedInvented, ParsedPrimitive,
+                              ParsedRPrimitive)
 
 
 class GrammarParser:
     """Extract, parse, and store all primitives from grammar."""
 
-    def __init__(self, grammar: Grammar = None) -> None:
+    def __init__(self, grammar: Grammar = None, mode='python') -> None:
         """Optionally parse grammar if passed during construction.
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar, optional
+        :param mode: Whether to extract Python or R code.
+        :type mode: string, optional
         """
+        self.mode = mode.lower()
+        if self.mode not in ('python', 'r'):
+            raise ValueError('mode must be "Python" or "R".')
+
         if grammar is not None:
             self.parse(grammar)
         else:
@@ -37,9 +44,12 @@ class GrammarParser:
             if isinstance(primitive, Primitive):
                 name = primitive.name
                 if name not in parsed_primitives:
-                    parsed_primitive = ParsedPrimitive(primitive)
-                    parsed_primitive = parsed_primitive.resolve_lambdas()
-                    parsed_primitives[name] = parsed_primitive
+                    if self.mode == 'python':
+                        parsed_primitive = ParsedPrimitive(primitive)
+                        parsed_primitive = parsed_primitive.resolve_lambdas()
+                        parsed_primitives[name] = parsed_primitive
+                    else:
+                        parsed_primitives[name] = ParsedRPrimitive(primitive)
 
             elif not isinstance(primitive, Invented):
                 raise TypeError(f'Encountered unknown type {type(primitive)}.')

@@ -6,23 +6,28 @@ import traceback
 
 from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
-from lapspython.types import ParsedGrammar, ParsedProgram, ParsedType
+from lapspython.types import (ParsedGrammar, ParsedProgram, ParsedProgramBase,
+                              ParsedRProgram, ParsedType)
 
 
 class Translator:
     """Translate lambda programs to Python code."""
 
-    def __init__(self, grammar: ParsedGrammar) -> None:
+    def __init__(self, grammar: ParsedGrammar, mode='python') -> None:
         """Init grammar used for translation and empty containers.
 
         :param grammar: Grammar used for translation
         :type grammar: lapspython.types.ParsedGrammar
         """
+        self.mode = mode.lower()
+        if self.mode not in ('python', 'r'):
+            raise ValueError('mode must be "Python" or "R".')
         self.grammar = grammar
         self.call_counts = {p: 0 for p in self.grammar.primitives}
         self.call_counts.update({i: 0 for i in self.grammar.invented})
         self.code: list = []
         self.args: list = []
+        self.imports: set = set()
         self.dependencies: set = set()
         self.debug_stack: list = []
         self.logger = self.setup_logger()
@@ -46,7 +51,7 @@ class Translator:
             self.logger.debug(f'\n{code}')
         self.logger.debug(f'\n{traceback.format_exc()}\n')
 
-    def translate(self, program: Program, name: str) -> ParsedProgram:
+    def translate(self, program: Program, name: str) -> ParsedProgramBase:
         """Init variables and call recursive translation function.
 
         :param program: Abstraction/Invented at any depth of lambda expression
@@ -63,6 +68,7 @@ class Translator:
         arg_types = ParsedType.parse_argument_types(program.infer())
         n_args = len(arg_types) - 1
         self.args = [f'arg{i + 1}' for i in range(n_args)]
+        self.imports = set()
         self.dependencies = set()
         self.name = name
         self.debug_stack = []
@@ -74,7 +80,22 @@ class Translator:
         if len(last_variable_assignments) > 0:
             source = 'return'.join(source.split(last_variable_assignments[-1]))
 
-        return ParsedProgram(name, source, self.args, self.dependencies)
+        if self.mode == 'python':
+            return ParsedProgram(
+                name,
+                source,
+                self.args,
+                self.imports,
+                self.dependencies
+            )
+
+        return ParsedRProgram(
+            name,
+            source,
+            self.args,
+            self.imports,
+            self.dependencies
+        )
 
     def _translate_wrapper(self, program: Program, node_type: str = 'body'):
         """Redirect node to corresponding translation procedure.
@@ -208,6 +229,7 @@ class Translator:
             f_parsed.source = f_trans.source
             f_parsed.args = f_trans.args
             f_parsed.dependencies = f_trans.dependencies
+        self.imports.update(f_parsed.imports)
         self.dependencies.update(f_parsed.dependencies)
         self.dependencies.add(str(f_parsed))
         name = f'{f_parsed.name}_{self.call_counts[handle]}'
@@ -217,6 +239,7 @@ class Translator:
 
     def _translate_primitive_f(self, primitive: Primitive) -> tuple:
         parsed = self.grammar.primitives[primitive.name].resolve_lambdas()
+        self.imports.update(parsed.imports)
         self.dependencies.update(parsed.dependencies)
         return parsed, []
 
