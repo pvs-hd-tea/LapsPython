@@ -50,7 +50,7 @@ class Pipeline:
             print(stats)
             stats.plot_histogram(result)
 
-        print('\nSampling 1 valid translation:')
+        print(f'\nSampling 1 {"valid "*(mode == "python")}translation:')
         sample = result.sample()
         if len(sample) > 0:
             print(sample['annotation'])
@@ -75,8 +75,8 @@ class Pipeline:
         :returns: Extracted and translated programs
         :rtype: lapspython.types.CompactResult
         """
-        print('Loading checkpoint...', end=' ')
+        print(f'Loading checkpoint {filepath}...', end=' ')
         result = load_checkpoint(filepath)
-        print('Done')
+        print('Done\n')
         json_path = f'{filepath}_{mode.lower()}'
         return cls.extract_translate(result, json_path, mode)
