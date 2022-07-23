@@ -2,6 +2,7 @@
 
 if __name__ == '__main__':
     import random
+
     from lapspython.pipeline import Pipeline
 
     random.seed(3)
