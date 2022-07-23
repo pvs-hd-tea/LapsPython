@@ -1,22 +1,31 @@
 """Implements classes to extract primitives and lambda expressions."""
 
+from tqdm import tqdm
+
 from dreamcoder.dreamcoder import ECResult
 from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
 from lapspython.translation import Translator
 from lapspython.types import (CompactFrontier, CompactResult, ParsedGrammar,
-                              ParsedInvented, ParsedPrimitive)
+                              ParsedInvented, ParsedPrimitive, ParsedRInvented,
+                              ParsedRPrimitive)
 
 
 class GrammarParser:
     """Extract, parse, and store all primitives from grammar."""
 
-    def __init__(self, grammar: Grammar = None) -> None:
+    def __init__(self, grammar: Grammar = None, mode='python') -> None:
         """Optionally parse grammar if passed during construction.
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar, optional
+        :param mode: Whether to extract Python or R code.
+        :type mode: string, optional
         """
+        self.mode = mode.lower()
+        if self.mode not in ('python', 'r'):
+            raise ValueError('mode must be "Python" or "R".')
+
         if grammar is not None:
             self.parse(grammar)
         else:
@@ -33,13 +42,16 @@ class GrammarParser:
         parsed_primitives: dict = {}
         parsed_invented: dict = {}
 
-        for _, _, primitive in grammar.productions:
+        for _, _, primitive in tqdm(grammar.productions):
             if isinstance(primitive, Primitive):
                 name = primitive.name
                 if name not in parsed_primitives:
-                    parsed_primitive = ParsedPrimitive(primitive)
-                    parsed_primitive = parsed_primitive.resolve_lambdas()
-                    parsed_primitives[name] = parsed_primitive
+                    if self.mode == 'python':
+                        parsed_primitive = ParsedPrimitive(primitive)
+                        parsed_primitive = parsed_primitive.resolve_lambdas()
+                        parsed_primitives[name] = parsed_primitive
+                    else:
+                        parsed_primitives[name] = ParsedRPrimitive(primitive)
 
             elif not isinstance(primitive, Invented):
                 raise TypeError(f'Encountered unknown type {type(primitive)}.')
@@ -47,11 +59,14 @@ class GrammarParser:
             elif str(primitive) not in parsed_invented:
                 handle = str(primitive)
                 name = f'f{len(parsed_invented)}'
-                parsed_invented[handle] = ParsedInvented(primitive, name)
+                if self.mode == 'python':
+                    parsed_invented[handle] = ParsedInvented(primitive, name)
+                else:
+                    parsed_invented[handle] = ParsedRInvented(primitive, name)
 
         self.parsed_grammar = ParsedGrammar(parsed_primitives, parsed_invented)
 
-        translator = Translator(self.parsed_grammar)
+        translator = Translator(self.parsed_grammar, self.mode)
         for invented in self.parsed_grammar.invented.values():
             if invented.source == '':
                 trans = translator.translate(invented.program, invented.name)
@@ -60,6 +75,23 @@ class GrammarParser:
                 invented.dependencies = trans.dependencies
 
         return self.parsed_grammar
+
+    def fix_invented(self, new_invented: dict) -> None:
+        """Replace invented primitives implementations.
+
+        :param new_invented: Invented primitives from JSON file.
+        :type new_invented: dict
+        """
+        this_invented = self.parsed_grammar.invented
+        if set(this_invented.keys()) != set(new_invented.keys()):
+            raise ValueError('Keys of the two grammars are not equal.')
+
+        for handle in this_invented:
+            new_data = new_invented[handle]
+            this_invented[handle].name = new_data['name']
+            this_invented[handle].source = new_data['source']
+            this_invented[handle].args = new_data['args']
+            this_invented[handle].dependencies = new_data['dependencies']
 
 
 class ProgramExtractor:
@@ -93,7 +125,7 @@ class ProgramExtractor:
         hit_frontiers = {}
         miss_frontiers = {}
 
-        for frontier in result.allFrontiers.values():
+        for frontier in tqdm(result.allFrontiers.values()):
             name = frontier.task.name
             annotation = result.taskLanguage.get(name, '')[0]
             compact_frontier = CompactFrontier(frontier, annotation)

@@ -2,8 +2,10 @@
 
 import copy
 import inspect
+import random
 import re
 from abc import ABC, abstractmethod
+from typing import Dict, List
 
 from dreamcoder.frontier import Frontier
 from dreamcoder.program import Invented, Primitive
@@ -20,18 +22,26 @@ class ParsedType(ABC):
         self.handle: str = ''
         self.source: str = ''
         self.args: list = []
+        self.imports: set = set()
+        self.dependencies: set = set()
         self.arg_types: list = []
-        self.returntype = type
+        self.return_type = type
 
-    def __str__(self) -> str:
-        """Construct clean Python function from object.
+    @abstractmethod
+    def __str__(self) -> str:  # pragma: no cover
+        """Convert object to clean code."""
+        pass
 
-        :returns: Function source code
-        :rtype: string
-        """
-        header = f'def {self.name}({", ".join(self.args)}):\n'
-        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
-        return header + indented_body + '\n'
+    def as_dict(self) -> dict:
+        """Return member attributes as dict for json dumping."""
+        return {
+            'name': self.name,
+            'handle': self.handle,
+            'source': self.source,
+            'args': self.args,
+            'imports': list(self.imports),
+            'dependencies': list(self.dependencies)
+        }
 
     @classmethod
     def parse_argument_types(cls, arg_types: TypeConstructor) -> list:
@@ -48,19 +58,7 @@ class ParsedType(ABC):
         else:
             return [arg_types]
 
-    def resolve_lambdas(self) -> Primitive:
-        """Remove lambda functions from source and extend list of arguments.
-
-        :returns: New, cleaner parsed primitive
-        :rtype: ParsedPrimitive
-        """
-        new_primitive = copy.copy(self)
-        pattern = r'lambda (\S+): '
-        new_primitive.args = self.args + re.findall(pattern, self.source)
-        new_primitive.source = re.sub(pattern, '', self.source)
-        return new_primitive
-
-    def resolve_variables(self, args: list, return_name: str = '') -> str:
+    def resolve_variables(self, args: list, return_name: str) -> str:
         """Substitute default arguments in source.
 
         :param args: List of new argument names (number must be equal)
@@ -82,11 +80,67 @@ class ParsedType(ABC):
             new_source = re.sub(pattern, repl, new_source)
             new_source = re.sub(fstring_pattern, str(args[i]), new_source)
         if return_name != '':
-            return re.sub('return', f'{return_name} =', new_source)
+            return self.replace_return_statement(return_name, new_source)
         return new_source
 
+    def replace_return_statement(self, return_name, source):
+        """Substiture return with variable assignment."""
+        pass
 
-class ParsedPrimitive(ParsedType):
+
+class ParsedPythonType(ParsedType):
+    """Abstract base class for python parsing."""
+
+    def __str__(self) -> str:
+        """Construct clean Python function from object.
+
+        :returns: Function source code
+        :rtype: string
+        """
+        header = f'def {self.name}({", ".join(self.args)}):\n'
+        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return header + indented_body + '\n'
+
+    def resolve_lambdas(self) -> Primitive:
+        """Remove lambda functions from source and extend list of arguments.
+
+        :returns: New, cleaner parsed primitive
+        :rtype: ParsedPrimitive
+        """
+        new_primitive = copy.copy(self)
+        pattern = r'lambda (\S+): '
+        new_primitive.args = self.args + re.findall(pattern, self.source)
+        new_primitive.source = re.sub(pattern, '', self.source)
+        return new_primitive
+
+    def replace_return_statement(self, return_name, source):
+        """Substiture return with variable assignment."""
+        return re.sub('return', f'{return_name} =', source)
+
+
+class ParsedRType(ParsedType):
+    """Abstract base class for R parsing."""
+
+    def __str__(self) -> str:
+        """Return parsed primitive as R code.
+
+        :returns: R source code
+        :rtype: string
+        """
+        header = f'{self.name} <- function({", ".join(self.args)} \u007b\n'
+        indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return header + indented_body + '\n}\n'
+
+    def resolve_lambdas(self):
+        """No lambdas in R, but required for backwards compatibility."""
+        return self
+
+    def replace_return_statement(self, return_name, source):
+        """Substiture return with variable assignment."""
+        return re.sub(r'return\((.+)\)', fr'{return_name} <- \1', source)
+
+
+class ParsedPrimitive(ParsedPythonType):
     """Class parsing primitives for translation to clean Python code."""
 
     def __init__(self, primitive: Primitive) -> None:
@@ -99,25 +153,29 @@ class ParsedPrimitive(ParsedType):
 
         if inspect.isfunction(implementation):
             args = inspect.getfullargspec(implementation).args
-            source = self._parse_source(implementation)
+            source = self.parse_source(implementation)
+            imports = self.get_imports(implementation)
+            dependencies = self.get_dependencies(implementation)
         else:
             args = []
             source = implementation
+            imports = set()
+            dependencies = []
 
-        dependencies = self._get_dependencies(implementation)
-        self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.handle = primitive.name
         self.name = re.sub(r'^[^a-z]+', '', self.handle)
+        self.imports = {module for module in imports if module in source}
+        self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.source = source.strip()
         self.args = args
         self.arg_types = self.parse_argument_types(primitive.tp)
         self.return_type = self.arg_types.pop()
 
-    def _parse_source(self, implementation) -> str:
+    def parse_source(self, implementation) -> str:
         """Resolve lambdas and arguments to produce cleaner Python code.
 
         :param implementation: The function referenced by primitive
-        :type implementation: function
+        :type implementation: callable
         :returns: New source code
         :rtype: string
         """
@@ -137,8 +195,20 @@ class ParsedPrimitive(ParsedType):
 
         return re.sub(' #.+$', '', source)
 
-    def _get_dependencies(self, implementation) -> list:
-        """Find functions called by primities that are not built-ins.
+    def get_imports(self, implementation) -> set:
+        """Find import modules that might be required by primitives.
+
+        :param implementation: The function referenced by a primitive
+        :type implementation: function
+        :returns: A set of module names as strings
+        :rtype: set
+        """
+        main_module = inspect.getmodule(implementation)
+        imports = inspect.getmembers(main_module, inspect.ismodule)
+        return {module[0] for module in imports}
+
+    def get_dependencies(self, implementation) -> list:
+        """Find functions called by primitives that are not built-ins.
 
         :param implementation: The function referenced by a primitive
         :type implementation: function
@@ -151,7 +221,117 @@ class ParsedPrimitive(ParsedType):
         return [(f[0], inspect.getsource(f[1])) for f in dependent_functions]
 
 
-class ParsedInvented(ParsedType):
+class ParsedRPrimitive(ParsedRType):
+    """Abstract base class for R program parsing."""
+
+    def __init__(self, primitive: Primitive):
+        """Extract name, path and source of R primitive.
+
+        :param primitive: A primitive extracted from LAPS.
+        :type primitive: dreamcoder.program.Primitive
+        """
+        self.handle = primitive.name
+        self.name = re.sub(r'^[^a-z]+', '', self.handle)
+        py_implementation = primitive.value
+
+        if inspect.isfunction(py_implementation):
+            py_path = inspect.getsourcefile(py_implementation)
+            if not isinstance(py_path, str):
+                msg = f'Cannot get source of primitive {self.name}.'
+                raise ValueError(msg)
+            self.path = py_path[:-2] + 'R'
+            source = self.parse_source(self.name, self.path)
+            imports = self.get_imports(self.path)
+            dependencies = self.get_dependencies(primitive.value)
+        else:
+            source = py_implementation
+            imports = set()
+            dependencies = set()
+            self.args = []
+
+        self.imports = imports
+        self.dependencies = {d[1] for d in dependencies if d[0] in source}
+        self.source = source.strip()
+
+    def parse_source(self, name: str, path: str, is_dep=False) -> str:
+        """Extract source code of primitive from R file.
+
+        :param handle: Function name in source file.
+        :type handle: string
+        :returns: Source code of corresponding function.
+        :rtype: string
+        """
+        with open(path, 'r') as r_file:
+            lines = r_file.readlines()
+
+        pattern = f'{name} <- '
+
+        for i in range(len(lines)):
+            line = lines[i]
+            if line.startswith(pattern):
+                if not line.endswith('{\n'):
+                    self.args = []
+                    return re.sub(pattern, '', line)
+                if not is_dep:
+                    self.args = self.get_args(line)
+                cutoff_lines = lines[i + 1 - is_dep:]
+                break
+
+        for j in range(len(cutoff_lines)):
+            if cutoff_lines[j] == '}\n':
+                return ''.join(cutoff_lines[:j + is_dep])
+
+        raise ValueError(f'No primitive {self.name} found in {self.path}.')
+
+    def get_imports(self, path) -> set:
+        """Find import modules that might be required by primitives.
+
+        :param implementation: The function referenced by a primitive
+        :type implementation: function
+        :returns: A set of module names as strings
+        :rtype: set
+        """
+        pattern = r'library\((.+)\)'
+        with open(path, 'r') as r_file:
+            return set(re.findall(pattern, r_file.read()))
+
+    def get_dependencies(self, implementation):
+        """Find functions called by primitives that are not built-ins.
+
+        :param implementation: The function referenced by a primitive
+        :type implementation: function
+        :returns: A list of (function name, source) tuples
+        :rtype: list
+        """
+        module = inspect.getmodule(implementation)
+        functions = inspect.getmembers(module, inspect.isfunction)
+        dependent_functions = [(f[0], f[1])
+                               for f in functions if f[0][:2] == '__']
+        dependencies = []
+        for f in dependent_functions:
+            if inspect.isfunction(f[1]):
+                path = inspect.getsourcefile(f[1])[:-2] + 'R'
+                dependencies.append(
+                    (f[0][2:], self.parse_source(f[0][2:], path, True)))
+            else:
+                dependencies.append((f[0][2:], f[1]))
+
+        return dependencies
+
+    def get_args(self, header: str):
+        """Get list of arguments from function code.
+
+        :param source: Function code
+        :type source: string
+        """
+        match = re.search(r'\(.+\)', header)
+        if match is None:
+            return []
+        args = match[0][1:-1]
+        return args.split(', ')
+
+
+class ParsedInvented(ParsedPythonType):
     """Class parsing invented primitives for translation to Python."""
 
     def __init__(self, invented: Invented, name: str):
@@ -162,35 +342,68 @@ class ParsedInvented(ParsedType):
         :param name: A custom name since invented primitives are unnamed
         :type name: string
         """
-        self.name = name
         self.handle = str(invented)
+        self.name = name
         self.program = invented
+        self.arg_types = self.parse_argument_types(invented.tp)
+        self.return_type = self.arg_types.pop()
 
         # To avoid circular imports, source translation is only handled by
         # lapspython.extraction.GrammarParser instead of during construction.
         self.source = ''
         self.args: list = []
-        self.dependencies: list = []
+        self.imports: set = set()
+        self.dependencies: set = set()
 
-        self.arg_types = self.parse_argument_types(invented.tp)
-        self.return_type = self.arg_types.pop()
-
-    def resolve_variables(self, args: list, return_name: str = '') -> str:
+    def resolve_variables(self, args: list, return_name: str) -> str:
         """Instead arguments in function call rather than definition."""
-        if return_name == '':
-            head = 'return '
-        else:
-            head = f'{return_name} = '
+        head = f'{return_name} = '
         body = f'{self.name}({", ".join(args)})'
         return f'{head}{body}'
 
 
-class ParsedProgram(ParsedType):
+class ParsedRInvented(ParsedRType):
+    """Class parsing invented primitives for translation to R."""
+
+    def __init__(self, invented: Invented, name: str):
+        """Construct ParsedRInvented object with parsed specs.
+
+        :param invented: An invented primitive object
+        :type invented: dreamcoder.program.Invented
+        :param name: A custom name since invented primitives are unnamed
+        :type name: string
+        """
+        self.handle = str(invented)
+        self.name = name
+        self.program = invented
+        self.arg_types = self.parse_argument_types(invented.tp)
+        self.return_type = self.arg_types.pop()
+
+        # To avoid circular imports, source translation is only handled by
+        # lapspython.extraction.GrammarParser instead of during construction.
+        self.source = ''
+        self.args: list = []
+        self.imports: set = set()
+        self.dependencies: set = set()
+
+    def resolve_variables(self, args: list, return_name: str) -> str:
+        """Instead arguments in function call rather than definition."""
+        head = f'{return_name} <- '
+        body = f'{self.name}({", ".join(args)})'
+        return f'{head}{body}'
+
+
+class ParsedProgramBase(ParsedType):
     """Class parsing synthesized programs."""
 
-    imports = ['re']
-
-    def __init__(self, name: str, source: str, args: list, dependencies: set):
+    def __init__(
+        self,
+        name: str,
+        source: str,
+        args: list,
+        imports: set,
+        dependencies: set
+    ):
         """Store Python program with dependencies, arguments, and name.
 
         :param name: Task name or invented primitive handle
@@ -202,11 +415,36 @@ class ParsedProgram(ParsedType):
         :param dependencies: Source codes of called functions
         :type dependencies: set
         """
-        self.name = name
         self.handle = name
+        self.name = name
         self.source = source
         self.args = args
+        self.imports = imports
         self.dependencies = dependencies
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """Return imports, dependencies and source code as string.
+
+        :returns: Full source code of translated program
+        :rtype: string
+        """
+        pass
+
+    @abstractmethod
+    def verify(self, examples: list) -> bool:
+        """Verify code for a list of examples from task.
+
+        :param examples: A list of (input, output) tuples
+        :type examples: list
+        :returns: Whether the translated program is correct.
+        :rtype: bool
+        """
+        pass
+
+
+class ParsedProgram(ParsedProgramBase, ParsedType):
+    """Class parsing synthesized programs."""
 
     def __str__(self) -> str:
         """Return dependencies and source code as string.
@@ -248,6 +486,32 @@ class ParsedProgram(ParsedType):
         return True
 
 
+class ParsedRProgram(ParsedProgramBase, ParsedRType):
+    """Class parsing synthesized programs."""
+
+    def __str__(self) -> str:
+        """Return dependencies and source code as string.
+
+        :returns: Full source code of translated program
+        :rtype: string
+        """
+        imports = '\n'.join([f'library({module})' for module in self.imports])
+        dependencies = '\n'.join(self.dependencies) + '\n'
+        header = f'{self.name} <- function({", ".join(self.args)}) \u007b\n'
+        indent_source = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
+        return imports + '\n\n' + dependencies + header + indent_source + '\n}'
+
+    def verify(self, examples: list) -> bool:
+        """Verify code for a list of examples from task.
+
+        :param examples: A list of (input, output) tuples
+        :type examples: list
+        :returns: Whether the translated program is correct.
+        :rtype: bool
+        """
+        return True  # TODO
+
+
 class ParsedGrammar:
     """Data class containing parsed (invented) primitives."""
 
@@ -261,6 +525,15 @@ class ParsedGrammar:
         """
         self.primitives: dict = primitives
         self.invented: dict = invented
+
+    def as_dict(self):
+        """Return member attributes as dict for json dumping."""
+        primitives = {p.handle: p.as_dict() for p in self.primitives.values()}
+        invented = {i.handle: i.as_dict() for i in self.invented.values()}
+        return {
+            'primitives': primitives,
+            'invented': invented
+        }
 
 
 class CompactFrontier:
@@ -282,7 +555,7 @@ class CompactFrontier:
 
 
 class CompactResult:
-    """Data class containing (compact) extracted frontiers."""
+    """Class containing (compact) extracted frontiers."""
 
     def __init__(self, hit: dict, miss: dict) -> None:
         """Store HIT and MISS CompactFrontiers in member variables.
@@ -295,11 +568,41 @@ class CompactResult:
         self.hit_frontiers: dict = hit
         self.miss_frontiers: dict = miss
 
-    def best(self):
-        """Return the HIT frontiers with best posteriors.
+    def get_best(self) -> List[Dict]:
+        """Return the HIT frontiers as dict with best posteriors.
 
-        :returns: A (name, HIT CompactFrontier) dictionary.
+        :returns: A list of minimal CompactFrontier dictionaries.
+        :rtype: List[Dict]
+        """
+        hits_best = []
+
+        for hit in self.hit_frontiers.values():
+            best_valid = best_invalid = None
+
+            if len(hit.translations) > 0:
+                best_valid = str(hit.translations[0])
+            if len(hit.failed) > 0:
+                best_invalid = str(hit.failed[0])
+
+            hit_best = {
+                'annotation': hit.annotation,
+                'best_program': str(hit.programs[0]),
+                'best_valid_translation': best_valid,
+                'best_invalid_translation': best_invalid
+            }
+            hits_best.append(hit_best)
+
+        return hits_best
+
+    def sample(self) -> dict:
+        """Return a random HIT frontier with valid translation.
+
+        :returns: A minimal CompactFrontier dictionary.
         :rtype: dict
         """
-        # TODO: Copy frontiers to only contain 1 program
-        return {k: v for k, v in self.hit_frontiers.items()}
+        best_valid = [best for best in self.get_best()
+                      if best['best_valid_translation'] is not None]
+        if len(best_valid) > 0:
+            return random.choice(best_valid)
+        else:
+            return {}

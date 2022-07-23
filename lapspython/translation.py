@@ -6,23 +6,34 @@ import traceback
 
 from dreamcoder.program import (Abstraction, Application, Index, Invented,
                                 Primitive, Program)
-from lapspython.types import ParsedGrammar, ParsedProgram, ParsedType
+from lapspython.types import (ParsedGrammar, ParsedProgram, ParsedProgramBase,
+                              ParsedRProgram, ParsedType)
 
 
 class Translator:
     """Translate lambda programs to Python code."""
 
-    def __init__(self, grammar: ParsedGrammar) -> None:
+    def __init__(self, grammar: ParsedGrammar, mode='python') -> None:
         """Init grammar used for translation and empty containers.
 
         :param grammar: Grammar used for translation
         :type grammar: lapspython.types.ParsedGrammar
         """
+        self.mode = mode.lower()
+        if self.mode not in ('python', 'r'):
+            raise ValueError('mode must be "Python" or "R".')
+
+        if self.mode == 'python':
+            self.sep = ' = '
+        else:
+            self.sep = ' <- '
+
         self.grammar = grammar
         self.call_counts = {p: 0 for p in self.grammar.primitives}
         self.call_counts.update({i: 0 for i in self.grammar.invented})
         self.code: list = []
         self.args: list = []
+        self.imports: set = set()
         self.dependencies: set = set()
         self.debug_stack: list = []
         self.logger = self.setup_logger()
@@ -30,11 +41,10 @@ class Translator:
     def setup_logger(self) -> logging.Logger:
         """Write debug stack into translation.log in case of exception."""
         logger = logging.getLogger(__name__)
-        logger.setLevel(logging.DEBUG)
-        ch = logging.FileHandler('translation.log', 'w')
-        formatter = logging.Formatter('%(message)s')
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
+        handler = logging.FileHandler('translation.log', 'w')
+        handler.setLevel(logging.DEBUG)
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        logger.addHandler(handler)
         return logger
 
     def log_exception(self):
@@ -47,7 +57,7 @@ class Translator:
             self.logger.debug(f'\n{code}')
         self.logger.debug(f'\n{traceback.format_exc()}\n')
 
-    def translate(self, program: Program, name: str) -> ParsedProgram:
+    def translate(self, program: Program, name: str) -> ParsedProgramBase:
         """Init variables and call recursive translation function.
 
         :param program: Abstraction/Invented at any depth of lambda expression
@@ -64,6 +74,7 @@ class Translator:
         arg_types = ParsedType.parse_argument_types(program.infer())
         n_args = len(arg_types) - 1
         self.args = [f'arg{i + 1}' for i in range(n_args)]
+        self.imports = set()
         self.dependencies = set()
         self.name = name
         self.debug_stack = []
@@ -71,11 +82,28 @@ class Translator:
         self._translate_wrapper(program)
 
         source = '\n'.join(self.code)
-        last_variable_assignments = re.findall(r'\w+ =', source)
-        if len(last_variable_assignments) > 0:
-            source = 'return'.join(source.split(last_variable_assignments[-1]))
 
-        return ParsedProgram(name, source, self.args, self.dependencies)
+        if self.mode == 'python':
+            last_variable_assignments = re.findall(r'\w+ = ', source)
+            if len(last_variable_assignments) > 0:
+                split = source.split(last_variable_assignments[-1])
+                source = 'return '.join(split)
+
+            return ParsedProgram(
+                name,
+                source,
+                self.args,
+                self.imports,
+                self.dependencies
+            )
+
+        return ParsedRProgram(
+            name,
+            source,
+            self.args,
+            self.imports,
+            self.dependencies
+        )
 
     def _translate_wrapper(self, program: Program, node_type: str = 'body'):
         """Redirect node to corresponding translation procedure.
@@ -120,15 +148,22 @@ class Translator:
     def _translate_abstraction_x(self, abstraction: Abstraction) -> tuple:
         parsed, args = self._translate_wrapper(abstraction.body)
 
-        if self.contains_index(abstraction) and len(self.code) > 0:
-            last_row = self.code[-1]
-            body = last_row.split(' = ')[1]
-            body = re.sub(r'arg\d', 'lx', body)
-            args = [f'lambda lx: {body}']
-        else:
-            args = [f'lambda x: {args[0]}']
+        try:
+            lambda_head = ''
+            if self.mode == 'python':
+                lambda_head = 'lambda lx: '
+            if self.contains_index(abstraction) and len(self.code) > 0:
+                last_row = self.code[-1]
+                body = last_row.split(self.sep)[1]
+                body = re.sub(r'arg\d', 'lx', body)
+                args = [f'{lambda_head}{body}']
+            else:
+                args = [f'{lambda_head}{args[0]}']
 
-        return parsed, args
+            return parsed, args
+
+        except IndexError:
+            return '# ERROR', ['# ERROR']
 
     def _translate_application_f(self, application: Application) -> tuple:
         f = application.f
@@ -204,11 +239,12 @@ class Translator:
         handle = str(invented)
         f_parsed = self.grammar.invented[handle]
         if f_parsed.source == '':
-            translator = Translator(self.grammar)
+            translator = Translator(self.grammar, self.mode)
             f_trans = translator.translate(f_parsed.program, f_parsed.name)
             f_parsed.source = f_trans.source
             f_parsed.args = f_trans.args
             f_parsed.dependencies = f_trans.dependencies
+        self.imports.update(f_parsed.imports)
         self.dependencies.update(f_parsed.dependencies)
         self.dependencies.add(str(f_parsed))
         name = f'{f_parsed.name}_{self.call_counts[handle]}'
@@ -218,6 +254,7 @@ class Translator:
 
     def _translate_primitive_f(self, primitive: Primitive) -> tuple:
         parsed = self.grammar.primitives[primitive.name].resolve_lambdas()
+        self.imports.update(parsed.imports)
         self.dependencies.update(parsed.dependencies)
         return parsed, []
 
@@ -244,4 +281,4 @@ class Translator:
         """Return the declared variable in the last line of code."""
         if len(self.code) == 0:
             return ''
-        return self.code[-1].split(' = ')[0]
+        return self.code[-1].split(self.sep)[0]

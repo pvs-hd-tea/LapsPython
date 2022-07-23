@@ -1,0 +1,590 @@
+{
+    "grammar": {
+        "primitives": {
+            "_rdot": {
+                "name": "rdot",
+                "handle": "_rdot",
+                "source": ".",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rempty": {
+                "name": "rempty",
+                "handle": "_rempty",
+                "source": "",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_a": {
+                "name": "a",
+                "handle": "_a",
+                "source": "a",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_b": {
+                "name": "b",
+                "handle": "_b",
+                "source": "b",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_c": {
+                "name": "c",
+                "handle": "_c",
+                "source": "c",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_d": {
+                "name": "d",
+                "handle": "_d",
+                "source": "d",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_e": {
+                "name": "e",
+                "handle": "_e",
+                "source": "e",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_f": {
+                "name": "f",
+                "handle": "_f",
+                "source": "f",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_g": {
+                "name": "g",
+                "handle": "_g",
+                "source": "g",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_h": {
+                "name": "h",
+                "handle": "_h",
+                "source": "h",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_i": {
+                "name": "i",
+                "handle": "_i",
+                "source": "i",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_j": {
+                "name": "j",
+                "handle": "_j",
+                "source": "j",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_k": {
+                "name": "k",
+                "handle": "_k",
+                "source": "k",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_l": {
+                "name": "l",
+                "handle": "_l",
+                "source": "l",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_m": {
+                "name": "m",
+                "handle": "_m",
+                "source": "m",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_n": {
+                "name": "n",
+                "handle": "_n",
+                "source": "n",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_o": {
+                "name": "o",
+                "handle": "_o",
+                "source": "o",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_p": {
+                "name": "p",
+                "handle": "_p",
+                "source": "p",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_q": {
+                "name": "q",
+                "handle": "_q",
+                "source": "q",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_r": {
+                "name": "r",
+                "handle": "_r",
+                "source": "r",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_s": {
+                "name": "s",
+                "handle": "_s",
+                "source": "s",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_t": {
+                "name": "t",
+                "handle": "_t",
+                "source": "t",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_u": {
+                "name": "u",
+                "handle": "_u",
+                "source": "u",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_v": {
+                "name": "v",
+                "handle": "_v",
+                "source": "v",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_w": {
+                "name": "w",
+                "handle": "_w",
+                "source": "w",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_x": {
+                "name": "x",
+                "handle": "_x",
+                "source": "x",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_y": {
+                "name": "y",
+                "handle": "_y",
+                "source": "y",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_z": {
+                "name": "z",
+                "handle": "_z",
+                "source": "z",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rnot": {
+                "name": "rnot",
+                "handle": "_rnot",
+                "source": "return f\"[^{s}]\"",
+                "args": [
+                    "s"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "_ror": {
+                "name": "ror",
+                "handle": "_ror",
+                "source": "return f\"(({s1})|({s2}))\"",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "_rconcat": {
+                "name": "rconcat",
+                "handle": "_rconcat",
+                "source": "return s1 + s2",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "_rmatch": {
+                "name": "rmatch",
+                "handle": "_rmatch",
+                "source": "return __ismatch(s1, s2)",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": [
+                    "def __ismatch(s1, s2):\n    try:\n        return re.fullmatch(re.compile(s1), s2) is not None \n    except:\n        return False\n"
+                ]
+            },
+            "_rsplit": {
+                "name": "rsplit",
+                "handle": "_rsplit",
+                "source": "return __regex_split(s1, s2)",
+                "args": [
+                    "s1",
+                    "s2"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": [
+                    "def __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n"
+                ]
+            },
+            "_rflatten": {
+                "name": "rflatten",
+                "handle": "_rflatten",
+                "source": "return \"\".join(l)",
+                "args": [
+                    "l"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "_rtail": {
+                "name": "rtail",
+                "handle": "_rtail",
+                "source": "return l[-1]",
+                "args": [
+                    "l"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "_rappend": {
+                "name": "rappend",
+                "handle": "_rappend",
+                "source": "return l + [x]",
+                "args": [
+                    "x",
+                    "l"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "_rrevcdr": {
+                "name": "rrevcdr",
+                "handle": "_rrevcdr",
+                "source": "return l[:-1]",
+                "args": [
+                    "l"
+                ],
+                "imports": [
+                    "re"
+                ],
+                "dependencies": []
+            },
+            "if": {
+                "name": "if",
+                "handle": "if",
+                "source": "return t if c else f",
+                "args": [
+                    "c",
+                    "t",
+                    "f"
+                ],
+                "imports": [
+                    "math"
+                ],
+                "dependencies": []
+            },
+            "cons": {
+                "name": "cons",
+                "handle": "cons",
+                "source": "return [x] + y",
+                "args": [
+                    "x",
+                    "y"
+                ],
+                "imports": [
+                    "math",
+                    "random",
+                    "traceback",
+                    "heapq",
+                    "signal",
+                    "hashlib",
+                    "resource",
+                    "sys",
+                    "psutil",
+                    "os",
+                    "inspect",
+                    "datetime",
+                    "subprocess",
+                    "pickle"
+                ],
+                "dependencies": []
+            },
+            "car": {
+                "name": "car",
+                "handle": "car",
+                "source": "return x[0]",
+                "args": [
+                    "x"
+                ],
+                "imports": [
+                    "math",
+                    "random",
+                    "traceback",
+                    "heapq",
+                    "signal",
+                    "hashlib",
+                    "resource",
+                    "sys",
+                    "psutil",
+                    "os",
+                    "inspect",
+                    "datetime",
+                    "subprocess",
+                    "pickle"
+                ],
+                "dependencies": []
+            },
+            "cdr": {
+                "name": "cdr",
+                "handle": "cdr",
+                "source": "return x[1:]",
+                "args": [
+                    "x"
+                ],
+                "imports": [
+                    "math",
+                    "random",
+                    "traceback",
+                    "heapq",
+                    "signal",
+                    "hashlib",
+                    "resource",
+                    "sys",
+                    "psutil",
+                    "os",
+                    "inspect",
+                    "datetime",
+                    "subprocess",
+                    "pickle"
+                ],
+                "dependencies": []
+            },
+            "map": {
+                "name": "map",
+                "handle": "map",
+                "source": "return list(map(f, l))",
+                "args": [
+                    "f",
+                    "l"
+                ],
+                "imports": [
+                    "math"
+                ],
+                "dependencies": []
+            },
+            "_rvowel": {
+                "name": "rvowel",
+                "handle": "_rvowel",
+                "source": "(a|e|i|o|u)",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            },
+            "_rconsonant": {
+                "name": "rconsonant",
+                "handle": "_rconsonant",
+                "source": "[^aeiou]",
+                "args": [],
+                "imports": [],
+                "dependencies": []
+            }
+        },
+        "invented": {
+            "#(_rsplit _rdot)": {
+                "name": "f0",
+                "handle": "#(_rsplit _rdot)",
+                "source": "return __regex_split('.', arg1)",
+                "args": [
+                    "arg1"
+                ],
+                "imports": [],
+                "dependencies": [
+                    "def __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n"
+                ]
+            }
+        }
+    },
+    "result": [
+        {
+            "annotation": "if the word ends with any letter add w after that",
+            "best_program": "(lambda (_rflatten (_rappend _w (_rsplit _d $0))))",
+            "best_valid_translation": "import re\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_0_if_the_word_ends_with_any_letter_add_w_after_that(arg1):\n    rsplit_1 = __regex_split('d', arg1)\n    rappend_1 = rsplit_1 + ['w']\n    return \"\".join(rappend_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with k",
+            "best_program": "(lambda (_rflatten (map (lambda _k) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_23_if_there_is_any_letter_replace_that_with_k(arg1):\n    f0_1 = f0(arg1)\n    map_1 = list(map(lambda x: 'k', f0_1))\n    return \"\".join(map_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter replace that with r",
+            "best_program": "(lambda (_rflatten (_rappend _r (_rrevcdr (#(_rsplit _rdot) $0)))))",
+            "best_valid_translation": "import re\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_26_if_the_word_ends_with_any_letter_replace_that_with_r(arg1):\n    f0_1 = f0(arg1)\n    rrevcdr_1 = f0_1[:-1]\n    rappend_1 = rrevcdr_1 + ['r']\n    return \"\".join(rappend_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter any letter replace that with o u",
+            "best_program": "(lambda (_rflatten (_rappend (_rconcat _o _u) (_rrevcdr (_rrevcdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "import re\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_29_if_the_word_ends_with_any_letter_any_letter_replace_that_with_o_u(arg1):\n    f0_1 = f0(arg1)\n    rrevcdr_1 = f0_1[:-1]\n    rrevcdr_2 = rrevcdr_1[:-1]\n    rconcat_1 = 'o' + 'u'\n    rappend_1 = rrevcdr_2 + [rconcat_1]\n    return \"\".join(rappend_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter add d after that",
+            "best_program": "(lambda (_rflatten (_rappend _d (_rsplit _a $0))))",
+            "best_valid_translation": "import re\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_34_if_the_word_ends_with_any_letter_add_d_after_that(arg1):\n    rsplit_1 = __regex_split('a', arg1)\n    rappend_1 = rsplit_1 + ['d']\n    return \"\".join(rappend_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with q j",
+            "best_program": "(lambda (_rflatten (map (lambda (_rconcat _q _j)) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_35_if_there_is_any_letter_replace_that_with_q_j(arg1):\n    f0_1 = f0(arg1)\n    rconcat_1 = 'q' + 'j'\n    map_1 = list(map(lambda x: rconcat_1, f0_1))\n    return \"\".join(map_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter add v after that",
+            "best_program": "(lambda (_rflatten (map (lambda (_rconcat $0 _v)) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_41_if_there_is_any_letter_add_v_after_that(arg1):\n    f0_1 = f0(arg1)\n    rconcat_1 = arg1 + 'v'\n    map_1 = list(map(lambda lx: lx + 'v', f0_1))\n    return \"\".join(map_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter replace that with f",
+            "best_program": "(lambda (_rflatten (_rappend _f (_rrevcdr (#(_rsplit _rdot) $0)))))",
+            "best_valid_translation": "import re\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_52_if_the_word_ends_with_any_letter_replace_that_with_f(arg1):\n    f0_1 = f0(arg1)\n    rrevcdr_1 = f0_1[:-1]\n    rappend_1 = rrevcdr_1 + ['f']\n    return \"\".join(rappend_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter replace that with t m",
+            "best_program": "(lambda (_rflatten (_rappend _m (_rappend _t (_rrevcdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "import re\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_53_if_the_word_ends_with_any_letter_replace_that_with_t_m(arg1):\n    f0_1 = f0(arg1)\n    rrevcdr_1 = f0_1[:-1]\n    rappend_1 = rrevcdr_1 + ['t']\n    rappend_2 = rappend_1 + ['m']\n    return \"\".join(rappend_2)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word ends with any letter s replace that with f",
+            "best_program": "(lambda (if (_rmatch (_rtail (#(_rsplit _rdot) $0)) _s) (_rflatten (_rappend _f (_rrevcdr (_rrevcdr (#(_rsplit _rdot) $0))))) $0))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef __ismatch(s1, s2):\n    try:\n        return re.fullmatch(re.compile(s1), s2) is not None \n    except:\n        return False\n\ndef re2_train_61_if_the_word_ends_with_any_letter_s_replace_that_with_f(arg1):\n    f0_1 = f0(arg1)\n    rrevcdr_1 = f0_1[:-1]\n    rrevcdr_2 = rrevcdr_1[:-1]\n    rappend_1 = rrevcdr_2 + ['f']\n    rflatten_1 = \"\".join(rappend_1)\n    f0_2 = f0(arg1)\n    rtail_1 = f0_2[-1]\n    rmatch_1 = __ismatch(rtail_1, 's')\n    return rflatten_1 if rmatch_1 else arg1",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with any letter any letter add j before that",
+            "best_program": "(lambda (_rflatten (cons _j (_rsplit _r $0))))",
+            "best_valid_translation": "import math\nimport random\nimport traceback\nimport heapq\nimport signal\nimport hashlib\nimport resource\nimport sys\nimport psutil\nimport os\nimport inspect\nimport datetime\nimport re\nimport subprocess\nimport pickle\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_66_if_the_word_starts_with_any_letter_any_letter_add_j_before_that(arg1):\n    rsplit_1 = __regex_split('r', arg1)\n    cons_1 = ['j'] + rsplit_1\n    return \"\".join(cons_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with j",
+            "best_program": "(lambda (_rflatten (map (lambda _j) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_67_if_there_is_any_letter_replace_that_with_j(arg1):\n    f0_1 = f0(arg1)\n    map_1 = list(map(lambda x: 'j', f0_1))\n    return \"\".join(map_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with h s",
+            "best_program": "(lambda (_rflatten (map (lambda (_rconcat _h _s)) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_68_if_there_is_any_letter_replace_that_with_h_s(arg1):\n    f0_1 = f0(arg1)\n    rconcat_1 = 'h' + 's'\n    map_1 = list(map(lambda x: rconcat_1, f0_1))\n    return \"\".join(map_1)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with consonant vowel add t before that",
+            "best_program": "(lambda (if (_rmatch _rvowel (car (cdr (#(_rsplit _rdot) $0)))) (_rflatten (cons _t (#(_rsplit _rdot) $0))) $0))",
+            "best_valid_translation": "import random\nimport heapq\nimport signal\nimport hashlib\nimport resource\nimport sys\nimport psutil\nimport inspect\nimport datetime\nimport math\nimport traceback\nimport os\nimport re\nimport subprocess\nimport pickle\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef __ismatch(s1, s2):\n    try:\n        return re.fullmatch(re.compile(s1), s2) is not None \n    except:\n        return False\n\ndef re2_train_91_if_the_word_starts_with_consonant_vowel_add_t_before_that(arg1):\n    f0_1 = f0(arg1)\n    cons_1 = ['t'] + f0_1\n    rflatten_1 = \"\".join(cons_1)\n    f0_2 = f0(arg1)\n    cdr_1 = f0_2[1:]\n    car_1 = cdr_1[0]\n    rmatch_1 = __ismatch('(a|e|i|o|u)', car_1)\n    return rflatten_1 if rmatch_1 else arg1",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with consonant replace that with n",
+            "best_program": "(lambda (if (_rmatch _rconsonant (car (#(_rsplit _rdot) $0))) (_rflatten (cons _n (cdr (#(_rsplit _rdot) $0)))) $0))",
+            "best_valid_translation": "import random\nimport heapq\nimport signal\nimport hashlib\nimport resource\nimport sys\nimport psutil\nimport inspect\nimport datetime\nimport math\nimport traceback\nimport os\nimport re\nimport subprocess\nimport pickle\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef __ismatch(s1, s2):\n    try:\n        return re.fullmatch(re.compile(s1), s2) is not None \n    except:\n        return False\n\ndef re2_train_101_if_the_word_starts_with_consonant_replace_that_with_n(arg1):\n    f0_1 = f0(arg1)\n    cdr_1 = f0_1[1:]\n    cons_1 = ['n'] + cdr_1\n    rflatten_1 = \"\".join(cons_1)\n    f0_2 = f0(arg1)\n    car_1 = f0_2[0]\n    rmatch_1 = __ismatch('[^aeiou]', car_1)\n    return rflatten_1 if rmatch_1 else arg1",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with any letter replace that with q a",
+            "best_program": "(lambda (_rflatten (cons _q (cons _a (cdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "import random\nimport heapq\nimport signal\nimport hashlib\nimport resource\nimport sys\nimport psutil\nimport inspect\nimport datetime\nimport math\nimport traceback\nimport os\nimport re\nimport subprocess\nimport pickle\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_103_if_the_word_starts_with_any_letter_replace_that_with_q_a(arg1):\n    f0_1 = f0(arg1)\n    cdr_1 = f0_1[1:]\n    cons_1 = ['a'] + cdr_1\n    cons_2 = ['q'] + cons_1\n    return \"\".join(cons_2)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if the word starts with any letter replace that with g a",
+            "best_program": "(lambda (_rflatten (cons _g (cons _a (cdr (#(_rsplit _rdot) $0))))))",
+            "best_valid_translation": "import random\nimport heapq\nimport signal\nimport hashlib\nimport resource\nimport sys\nimport psutil\nimport inspect\nimport datetime\nimport math\nimport traceback\nimport os\nimport re\nimport subprocess\nimport pickle\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_111_if_the_word_starts_with_any_letter_replace_that_with_g_a(arg1):\n    f0_1 = f0(arg1)\n    cdr_1 = f0_1[1:]\n    cons_1 = ['a'] + cdr_1\n    cons_2 = ['g'] + cons_1\n    return \"\".join(cons_2)",
+            "best_invalid_translation": null
+        },
+        {
+            "annotation": "if there is any letter replace that with p",
+            "best_program": "(lambda (_rflatten (map (lambda _p) (#(_rsplit _rdot) $0))))",
+            "best_valid_translation": "import re\nimport math\n\ndef f0(arg1):\n    return __regex_split('.', arg1)\n\ndef __regex_split(s1, s2):\n    # Splits s2 on regex s1 as delimiter, including the matches\n    try:\n        # Special case -- we override splitting on \"\" to be splitting on \".\"\n        # to match OCaml.\n        if len(s1) == 0: s1 = \".\"\n        ret = []\n        remaining = s2\n        m = re.search(re.compile(s1), remaining)\n        while m is not None:\n            prefix = remaining[0:m.start()]\n            if len(prefix) > 0:\n                ret.append(prefix)\n            ret.append(remaining[m.start():m.end()])\n            remaining = remaining[m.end():]\n            m = re.search(re.compile(s1), remaining)\n        if len(remaining) > 0:\n            ret.append(remaining)\n        return ret        \n    except:\n        return [s2]\n\ndef re2_train_113_if_there_is_any_letter_replace_that_with_p(arg1):\n    f0_1 = f0(arg1)\n    map_1 = list(map(lambda x: 'p', f0_1))\n    return \"\".join(map_1)",
+            "best_invalid_translation": null
+        }
+    ]
+}

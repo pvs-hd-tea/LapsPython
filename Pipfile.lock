@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "22312a105dd12ab7b4e3cc1794d9f1aef922934881b1248a106fd632ca67b70b"
+            "sha256": "387536a3c086af569782f775885805fbb82f17cd8dc5c283e780bef78b1e9065"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1000,6 +1000,14 @@
             ],
             "index": "pypi",
             "version": "==4.3.3"
+        },
+        "uniplot": {
+            "hashes": [
+                "sha256:17d56520f2f44d5da09af9376c8a76c6bdc16438b92d3be1da0beae0d9c0f7e2",
+                "sha256:3d9ea81e85546fae0ecedc72e914cfa2b1394d2554c16802fcc8d7139197882b"
+            ],
+            "index": "pypi",
+            "version": "==0.5.0"
         },
         "urllib3": {
             "hashes": [
