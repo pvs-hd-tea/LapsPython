@@ -92,7 +92,6 @@ Jinja2 = "==2.11.1"
 MarkupSafe = "==1.1.1"
 Pygments = "==2.5.2"
 Send2Trash = "==1.5.0"
-pregex = "*"
 uniplot = "*"
 
 [dev-packages]
@@ -115,4 +114,4 @@ tests = "python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov
 typechecks = "mypy lapspython --ignore-missing-imports --follow-imports skip"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
