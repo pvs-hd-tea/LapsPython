@@ -31,7 +31,7 @@ class Pipeline:
         print(f'Language Mode: {mode.upper()}')
         if mode == 'r':
             print('WARNING: Code verification for R not implemented')
-        print('\nParsing grammar...', flush=True)
+        print('\nParsing library...', flush=True)
         parser = GrammarParser(result.grammars[-1], mode)
         json = json_read(json_path)
         if json != {}:
