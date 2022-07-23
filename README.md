@@ -11,7 +11,7 @@ Credits of package `dreamcoder` go to the contributors of [https://github.com/el
   - `dreamcoder/domains/re2/re2Primitives.R`
   - `dreamcoder/domains/text/textPrimitives.R`
   
-**This repository currently contains only the files required to run the LapsPython functionality! If you want to run LAPS itself, refer to the LapsTrans project which provides binaries compiled for Ubuntu 20.04.**
+**This repository currently contains only the files required to run the LapsPython functionality! If you want to run LAPS itself, refer to the [LapsTrans](https://github.com/pvs-hd-tea/LapsTrans) project which provides binaries compiled for Ubuntu 20.04.**
 
 [^1]: Wong, C., Ellis, K., Tenenbaum, J. B., & Andreas, J. (2021). Leveraging Language to Learn Program Abstractions and Search Heuristics. arXiv. https://doi.org/10.48550/ARXIV.2106.11053 
 
