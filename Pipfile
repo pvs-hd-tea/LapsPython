@@ -93,6 +93,7 @@ MarkupSafe = "==1.1.1"
 Pygments = "==2.5.2"
 Send2Trash = "==1.5.0"
 uniplot = "*"
+pregex = {git = "https://github.com/Hieuzest/pregex.git"}
 
 [dev-packages]
 flake8 = "*"

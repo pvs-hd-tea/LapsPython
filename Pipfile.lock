@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0abda74eb70d1fdf94ef1e825e7e266284657f7a8eefa7dd3db2f13d0bfd33e6"
+            "sha256": "387536a3c086af569782f775885805fbb82f17cd8dc5c283e780bef78b1e9065"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -632,6 +632,10 @@
             ],
             "index": "pypi",
             "version": "==1.6.4.9"
+        },
+        "pregex": {
+            "git": "https://github.com/Hieuzest/pregex.git",
+            "ref": "d44b3069d50474e40702f70cde88183ae01a5b14"
         },
         "prometheus-client": {
             "hashes": [
