@@ -3,82 +3,115 @@
 from dreamcoder.dreamcoder import ECResult
 from dreamcoder.grammar import Grammar
 from dreamcoder.program import Invented, Primitive
-from lapspython.types import CompactFrontier, ParsedInvented, ParsedPrimitive
+from lapspython.translation import Translator
+from lapspython.types import (CompactFrontier, CompactResult, ParsedGrammar,
+                              ParsedInvented, ParsedPrimitive)
 
 
 class GrammarParser:
     """Extract, parse, and store all primitives from grammar."""
 
-    parsed_primitives: dict = {}
-    parsed_invented: dict = {}
-
-    def __init__(self, grammar: Grammar = None):
+    def __init__(self, grammar: Grammar = None) -> None:
         """Optionally parse grammar if passed during construction.
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar, optional
         """
         if grammar is not None:
-            self.parse_grammar(grammar)
+            self.parse(grammar)
+        else:
+            self.parsed_grammar = ParsedGrammar({}, {})
 
-    def parse_grammar(self, grammar: Grammar) -> dict:
+    def parse(self, grammar: Grammar) -> ParsedGrammar:
         """Convert Primitive objects to simplified ParsedPrimitive objects.
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar
-        :returns: A dictionary of ParsedPrimitive objects
-        :rtype: dict
+        :returns: A ParsedGrammar object
+        :rtype: ParsedGrammar
         """
+        parsed_primitives: dict = {}
+        parsed_invented: dict = {}
+
         for _, _, primitive in grammar.productions:
             if isinstance(primitive, Primitive):
                 name = primitive.name
-                if name not in self.parsed_primitives:
+                if name not in parsed_primitives:
                     parsed_primitive = ParsedPrimitive(primitive)
                     parsed_primitive = parsed_primitive.resolve_lambdas()
-                    self.parsed_primitives[name] = parsed_primitive
+                    parsed_primitives[name] = parsed_primitive
 
             elif not isinstance(primitive, Invented):
                 raise TypeError(f'Encountered unknown type {type(primitive)}.')
 
-            elif str(primitive) not in self.parsed_invented:
-                name = f'f{len(self.parsed_invented)}'
-                parsed_invented = ParsedInvented(primitive, name)
-                self.parsed_invented[str(primitive)] = parsed_invented
+            elif str(primitive) not in parsed_invented:
+                handle = str(primitive)
+                name = f'f{len(parsed_invented)}'
+                parsed_invented[handle] = ParsedInvented(primitive, name)
 
-        return {'primitives': self.parsed_primitives,
-                'invented': self.parsed_invented, }
+        self.parsed_grammar = ParsedGrammar(parsed_primitives, parsed_invented)
+
+        translator = Translator(self.parsed_grammar)
+        for invented in self.parsed_grammar.invented.values():
+            if invented.source == '':
+                trans = translator.translate(invented.program, invented.name)
+                invented.source = trans.source
+                invented.args = trans.args
+                invented.dependencies = trans.dependencies
+
+        return self.parsed_grammar
 
 
 class ProgramExtractor:
     """Extract and process synthesized programs."""
 
-    hit_frontiers: dict = {}
-    miss_frontiers: dict = {}
-
-    def __init__(self, result: ECResult = None):
+    def __init__(self, result: ECResult = None,
+                 translator: Translator = None) -> None:
         """Optionally extract programs if passed during construction.
 
         :param result: A result produced by LAPS or checkpoint.
         :type result: dreamcoder.dreamcoder.ECResult, optional
+        :param translator: Translator to translate programs during extraction.
+        :type translator: lapspython.translation.Translator, optional
         """
         if result is not None:
-            self.extract(result)
+            self.extract(result, translator)
+        else:
+            self.compact_result = CompactResult({}, {})
 
-    def extract(self, result: ECResult) -> dict:
+    def extract(self, result: ECResult,
+                translator: Translator = None) -> CompactResult:
         """Extract all frontiers with descriptions and frontiers.
 
-        :param result: result of dreamcoder execution (checkpoint)
+        :param result: Result of dreamcoder execution (checkpoint)
         :type result: dreamcoder.dreamcoder.ECResult
-        :returns: A dictionary of extracted frontiers
-        :rtype: dict
+        :param translator: Translator to translate programs during extraction.
+        :type translator: lapspython.translation.Translator, optional
+        :returns: A CompactResult object containing programs from checkpoint
+        :rtype: lapspython.types.CompactResult
         """
+        hit_frontiers = {}
+        miss_frontiers = {}
+
         for frontier in result.allFrontiers.values():
             name = frontier.task.name
             annotation = result.taskLanguage.get(name, '')[0]
             compact_frontier = CompactFrontier(frontier, annotation)
             if frontier.empty:
-                self.miss_frontiers[name] = compact_frontier
+                miss_frontiers[name] = compact_frontier
             else:
-                self.hit_frontiers[name] = compact_frontier
+                hit_frontiers[name] = compact_frontier
 
-        return {'hit': self.hit_frontiers, 'miss': self.miss_frontiers, }
+                if translator is not None:
+                    for program in compact_frontier.programs:
+                        transl = translator.translate(program, name)
+                        try:
+                            if transl.verify(compact_frontier.examples):
+                                compact_frontier.translations.append(transl)
+                            else:
+                                compact_frontier.failed.append(transl)
+                        except BaseException:
+                            compact_frontier.failed.append(transl)
+
+        self.compact_result = CompactResult(hit_frontiers, miss_frontiers)
+        return self.compact_result
