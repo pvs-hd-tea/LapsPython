@@ -8,39 +8,41 @@ from lapspython.types import CompactFrontier
 from lapspython.utils import load_checkpoint
 
 
-class TestPrimitiveExtractor:
-    """Run tests for lapspython.extraction.PrimitiveExtractor."""
+class TestGrammarParser:
+    """Run tests for lapspython.extraction.GrammarParser."""
 
     def test_init_default(self):
         """Construct parser with empty grammar."""
-        parser = GrammarParser()
-        assert parser.parsed_primitives == {}
-        assert parser.parsed_invented == {}
+        parsed_grammar = GrammarParser().parsed_grammar
+        assert parsed_grammar.primitives == {}
+        assert parsed_grammar.invented == {}
 
     def test_init_re2(self):
         """Construct parser with passed grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
-        parser = GrammarParser(grammar)
-        assert parser.parsed_primitives != {}
-        assert parser.parsed_invented != {}
+        parsed_grammar = GrammarParser(grammar).parsed_grammar
+        assert parsed_grammar.primitives != {}
+        assert parsed_grammar.invented != {}
 
-    def test_parse_grammar_re2_pattern(self):
+    def test_parse_re2_pattern(self):
         """Extract primitives from an re2 grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
-        _rvowel = parser.parse_grammar(grammar)['primitives']['_rvowel']
-        assert _rvowel.name == '_rvowel'
+        _rvowel = parser.parse(grammar).primitives['_rvowel']
+        assert _rvowel.handle == '_rvowel'
+        assert _rvowel.name == 'rvowel'
         assert _rvowel.source == '(a|e|i|o|u)'
         assert _rvowel.args == []
         assert _rvowel.arg_types == []
         assert _rvowel.return_type.name == 'tsubstr'
 
-    def test_parse_grammar_re2_lambda(self):
+    def test_parse_re2_lambda(self):
         """Extract primitives from an re2 grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
-        _rconcat = parser.parse_grammar(grammar)['primitives']['_rconcat']
-        assert _rconcat.name == '_rconcat'
+        _rconcat = parser.parse(grammar).primitives['_rconcat']
+        assert _rconcat.handle == '_rconcat'
+        assert _rconcat.name == 'rconcat'
         assert _rconcat.source == 'return s1 + s2'
         assert _rconcat.args == ['s1', 's2']
         assert len(_rconcat.arg_types) == 2
@@ -48,11 +50,11 @@ class TestPrimitiveExtractor:
         assert _rconcat.arg_types[1].name == 'tsubstr'
         assert _rconcat.return_type.name == 'tsubstr'
 
-    def test_parse_grammar_re2_python(self):
+    def test_parse_re2_python(self):
         """Extract primitives from an re2 grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
-        _map = parser.parse_grammar(grammar)['primitives']['map']
+        _map = parser.parse(grammar).primitives['map']
         assert _map.name == 'map'
         assert _map.source == 'return list(map(f, l))'
         assert _map.args == ['f', 'l']
@@ -61,7 +63,7 @@ class TestPrimitiveExtractor:
         assert _map.arg_types[1].name == 'list'
         assert _map.return_type.name == 'list'
 
-    def test_parse_grammar_unknown_type(self):
+    def test_parse_unknown_type(self):
         """Test grammar with unexpected type."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         grammar.productions = [(None, None, None)]
@@ -73,7 +75,8 @@ class TestPrimitiveExtractor:
         """Extract invented primitive from re2 grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser(grammar)
-        for invented in parser.parsed_invented.values():
+        parsed_grammar = parser.parsed_grammar
+        for invented in parsed_grammar.invented.values():
             assert invented.name.find('f') == 0
             assert isinstance(invented.arg_types[0], TypeConstructor)
             assert isinstance(invented.return_type, TypeConstructor)
@@ -85,24 +88,25 @@ class TestProgramExtractor:
     def test_init_default(self):
         """Default constructor."""
         extractor = ProgramExtractor()
-        assert len(extractor.hit_frontiers) == 0
-        assert len(extractor.miss_frontiers) == 0
+        compact_result = extractor.compact_result
+        assert compact_result.hit_frontiers == {}
+        assert compact_result.miss_frontiers == {}
 
     def test_init_re2(self):
         """Construct extractor with results."""
         result = load_checkpoint('re2_test')
         extractor = ProgramExtractor(result)
-        assert len(extractor.hit_frontiers) > 0
-        assert len(extractor.miss_frontiers) > 0
+        assert len(extractor.compact_result.hit_frontiers) > 0
+        assert len(extractor.compact_result.miss_frontiers) > 0
 
     def test_extract_hit(self):
         """Extract and validate HIT results."""
         result = load_checkpoint('re2_test')
         extractor = ProgramExtractor()
-        extractor.extract(result)
+        compact_result = extractor.extract(result)
 
-        for name in extractor.hit_frontiers.keys():
-            frontier = extractor.hit_frontiers[name]
+        for name in compact_result.hit_frontiers.keys():
+            frontier = compact_result.hit_frontiers[name]
             assert isinstance(frontier, CompactFrontier)
             assert frontier.name == name
             assert len(frontier.programs) > 0
@@ -111,10 +115,10 @@ class TestProgramExtractor:
         """Extract and validate MISS results."""
         result = load_checkpoint('re2_test')
         extractor = ProgramExtractor()
-        extractor.extract(result)
+        compact_result = extractor.extract(result)
 
-        for name in extractor.miss_frontiers.keys():
-            frontier = extractor.miss_frontiers[name]
+        for name in compact_result.miss_frontiers.keys():
+            frontier = compact_result.miss_frontiers[name]
             assert isinstance(frontier, CompactFrontier)
             assert frontier.name == name
             assert len(frontier.programs) == 0

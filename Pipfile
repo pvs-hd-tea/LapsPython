@@ -92,7 +92,8 @@ Jinja2 = "==2.11.1"
 MarkupSafe = "==1.1.1"
 Pygments = "==2.5.2"
 Send2Trash = "==1.5.0"
-pregex = "*"
+pregex = {git = "https://github.com/Hieuzest/pregex.git"}
+uniplot = "*"
 
 [dev-packages]
 flake8 = "*"
@@ -108,7 +109,8 @@ pytest = "*"
 pytest-cov = "*"
 
 [scripts]
-linting = "flake8 --exclude=.venv,dreamcoder --ignore=I900,S101,S301,S403,W391"
+demo = "python demo.py"
+linting = "flake8 --exclude=.venv,dreamcoder --ignore=I900,S101,S102,S301,S311,S403,T201,W391"
 tests = "python -m pytest --ignore=dreamcoder --cov=lapspython --cov=tests --cov-report term-missing --cov-report html:coverage --disable-warnings"
 typechecks = "mypy lapspython --ignore-missing-imports --follow-imports skip"
 
