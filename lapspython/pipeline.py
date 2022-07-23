@@ -59,7 +59,7 @@ class Pipeline:
         else:
             print('No validated translation found')
 
-        print('\nSaving results...', end=' ')
+        print(f'\nSaving results to {json_path}...', end=' ')
         if json_path != '':
             json_dump(json_path, grammar, extractor.compact_result)
         print('Done')
