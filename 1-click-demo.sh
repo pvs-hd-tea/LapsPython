@@ -2,7 +2,7 @@
 cd "$(dirname "${BASH_SOURCE[0]}")"
 conda create --name lapspython python=3.7
 conda activate lapspython
-conda install swig asdf pipenv
+conda install swig pipenv
 pipenv install --dev
 pipenv run linting
 pipenv run typechecks
