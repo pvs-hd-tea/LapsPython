@@ -272,7 +272,8 @@ class ParsedRPrimitive(ParsedRType):
                 if not line.endswith('{\n'):
                     self.args = []
                     return re.sub(pattern, '', line)
-                self.args = self.get_args(lines[i])
+                if not is_dep:
+                    self.args = self.get_args(line)
                 cutoff_lines = lines[i + 1 - is_dep:]
                 break
 
