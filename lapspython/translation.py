@@ -10,6 +10,7 @@ from lapspython.types import (ParsedGrammar, ParsedProgram, ParsedProgramBase,
                               ParsedRProgram, ParsedType)
 
 
+
 class Translator:
     """Translate lambda programs to Python code."""
 
@@ -117,123 +118,59 @@ class Translator:
         self.debug_stack.append(', '.join(debug))
 
         if program.isAbstraction:
-            if node_type == 'x':
-                return self._translate_abstraction_x(program)
-            return self._translate_abstraction_body(program)
+            return self._translate_abstraction(program)
         if program.isApplication:
-            if node_type == 'f':
-                return self._translate_application_f(program)
-            if node_type == 'x':
-                return self._translate_application_x(program)
-            return self._translate_application_body(program)
+            return self._translate_application(program)
         if program.isIndex:
             return self._translate_index(program)
         if program.isInvented:
             if node_type == 'f':
-                return self._translate_invented(program)
-            return self._translate_abstraction_body(program)
+               return self._translate_invented(program)
+            return self._translate_abstraction(program)  # unparsed invented
         if program.isPrimitive:
             if node_type == 'f':
                 return self._translate_primitive_f(program)
-            if node_type == 'x':
-                return self._translate_primitive_x(program)
-            return self._translate_primitive_body(program)
+            return self._translate_primitive_x(program)
         raise ValueError(f'{node_type} node of type {type(program)}')
 
-    def _translate_abstraction_body(self, abstraction: Abstraction) -> tuple:
-        parsed, args = self._translate_wrapper(abstraction.body)
-        args = [f'lambda x: {args[0]}']
-        return parsed, args
+    def _translate_abstraction(self, abstraction: Abstraction) -> tuple:
+        return self._translate_wrapper(abstraction.body)
 
-    def _translate_abstraction_x(self, abstraction: Abstraction) -> tuple:
-        parsed, args = self._translate_wrapper(abstraction.body)
+    def _translate_application(self, application: Application) -> tuple:
+        f, xs = application.applicationParse()
+        x_args = []
 
-        try:
-            lambda_head = ''
-            if self.mode == 'python':
-                lambda_head = 'lambda lx: '
-            if self.contains_index(abstraction) and len(self.code) > 0:
-                last_row = self.code[-1]
-                body = last_row.split(self.sep)[1]
-                body = re.sub(r'arg\d', 'lx', body)
-                args = [f'{lambda_head}{body}']
+        for x in xs:
+            x_parsed, x_parsed_resolved = self._translate_wrapper(x, 'x')
+
+            if x.isAbstraction:
+                try:
+                    x_arg = self.convert_func_to_lambda(x_parsed_resolved)
+                except TypeError:
+                    print(type(x), x_parsed, x_parsed_resolved)
+                    raise
+            elif not isinstance(x_parsed, str):
+                x_arg = x_parsed.name
             else:
-                args = [f'{lambda_head}{args[0]}']
+                x_arg = x_parsed
+                
+            x_args.append(x_arg)
 
-            return parsed, args
+        f_parsed, _ = self._translate_wrapper(f, 'f')
 
-        except IndexError:
-            return '# ERROR', ['# ERROR']
-
-    def _translate_application_f(self, application: Application) -> tuple:
-        f = application.f
-        x = application.x
-
-        _, x_args = self._translate_wrapper(x, 'x')
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
-
-        return f_parsed, f_args + x_args
-
-    def _translate_application_x(self, application: Application) -> tuple:
-        f = application.f
-        x = application.x
-
-        x_parsed, x_args = self._translate_wrapper(x, 'x')
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
-
-        if x_args[-1][:3] == 'arg' and x_args[-1] not in self.args:
-            new_x_arg = self.get_last_variable()
-            if new_x_arg != 'x':
-                x_args[-1] = new_x_arg
-
-        if not f.isInvented:
-            x_args = f_args + x_args
-
-        if not f.isIndex:
-            self.call_counts[f_parsed.handle] += 1
-            name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
-            try:
-                f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
-            except ValueError:
-                self.log_exception()
-                f_parsed_resolved = f'{name} = None'
-            self.code.append(f_parsed_resolved)
-            x_args = name
-
-        return f_parsed, [x_args]
-
-    def _translate_application_body(self, application: Application) -> tuple:
-        f = application.f
-        x = application.x
-
-        x_parsed, x_args = self._translate_wrapper(x, 'x')
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
-
-        x_args = f_args + x_args
+        if f.isIndex:
+            return f_parsed, None
 
         self.call_counts[f_parsed.handle] += 1
         name = f'{f_parsed.name}_{self.call_counts[f_parsed.handle]}'
-
-        missing_args = len(f_parsed.args) - len(x_args)
-        for i in range(missing_args):
-            new_arg = f'arg{i + 1}'
-            if new_arg in self.args:
-                x_args.append(new_arg)
-
-        try:
-            f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
-        except ValueError:
-            self.log_exception()
-            f_parsed_resolved = f'{name} = None'
-
+        f_parsed_resolved = f_parsed.resolve_variables(x_args, name)
         self.code.append(f_parsed_resolved)
 
-        return None, [name]
+        return name, f_parsed_resolved
 
     def _translate_index(self, index: Index) -> tuple:
         arg = f'arg{index.i + 1}'
-        f_parsed = f'lambda lx: {arg}'
-        return f_parsed, [arg]
+        return arg, arg
 
     def _translate_invented(self, invented: Invented) -> tuple:
         handle = str(invented)
@@ -256,13 +193,28 @@ class Translator:
         parsed = self.grammar.primitives[primitive.name].resolve_lambdas()
         self.imports.update(parsed.imports)
         self.dependencies.update(parsed.dependencies)
-        return parsed, []
+        return parsed, ''
 
     def _translate_primitive_x(self, primitive: Primitive) -> tuple:
-        return None, [f"'{primitive.value}'"]
+        return f"'{primitive.value}'", f"'{primitive.value}'"
 
-    def _translate_primitive_body(self, primitive: Primitive) -> tuple:
-        return None, [f"'{primitive.value}'"]
+    def convert_arg_to_lambda(self, arg: str) -> str:
+        """Convert variable to anonymous function."""
+        if self.mode == 'python':
+            return f'lambda lx: {arg}'
+        if self.mode == 'r':
+            return f'function(lx) {arg}'
+
+    def convert_func_to_lambda(self, func: str) -> str:
+        """Convert variable assignment to anonymous function."""
+        lambda_head = ''
+        if self.mode == 'python':
+            lambda_head = 'lambda lx: '
+        elif self.mode == 'r':
+            lambda_head = 'function(lx) '
+        body = re.sub(r'\w+ = ', '', func)
+        body = re.sub(r'arg\d', 'lx', body)
+        return f'{lambda_head}{body}'
 
     def contains_index(self, program: Program) -> bool:
         """Test whether the subprogram contains a de Bruijin index."""
