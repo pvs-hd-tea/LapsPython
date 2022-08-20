@@ -52,7 +52,6 @@ pickleshare==0.7.5
 pillow==6.0.0
 pox==0.2.5
 ppft==1.6.4.9
-git+https://github.com/Hieuzest/pregex.git@d44b3069d50474e40702f70cde88183ae01a5b14#egg=pregex
 prometheus-client==0.7.1
 prompt-toolkit==3.0.3
 protobuf==3.8.0
