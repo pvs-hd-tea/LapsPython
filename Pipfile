@@ -106,6 +106,7 @@ isort = "*"
 mypy = "*"
 pytest = "*"
 pytest-cov = "*"
+sphinx-rtd-theme = "*"
 
 [scripts]
 demo = "python demo.py"
