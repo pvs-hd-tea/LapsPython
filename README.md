@@ -18,11 +18,11 @@ Credits of package `dreamcoder` go to the contributors of [https://github.com/el
 ## 1-Click-Demo
 **Requirements: Conda, bash**
 
-Simply run the script `1-click-demo.sh`. It will execute the following steps:
+Simply run the script `1-click-demo.sh`. It serves as a setup script that will also run tests and the main functionality in a virtual environment. In detail, it executes the following steps:
 
-1. Setup and activate a Conda environment `lapspython` running on Python 3.7
+1. Create and activate a Conda environment `lapspython` running on Python 3.7
 2. Install Pipenv in the Conda environment (used to resolve dependencies and manage scripts)
-3. Setup a local Pipenv environment in `.venv`
+3. Create a local Pipenv environment in `.venv`
 4. Install all LAPS requirements and used dev packages in the local Pipenv environment
 5. Run CI scripts for
    - Linting
@@ -47,6 +47,6 @@ A Python shell in the Pipenv environment can be launched with `pipenv run python
 
 ### Why a virtual environment inside a virtual environment?
 
-Since all LAPS requirements are taken from different requirements.txt files which can only be installed recursively through pip, Conda is not able to resolve all dependencies. Pipenv is wrapped around pip, but resolves package dependencies better and ensures that the virtual environment can be reproduced using the portable `Pipfile.lock` file. This environment can be setup directly in the project directory, making it easy to find. Moreover, the custom scripts make it simple to run different complex workflows such as CI from a single entry point.
+Since all LAPS requirements are taken from different requirements.txt files which can only be installed recursively through pip, Conda is not able to resolve all dependencies. Pipenv is wrapped around pip, but resolves package dependencies better and ensures that the virtual environment can be reproduced using the portable `Pipfile.lock` file. This environment can be setup directly in the project directory, leading to a mostly centralized workspace. Moreover, custom Pipenv scripts make it simple to run different complex workflows such as CI from a single entry point.
 
-However, I know for sure that Conda is installed on the IWR servers and it is able to install Python 3.7 and swig (both required by LAPS), which would otherwise require apt-get and therefore superuser rights.
+However, I know for sure that Conda is installed on the IWR servers and it is able to install Python 3.7 and swig (both required by LAPS), which would otherwise require apt-get and therefore superuser rights. Although Pipenv is my virtual environment of choice, this makes Conda a great entry-point.

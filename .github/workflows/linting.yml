@@ -19,4 +19,4 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -r requirements-linting.txt
     - name: Analysing the code with Flake8
-      run: python -m flake8 --exclude=.venv,*Primitives.py,dreamcoder* --ignore=I900,S101,S102,S301,S311,S403,T201,W391
+      run: python -m flake8 --exclude=.venv,docs,dreamcoder,pregex --ignore=G004,I900,S101,S102,S301,S311,S403,T201,W391
