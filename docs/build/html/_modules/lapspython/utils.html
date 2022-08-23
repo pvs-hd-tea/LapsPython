@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lapspython.utils &mdash; LapsPython 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> LapsPython
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LapsPython</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>lapspython.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lapspython.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions that do not fit in other modules.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">dill</span>
+
+<span class="kn">from</span> <span class="nn">dreamcoder.dreamcoder</span> <span class="kn">import</span> <span class="n">ECResult</span>
+<span class="kn">from</span> <span class="nn">dreamcoder.program</span> <span class="kn">import</span> <span class="n">Program</span>
+<span class="kn">from</span> <span class="nn">lapspython.extraction</span> <span class="kn">import</span> <span class="n">GrammarParser</span><span class="p">,</span> <span class="n">ProgramExtractor</span>
+<span class="kn">from</span> <span class="nn">lapspython.translation</span> <span class="kn">import</span> <span class="n">Translator</span>
+<span class="kn">from</span> <span class="nn">lapspython.types</span> <span class="kn">import</span> <span class="n">CompactResult</span><span class="p">,</span> <span class="n">ParsedGrammar</span>
+
+
+<div class="viewcode-block" id="load_checkpoint"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.load_checkpoint">[docs]</a><span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ECResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load training checkpoint.</span>
+
+<span class="sd">    :param filename: name of file in checkpoints directory, without extension</span>
+<span class="sd">    :type filename: string</span>
+<span class="sd">    :returns: e</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.pickle&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dill</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="json_dump"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.json_dump">[docs]</a><span class="k">def</span> <span class="nf">json_dump</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">grammar</span><span class="p">:</span> <span class="n">ParsedGrammar</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">CompactResult</span>  <span class="c1"># = None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Store grammar and best results in json file.</span>
+
+<span class="sd">    :param filename: File name in checkpoints folder without file extension.</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param grammar: Grammar extracted and parsed from checkpoint.</span>
+<span class="sd">    :type grammar: ParsedGrammar</span>
+<span class="sd">    :param result: Result extracted and translated from checkpoint.</span>
+<span class="sd">    :type result: CompactResult, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.json&#39;</span>
+    <span class="n">json_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;grammar&#39;</span><span class="p">:</span> <span class="n">grammar</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(),</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">get_best</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">json_dict</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">json_path</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="json_read"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.json_read">[docs]</a><span class="k">def</span> <span class="nf">json_read</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read grammar and results from json file.</span>
+
+<span class="sd">    :param filename: File name in checkpoints folder without file extension.</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: {grammar, result} dictionary</span>
+<span class="sd">    :rytpe: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.json&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+            <span class="n">json_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+        <span class="n">grammar</span> <span class="o">=</span> <span class="n">json_dict</span><span class="p">[</span><span class="s1">&#39;grammar&#39;</span><span class="p">]</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">ParsedGrammar</span><span class="p">(</span><span class="n">grammar</span><span class="p">[</span><span class="s1">&#39;primitives&#39;</span><span class="p">],</span> <span class="n">grammar</span><span class="p">[</span><span class="s1">&#39;invented&#39;</span><span class="p">])</span>
+        <span class="n">json_dict</span><span class="p">[</span><span class="s1">&#39;grammar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
+        <span class="k">return</span> <span class="n">json_dict</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="get_source_similarity"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.get_source_similarity">[docs]</a><span class="k">def</span> <span class="nf">get_source_similarity</span><span class="p">(</span><span class="n">source1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Compute Jaccard similarity of two translated programs.&quot;&quot;&quot;</span>
+    <span class="n">set1</span> <span class="o">=</span> <span class="n">tokenize_source</span><span class="p">(</span><span class="n">source1</span><span class="p">)</span>
+    <span class="n">set2</span> <span class="o">=</span> <span class="n">tokenize_source</span><span class="p">(</span><span class="n">source2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jaccard_similarity</span><span class="p">(</span><span class="n">set1</span><span class="p">,</span> <span class="n">set2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="tokenize_program"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.tokenize_program">[docs]</a><span class="k">def</span> <span class="nf">tokenize_program</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Tokenize synthesized program.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[()]&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">program</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="tokenize_source"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.tokenize_source">[docs]</a><span class="k">def</span> <span class="nf">tokenize_source</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Tokenize translated program for similarity computation.</span>
+
+<span class="sd">    :param source: Translated program.</span>
+<span class="sd">    :type source: string</span>
+<span class="sd">    :returns: List of tokens longer excluding special symbols</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s&#39;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="n">tokens_nonempty</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tokens_nonempty</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^A-z]+&#39;</span><span class="p">,</span> <span class="n">t</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="jaccard_similarity"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.jaccard_similarity">[docs]</a><span class="k">def</span> <span class="nf">jaccard_similarity</span><span class="p">(</span><span class="n">tokens1</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">tokens2</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Compute Jaccard similarity index of 2 sets.&quot;&quot;&quot;</span>
+    <span class="n">set1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tokens1</span><span class="p">)</span>
+    <span class="n">set2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tokens2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">set1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">set2</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">set1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">set2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="test_translation_abstraction"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.test_translation_abstraction">[docs]</a><span class="k">def</span> <span class="nf">test_translation_abstraction</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Translate a sample program.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="s1">&#39;re2_test&#39;</span><span class="p">)</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">GrammarParser</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">grammars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">parsed_grammar</span>
+    <span class="n">translator</span> <span class="o">=</span> <span class="n">Translator</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+    <span class="n">hits</span> <span class="o">=</span> <span class="n">ProgramExtractor</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">compact_result</span><span class="o">.</span><span class="n">hit_frontiers</span>
+    <span class="k">for</span> <span class="n">_hit</span> <span class="ow">in</span> <span class="n">hits</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">break</span>
+    <span class="n">program</span> <span class="o">=</span> <span class="n">_hit</span><span class="o">.</span><span class="n">programs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">translation</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">_hit</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">translation</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">print(</span><span class="si">{_hit.name}</span><span class="s2">(&#39;testword&#39;))&quot;</span></div>
+
+
+<span class="c1"># All subsequent functions are temporary for debugging purposes</span>
+<div class="viewcode-block" id="test_translation_invented"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.test_translation_invented">[docs]</a><span class="k">def</span> <span class="nf">test_translation_invented</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Translate a sample invented primitive.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="s1">&#39;re2_test&#39;</span><span class="p">)</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">GrammarParser</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">grammars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">parsed_grammar</span>
+    <span class="n">translator</span> <span class="o">=</span> <span class="n">Translator</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+    <span class="n">invented</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">grammars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">productions</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">translator</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">invented</span><span class="p">,</span> <span class="s1">&#39;f0&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="testg"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.testg">[docs]</a><span class="k">def</span> <span class="nf">testg</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract grammar, translating all invented primitives.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="s1">&#39;re2_best_dsl_language&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">grammars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">productions</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="testgif"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.testgif">[docs]</a><span class="k">def</span> <span class="nf">testgif</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Extract an invented primitive containing an if statement.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="s1">&#39;re2_best_dsl_language&#39;</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">grammars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">productions</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">first_application</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">body</span>
+    <span class="n">next_abstraction_layer</span> <span class="o">=</span> <span class="n">first_application</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">body</span>
+    <span class="n">if_application</span> <span class="o">=</span> <span class="n">next_abstraction_layer</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">body</span>
+    <span class="k">return</span> <span class="n">if_application</span><span class="o">.</span><span class="n">x</span></div>
+
+
+<div class="viewcode-block" id="testa"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.testa">[docs]</a><span class="k">def</span> <span class="nf">testa</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract a sample program.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="s1">&#39;re2_test&#39;</span><span class="p">)</span>
+    <span class="n">hits</span> <span class="o">=</span> <span class="n">ProgramExtractor</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">compact_result</span><span class="o">.</span><span class="n">hit_frontiers</span>
+    <span class="k">for</span> <span class="n">_hit</span> <span class="ow">in</span> <span class="n">hits</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">_hit</span><span class="o">.</span><span class="n">programs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="testr"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.testr">[docs]</a><span class="k">def</span> <span class="nf">testr</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Extract a sample result.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="s1">&#39;re2_test&#39;</span><span class="p">)</span>
+    <span class="n">grammar</span> <span class="o">=</span> <span class="n">GrammarParser</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">grammars</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">parsed_grammar</span>
+    <span class="n">translator</span> <span class="o">=</span> <span class="n">Translator</span><span class="p">(</span><span class="n">grammar</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ProgramExtractor</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">translator</span><span class="p">)</span><span class="o">.</span><span class="n">compact_result</span></div>
+
+
+<div class="viewcode-block" id="testf"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.testf">[docs]</a><span class="k">def</span> <span class="nf">testf</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Example a sample frontier.&quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">testr</span><span class="p">()</span>
+    <span class="n">hf</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">hit_frontiers</span>
+    <span class="k">return</span> <span class="n">hf</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">hf</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="testv"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.testv">[docs]</a><span class="k">def</span> <span class="nf">testv</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Test code validation.&quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">testf</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">translations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">examples</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christopher Brückner.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
