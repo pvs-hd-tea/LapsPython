@@ -34,6 +34,7 @@ Contents
 .. toctree::
 
    usage
+   api/index
 
 References
 ----------
