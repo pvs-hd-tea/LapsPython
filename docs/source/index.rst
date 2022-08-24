@@ -33,7 +33,9 @@ Contents
 
 .. toctree::
 
-   usage
+   quickstart
+   tutorial
+   metrics
    api/index
 
 References
