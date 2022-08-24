@@ -33,7 +33,8 @@ Contents
 
 .. toctree::
 
-   usage
+   quickstart
+   tutorial
    api/index
 
 References

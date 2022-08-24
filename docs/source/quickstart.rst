@@ -1,5 +1,5 @@
-Getting Started
-===============
+Quick Start
+===========
 
 .. _demo:
 
@@ -14,7 +14,7 @@ Requirements: `Conda <https://docs.conda.io/en/latest/>`_ (or equivalent), bash
 
 This serves as a setup script that also runs the main functionality of LapsPython in a virtual environment. It executes the following steps:
 
-#. Create and activate a Conda environment **lapspython** running on Python 3.7
+#. Create and activate a Conda environment ``lapspython`` running on Python 3.7
 #. Install all LAPS requirements and used dev packages in a local Pipenv environment
 #. Run CI scripts (see Section :ref:`Continuous Integration <ci>` for detailed information)
 
@@ -24,9 +24,9 @@ This serves as a setup script that also runs the main functionality of LapsPytho
    
    * Unit Tests (generating coverage report in `LapsPython/coverage/index.html <../../../coverage/index.html>`_)
    
-#. Run a demo program launching the LapsPython pipeline for LAPS checkpoints in the **re2** domain in Python mode and in R mode
+#. Run a demo program launching the LapsPython pipeline for LAPS checkpoints in the re2 domain in Python mode and in R mode
 
-Section :ref:`Manual Installation <installation>` describes this process as well as design decisions in more detail. Delete the Pipenv environment (~1.8 GB) by removing the contents of **LapsPython/.venv/**. Delete the Conda environment (~218 MB) by running 
+Section :ref:`Manual Installation <installation>` describes this process as well as design decisions in more detail. Delete the Pipenv environment (~1.8 GB) by removing the contents of ``LapsPython/.venv/``. Delete the Conda environment (~218 MB) by running
 
 .. code-block:: console
 
@@ -38,7 +38,7 @@ Section :ref:`Manual Installation <installation>` describes this process as well
 Manual Installation
 -------------------
 
-If you do not want to use the recommended demo script, you can install the requirements manually in a **Python 3.7** environment of your choice (here: **lapspython**):
+If you do not want to use the recommended demo script, you can install the requirements manually in a **Python 3.7** environment of your choice (here: ``lapspython``):
 
 .. code-block:: console
 
@@ -47,7 +47,7 @@ If you do not want to use the recommended demo script, you can install the requi
    (lapspython) $ conda install swig pipenv
    (lapspython) $ pipenv sync
 
-The **pipenv sync** command installs all Python modules required by **LAPS** locally in **LapsPython/.venv/**, as well as `uniplot <https://pypi.org/project/uniplot/>`_ and the dev packages used in Section :ref:`Continuous Integration <ci>`.
+The ``pipenv sync`` command installs all Python modules required by LAPS locally in ``LapsPython/.venv/``, as well as `uniplot <https://pypi.org/project/uniplot/>`_ and the dev packages used in Section :ref:`Continuous Integration <ci>`.
 
 The demo program can then be run through Pipenv:
 
@@ -55,14 +55,14 @@ The demo program can then be run through Pipenv:
 
    (lapspython) $ pipenv run demo.py
    
-Using Pipenv is recommended and the only verified way to get LapsPython running, since the portable **Pipfile.lock** allows to reproduce the exact virtual environment used on my Ubuntu 20.04 machine. If you do not want to use Pipenv, **requirements.txt** and **requirements-dev.txt** are provided and can be installed by running
+Using Pipenv is recommended and the only verified way to get LapsPython running, since the portable ``Pipfile.lock`` allows to reproduce the exact virtual environment used on my Ubuntu 20.04 machine. If you do not want to use Pipenv, ``requirements.txt`` and ``requirements-dev.txt`` are provided and can be installed by running
 
 .. code-block:: console
 
    (lapspython) $ pip install -r requirements.txt
    (lapspython) $ pip install -r requirements-dev.txt
    
-If you do not want to use Conda, **swig** needs to be installed through a package manger such as **apt-get**, which might require superuser rights.
+If you do not want to use Conda, **swig** needs to be installed through a package manger such as ``apt-get``, which might require superuser rights.
    
 .. _ci:
 
@@ -90,3 +90,9 @@ This script runs static typechecks using `Mypy <http://www.mypy-lang.org/>`_.
    (lapspython) $ pipenv run linting
 
 This script runs the PEP-8 compliant linter `Flake8 <https://flake8.pycqa.org/en/latest/>`_ with a large selection of extensions enforcing stricter conventions in compliance with modern Python standards, simplifying complex code, as well as preventing bugs and security issues.
+
+.. code-block:: console
+
+   (lapspython) $ pipenv run sphinx
+   
+This script rebuilds the documentation using `Sphinx <https://www.sphinx-doc.org/en/master/index.html>`_. The built documentation can be deployed to GitHub Pages using the bash script ``git-deploy-docs.sh``. These two manual steps reproduce an automatic workflow which is deactivated due to missing permissions of the github-actions bot but can be found in the `Sphinx documentation <https://www.sphinx-doc.org/en/master/tutorial/deploying.html#id5>`_.
