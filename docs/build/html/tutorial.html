@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial &mdash; LapsPython 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Metrics" href="metrics.html" />
+    <link rel="prev" title="Quick Start" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LapsPython
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functionality">Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LapsPython</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorial.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline"></a></h1>
+<section id="functionality">
+<span id="id1"></span><h2>Functionality<a class="headerlink" href="#functionality" title="Permalink to this headline"></a></h2>
+<p>LapsPython extends the pipeline of LAPS, a program synthesizer for input-output examples, with a translation from LISP-like code to Python and R. To put this into a more comprehensible context, let’s take a look what exactly happens in the LAPS pipeline:</p>
+<ol class="arabic simple">
+<li><p>A library of primitives, i.e., simple functions implemented in Python, is loaded for a given domain such as string editing. Internally, this library is called <strong>grammar</strong>.</p></li>
+<li><p>For a set of input-output examples with natural language annotations, primitives from the current library are pieced together to a small program. This set of examples is called a <strong>task</strong> and it is solved if the synthesized program produces the correct outputs for all given inputs. Synthesization is guided by a neural network (“recognition model”) as well as a statistical machine translation system (<a class="reference external" href="http://www2.statmt.org/moses/">Moses</a>). Internally, a task is also called <strong>frontier</strong>.</p></li>
+<li><p>New concepts are learned: Small subprograms that appear in many task-solving programs are added to the library as “invented primitives”.</p></li>
+<li><p>Synthesized programs are compressed by substituting the beforementioned subprograms with the corresponding invented primitives.</p></li>
+<li><p>The result of the current iteration are stored in a single checkpoint: The new grammar, all synthesized programs, and the posterior probabilities of all such programs. A larger probability means that a program provides a more generalizable solution. Internally, the largest posterior probability is called <strong>best posterior</strong> which leads to interesting results when you google it.</p></li>
+</ol>
+<p>This is where LapsPython comes into play. It can either be injected directly into the code and work with the constructed “ECResult” object, or simply load an arbitrary checkpoint. It will execute the following analoguous steps:</p>
+<ol class="arabic simple">
+<li><p>The Python/R implementations of all primitives in the library are loaded.</p></li>
+<li><p>The invented primitives are translated.</p></li>
+<li><p>The synthesized programs are translated. The correctness of the translations is verified using the same input-output examples.</p></li>
+<li><p>Results are stored in a JSON file: The entire grammar including Python/R translations and all synthesized programs including the correct translation with the largest posterior probability as well as the incorrect translation with the largest posterior probability, if these exist.</p></li>
+<li><p>Descriptive statistics are computed: How many translations are correct, how many tasks are solved (i.e., have at least 1 correct translation), the min/max/mean/median percentage of correct translations per task.</p></li>
+</ol>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
+<p>LapsPython is easy to use since all previously described steps are executed by a single <a class="reference internal" href="api/lapspython.pipeline.html"><span class="doc">Pipeline</span></a> object. You can either pass an ECResult object to <code class="docutils literal notranslate"><span class="pre">Pipeline.extract_translate()</span></code>, or the file name (exclusing the file extension) of a checkpoint to <code class="docutils literal notranslate"><span class="pre">Pipeline.from_checkpoint()</span></code>. Checkpoints need to be placed into the <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code> folder first.</p>
+<p>By default, LapsPython translates to Python. Alternatively, translation to R is possible by passing the argument <code class="docutils literal notranslate"><span class="pre">mode='R'</span></code> to the two pipeline functions. If you work with a new domain, it will be necessary to manually re-implement the Python primitives in R.</p>
+<p>Python primitives can be found found in <code class="docutils literal notranslate"><span class="pre">dreamcoder/domains/&lt;name&gt;/&lt;name&gt;Primitives.py</span></code>. R primitives require the same path and file name, but the <code class="docutils literal notranslate"><span class="pre">.R</span></code> file extension. LapsPython assumes the following conventions when loading primitives:</p>
+<ul class="simple">
+<li><p>Python primitives start with 1 underscore, functions called by Python primitives start with 2 underscores.</p></li>
+<li><p>R primitives have the same names as their Python equivalents but without preceding underscores, and they are separated by at least 1 empty line.</p></li>
+</ul>
+<p>LapsPython pipelines <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">GrammarParser</span></a>, <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">ProgramExtractor</span></a>, <a class="reference internal" href="api/lapspython.translation.html"><span class="doc">Translator</span></a> and <a class="reference internal" href="api/lapspython.stats.html"><span class="doc">Statistics</span></a> objects. Results will be stored in a <code class="docutils literal notranslate"><span class="pre">checkpoints/&lt;name&gt;&lt;mode&gt;.json</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code> is the corresponding checkpoint name and <code class="docutils literal notranslate"><span class="pre">&lt;mode&gt;</span></code> can be <code class="docutils literal notranslate"><span class="pre">python</span></code> or <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
+<p>You notice that an invented primitive is translated incorrectly, resulting in many bad translations? You can fix it in the generated JSON file! It will be loaded the next you load the same checkpoint.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christopher Brückner.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
