@@ -35,6 +35,7 @@ Contents
 
    quickstart
    tutorial
+   metrics
    api/index
 
 References
