@@ -19,7 +19,7 @@ class GrammarParser:
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar, optional
-        :param mode: Whether to extract Python or R code.
+        :param mode: Whether to extract Python or R code, can 'python' or 'r'.
         :type mode: string, optional
         """
         self.mode = mode.lower()

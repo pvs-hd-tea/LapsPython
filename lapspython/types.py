@@ -252,6 +252,8 @@ class ParsedRPrimitive(ParsedRType):
         self.imports = imports
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.source = source.strip()
+        self.arg_types = self.parse_argument_types(primitive.tp)
+        self.return_type = self.arg_types.pop()
 
     def parse_source(self, name: str, path: str, is_dep=False) -> str:
         """Extract source code of primitive from R file.

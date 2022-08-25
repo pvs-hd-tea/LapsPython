@@ -24,6 +24,12 @@ class TestGrammarParser:
         assert parsed_grammar.primitives != {}
         assert parsed_grammar.invented != {}
 
+    def test_invalid_mode(self):
+        """Construct parser with an unsupported mode."""
+        error_msg = 'mode must be "Python" or "R".'
+        with pytest.raises(ValueError, match=error_msg):
+            GrammarParser(mode='cpp')
+
     def test_parse_re2_pattern(self):
         """Extract primitives from an re2 grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
@@ -51,12 +57,25 @@ class TestGrammarParser:
         assert _rconcat.return_type.name == 'tsubstr'
 
     def test_parse_re2_python(self):
-        """Extract primitives from an re2 grammar."""
+        """Extract Python primitives from an re2 grammar."""
         grammar = load_checkpoint('re2_test').grammars[-1]
         parser = GrammarParser()
         _map = parser.parse(grammar).primitives['map']
         assert _map.name == 'map'
         assert _map.source == 'return list(map(f, l))'
+        assert _map.args == ['f', 'l']
+        assert len(_map.arg_types) == 2
+        assert _map.arg_types[0].name == '->'
+        assert _map.arg_types[1].name == 'list'
+        assert _map.return_type.name == 'list'
+
+    def test_parse_re2_r(self):
+        """Extract R primitives from an re2 grammar."""
+        grammar = load_checkpoint('re2_test').grammars[-1]
+        parser = GrammarParser(mode='r')
+        _map = parser.parse(grammar).primitives['map']
+        assert _map.name == 'map'
+        assert _map.source == 'return(sapply(l, f))'
         assert _map.args == ['f', 'l']
         assert len(_map.arg_types) == 2
         assert _map.arg_types[0].name == '->'
@@ -80,6 +99,43 @@ class TestGrammarParser:
             assert invented.name.find('f') == 0
             assert isinstance(invented.arg_types[0], TypeConstructor)
             assert isinstance(invented.return_type, TypeConstructor)
+
+    def test_fix_invented_invalid_keys(self):
+        """Override invented primitive from re2 grammar with invalid dict."""
+        grammar = load_checkpoint('re2_test').grammars[-1]
+        parser = GrammarParser(grammar)
+        error_msg = 'Keys of the two grammars are not equal'
+        with pytest.raises(ValueError, match=error_msg):
+            parser.fix_invented({'key': 'value'})
+
+    def test_fix_invented_valid_keys(self):
+        """Override invented primitive from re2 grammar with valid dict."""
+        grammar = load_checkpoint('re2_test').grammars[-1]
+        parser = GrammarParser(grammar)
+
+        handle = '#(_rsplit _rdot)'
+
+        old_invented = parser.parsed_grammar.invented[handle]
+        assert old_invented.name == 'f0'
+        assert old_invented.source == "return __regex_split('.', arg1)"
+        assert old_invented.args == ['arg1']
+
+        new_invented = {
+            handle: {
+                'name': 'new name',
+                'source': 'new source',
+                'args': ['new args'],
+                'dependencies': ['new dependencies']
+            }
+        }
+
+        parser.fix_invented(new_invented)
+
+        override_invented = parser.parsed_grammar.invented[handle]
+        assert override_invented.name == 'new name'
+        assert override_invented.source == 'new source'
+        assert override_invented.args == ['new args']
+        assert override_invented.dependencies == ['new dependencies']
 
 
 class TestProgramExtractor:
