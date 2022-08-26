@@ -11,7 +11,7 @@ class TestPipeline:
 
     def test_from_checkpoint_python(self):
         """Load checkpoint in Python mode."""
-        result = Pipeline.from_checkpoint('re2_test', save=False)
+        result = Pipeline.from_checkpoint('re2_test')
         assert isinstance(result, CompactResult)
 
     def test_from_checkpoint_r(self):
@@ -23,4 +23,4 @@ class TestPipeline:
         """Load checkpoint in invalid mode."""
         error_msg = 'mode must be "Python" or "R".'
         with pytest.raises(ValueError, match=error_msg):
-            Pipeline.from_checkpoint('re2_test', 'cpp')
+            Pipeline.from_checkpoint('re2_test', mode='cpp')
