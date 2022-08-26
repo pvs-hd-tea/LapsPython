@@ -1,5 +1,0 @@
-﻿lapspython
-==========
-
-.. automodule:: lapspython
-   :members:
