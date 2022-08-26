@@ -14,13 +14,15 @@ LapsPython extends the pipeline of LAPS, a program synthesizer for input-output 
 #. Synthesized programs are compressed by substituting the beforementioned subprograms with the corresponding invented primitives.
 #. The result of the current iteration are stored in a single checkpoint: The new grammar, all synthesized programs, and the posterior probabilities of all such programs. A larger probability means that a program provides a more generalizable solution. Internally, the largest posterior probability is called **best posterior** which leads to interesting results when you google it.
 
-This is where LapsPython comes into play. It can either be injected directly into the code and work with the constructed "ECResult" object, or simply load an arbitrary checkpoint. It will execute the following analoguous steps:
+This is where LapsPython comes into play. It can either be injected directly into the LAPS code and work with the constructed "ECResult" object, or simply load an arbitrary checkpoint. It will execute the following analoguous steps:
 
 #. The Python/R implementations of all primitives in the library are loaded.
 #. The invented primitives are translated.
 #. The synthesized programs are translated. The correctness of the translations is verified using the same input-output examples.
 #. Results are stored in a JSON file: The entire grammar including Python/R translations and all synthesized programs including the correct translation with the largest posterior probability as well as the incorrect translation with the largest posterior probability, if these exist.
 #. Descriptive statistics are computed: How many translations are correct, how many tasks are solved (i.e., have at least 1 correct translation), the min/max/mean/median percentage of correct translations per task.
+
+Please note that the LapsPython repository only contains the dreamcoder files necessary to run the LapsPython functionality. Compiled OCaml solvers and Moses, which are required to run LAPS, are not provided.
 
 Usage
 -----

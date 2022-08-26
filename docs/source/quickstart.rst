@@ -22,7 +22,7 @@ This serves as a setup script that also runs the main functionality of LapsPytho
    
    * Static Typechecking
    
-   * Unit Tests (generating coverage report in `LapsPython/coverage/index.html <../../../coverage/index.html>`_)
+   * Unit Tests
    
 #. Run a demo program launching the LapsPython pipeline for LAPS checkpoints in the re2 domain in Python mode and in R mode
 
