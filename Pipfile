@@ -108,11 +108,12 @@ pytest = "*"
 pytest-cov = "*"
 sphinx-rtd-theme = "*"
 sphinx-toolbox = "*"
+pipenv-setup = "*"
 
 [scripts]
 demo = "python demo.py"
-linting = "flake8 --exclude=.venv,docs,dreamcoder,pregex --ignore=FS003,G004,I900,S101,S102,S301,S311,S403,T201,W391"
-tests = "python -m pytest --ignore=docs,dreamcoder,pregex --cov=lapspython --cov-report term-missing --cov-report html:coverage --disable-warnings"
+linting = "flake8 --exclude=.venv,docs,dreamcoder,pregex,setup.py --ignore=FS003,G004,I900,S101,S102,S301,S311,S403,T201,W391"
+tests = "python -m pytest --ignore=docs,dreamcoder,pregex --cov=lapspython --cov-report term-missing --cov-report html:docs/coverage --disable-warnings"
 typechecks = "mypy lapspython --ignore-missing-imports --follow-imports skip"
 sphinx = "pipenv run make clean html -C docs"
 
