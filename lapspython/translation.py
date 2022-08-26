@@ -13,15 +13,13 @@ from lapspython.types import (ParsedGrammar, ParsedProgram, ParsedProgramBase,
 class Translator:
     """Translate lambda programs to Python code."""
 
-    def __init__(self, grammar: ParsedGrammar, mode='python') -> None:
+    def __init__(self, grammar: ParsedGrammar) -> None:
         """Init grammar used for translation and empty containers.
 
         :param grammar: Grammar used for translation
         :type grammar: lapspython.types.ParsedGrammar
         """
-        self.mode = mode.lower()
-        if self.mode not in ('python', 'r'):
-            raise ValueError('mode must be "Python" or "R".')
+        self.mode = grammar.mode
 
         if self.mode == 'python':
             self.sep = ' = '

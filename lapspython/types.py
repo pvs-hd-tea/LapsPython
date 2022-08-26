@@ -516,7 +516,12 @@ class ParsedRProgram(ParsedProgramBase, ParsedRType):
 class ParsedGrammar:
     """Data class containing parsed (invented) primitives."""
 
-    def __init__(self, primitives: dict, invented: dict) -> None:
+    def __init__(
+        self,
+        primitives: dict,
+        invented: dict,
+        mode: str = 'python'
+    ) -> None:
         """Store parsed (invented) primitives in member variables.
 
         :param primitives: A (name, ParsedPrimitive) dictionary.
@@ -524,6 +529,7 @@ class ParsedGrammar:
         :param invented: A (name, ParsedInvented) dictionary.
         :type invented: dict
         """
+        self.mode: str = mode
         self.primitives: dict = primitives
         self.invented: dict = invented
 
