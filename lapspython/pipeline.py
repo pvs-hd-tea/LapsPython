@@ -16,7 +16,8 @@ class Pipeline:
         cls,
         result: ECResult,
         json_path: str = '',
-        mode: str = 'python'
+        mode: str = 'python',
+        verbose: bool = True
     ) -> CompactResult:
         """Extract and translate programs from a checkpoint.
 
@@ -28,11 +29,15 @@ class Pipeline:
         :rtype: lapspython.types.CompactResult
         """
         mode = mode.lower()
+        if mode not in ('python', 'r'):
+            raise ValueError('mode must be "Python" or "R".')
+
         print(f'Language Mode: {mode.upper()}')
         if mode == 'r':
             print('WARNING: Code verification for R not implemented')
         print('\nParsing library...', flush=True)
         parser = GrammarParser(result.grammars[-1], mode)
+
         json = json_read(json_path)
         if json != {}:
             new_invented = json['grammar'].invented
@@ -40,9 +45,17 @@ class Pipeline:
         grammar = parser.parsed_grammar
 
         print('\nTranslating synthesized programs...', flush=True)
-        translator = Translator(grammar, mode)
+        translator = Translator(grammar)
         extractor = ProgramExtractor(result, translator)
         result = extractor.compact_result
+
+        if json_path != '':
+            print(f'\nSaving results to {json_path}...', end=' ')
+            json_dump(json_path, grammar, extractor.compact_result)
+        print('Done')
+
+        if not verbose:
+            return result
 
         if mode == 'python':
             print('\nCollecting descriptive statistics:')
@@ -59,24 +72,34 @@ class Pipeline:
         else:
             print('No validated translation found')
 
-        print(f'\nSaving results to {json_path}...', end=' ')
-        if json_path != '':
-            json_dump(json_path, grammar, extractor.compact_result)
-        print('Done')
-
         return result
 
     @classmethod
-    def from_checkpoint(cls, filepath: str, mode='python') -> CompactResult:
+    def from_checkpoint(
+        cls,
+        filepath: str,
+        mode='python',
+        verbose=True,
+        save=True
+    ) -> CompactResult:
         """Load checkpoint, then extract and translate.
 
-        :param checkpoint: Checkpoint name in checkpoints directory.
-        :type checkpoint: str
+        :param filepath: Checkpoint name in checkpoints directory.
+        :type filepath: str
+        :param mode: Translate to 'python' or 'r'.
+        :type mode: str
+        :param verbose: Whether to print statistics and sample translations.
+        :type verbose: bool
+        :param save: Whether to save the results in a JSON file.
+        :type save: bool
         :returns: Extracted and translated programs
         :rtype: lapspython.types.CompactResult
         """
         print(f'Loading checkpoint {filepath}...', end=' ')
         result = load_checkpoint(filepath)
         print('Done\n')
-        json_path = f'{filepath}_{mode.lower()}'
-        return cls.extract_translate(result, json_path, mode)
+        if save:
+            json_path = f'{filepath}_{mode.lower()}'
+        else:
+            json_path = ''
+        return cls.extract_translate(result, json_path, mode, verbose)

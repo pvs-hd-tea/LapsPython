@@ -85,7 +85,7 @@ class ParsedType(ABC):
 
     def replace_return_statement(self, return_name, source):
         """Substiture return with variable assignment."""
-        pass
+        pass  # pragma: no cover
 
 
 class ParsedPythonType(ParsedType):
@@ -127,7 +127,7 @@ class ParsedRType(ParsedType):
         :returns: R source code
         :rtype: string
         """
-        header = f'{self.name} <- function({", ".join(self.args)} \u007b\n'
+        header = f'{self.name} <- function({", ".join(self.args)}) \u007b\n'
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
         return header + indented_body + '\n}\n'
 
@@ -222,7 +222,7 @@ class ParsedPrimitive(ParsedPythonType):
 
 
 class ParsedRPrimitive(ParsedRType):
-    """Abstract base class for R program parsing."""
+    """Class parsing primitives for translation to clean R code."""
 
     def __init__(self, primitive: Primitive):
         """Extract name, path and source of R primitive.
@@ -236,7 +236,7 @@ class ParsedRPrimitive(ParsedRType):
 
         if inspect.isfunction(py_implementation):
             py_path = inspect.getsourcefile(py_implementation)
-            if not isinstance(py_path, str):
+            if not isinstance(py_path, str):  # pragma: no cover
                 msg = f'Cannot get source of primitive {self.name}.'
                 raise ValueError(msg)
             self.path = py_path[:-2] + 'R'
@@ -252,6 +252,8 @@ class ParsedRPrimitive(ParsedRType):
         self.imports = imports
         self.dependencies = {d[1] for d in dependencies if d[0] in source}
         self.source = source.strip()
+        self.arg_types = self.parse_argument_types(primitive.tp)
+        self.return_type = self.arg_types.pop()
 
     def parse_source(self, name: str, path: str, is_dep=False) -> str:
         """Extract source code of primitive from R file.
@@ -279,9 +281,8 @@ class ParsedRPrimitive(ParsedRType):
 
         for j in range(len(cutoff_lines)):
             if cutoff_lines[j] == '}\n':
-                return ''.join(cutoff_lines[:j + is_dep])
-
-        raise ValueError(f'No primitive {self.name} found in {self.path}.')
+                break
+        return ''.join(cutoff_lines[:j + is_dep])
 
     def get_imports(self, path) -> set:
         """Find import modules that might be required by primitives.
@@ -325,7 +326,7 @@ class ParsedRPrimitive(ParsedRType):
         :type source: string
         """
         match = re.search(r'\(.+\)', header)
-        if match is None:
+        if match is None:  # pragma: no cover
             return []
         args = match[0][1:-1]
         return args.split(', ')
@@ -423,7 +424,7 @@ class ParsedProgramBase(ParsedType):
         self.dependencies = dependencies
 
     @abstractmethod
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: no cover
         """Return imports, dependencies and source code as string.
 
         :returns: Full source code of translated program
@@ -432,7 +433,7 @@ class ParsedProgramBase(ParsedType):
         pass
 
     @abstractmethod
-    def verify(self, examples: list) -> bool:
+    def verify(self, examples: list) -> bool:  # pragma: no cover
         """Verify code for a list of examples from task.
 
         :param examples: A list of (input, output) tuples
@@ -515,7 +516,12 @@ class ParsedRProgram(ParsedProgramBase, ParsedRType):
 class ParsedGrammar:
     """Data class containing parsed (invented) primitives."""
 
-    def __init__(self, primitives: dict, invented: dict) -> None:
+    def __init__(
+        self,
+        primitives: dict,
+        invented: dict,
+        mode: str = 'python'
+    ) -> None:
         """Store parsed (invented) primitives in member variables.
 
         :param primitives: A (name, ParsedPrimitive) dictionary.
@@ -523,6 +529,7 @@ class ParsedGrammar:
         :param invented: A (name, ParsedInvented) dictionary.
         :type invented: dict
         """
+        self.mode: str = mode
         self.primitives: dict = primitives
         self.invented: dict = invented
 

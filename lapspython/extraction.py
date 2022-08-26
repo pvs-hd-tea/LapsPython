@@ -19,7 +19,7 @@ class GrammarParser:
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar, optional
-        :param mode: Whether to extract Python or R code.
+        :param mode: Whether to extract Python or R code, can 'python' or 'r'.
         :type mode: string, optional
         """
         self.mode = mode.lower()
@@ -64,9 +64,13 @@ class GrammarParser:
                 else:
                     parsed_invented[handle] = ParsedRInvented(primitive, name)
 
-        self.parsed_grammar = ParsedGrammar(parsed_primitives, parsed_invented)
+        self.parsed_grammar = ParsedGrammar(
+            parsed_primitives,
+            parsed_invented,
+            self.mode
+        )
 
-        translator = Translator(self.parsed_grammar, self.mode)
+        translator = Translator(self.parsed_grammar)
         for invented in self.parsed_grammar.invented.values():
             if invented.source == '':
                 trans = translator.translate(invented.program, invented.name)

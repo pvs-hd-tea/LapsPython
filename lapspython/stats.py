@@ -12,7 +12,7 @@ from lapspython.types import CompactFrontier, CompactResult
 class Statistics:
     """Collect statistics for translated frontiers and results."""
 
-    stats: dict = {}
+    stats: dict
 
     def __init__(self, result: CompactResult = None):
         """Construct object and optionally summarized result.
@@ -20,6 +20,8 @@ class Statistics:
         :param result: Extracted and translated programs.
         :type result: CompactResult, optional
         """
+        self.stats = {}
+
         if result is not None:
             self.summarize(result)
 
