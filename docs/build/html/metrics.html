@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metrics &mdash; LapsPython 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api/index.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LapsPython
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-quality">Code Quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#results">Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-wrong-translation">Example (Wrong Translation)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LapsPython</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Metrics</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/metrics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="metrics">
+<h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline"></a></h1>
+<section id="code-quality">
+<span id="quality"></span><h2>Code Quality<a class="headerlink" href="#code-quality" title="Permalink to this headline"></a></h2>
+<p><strong>Lines of Code</strong></p>
+<p>Total lines of code, excluding comments, docstrings and blank lines:</p>
+<ul class="simple">
+<li><p>main code: 775</p></li>
+<li><p>tests: 430</p></li>
+<li><p>ratio of main code to test code: 1.80</p></li>
+</ul>
+<p><strong>Test Coverage</strong></p>
+<p>A detailed coverage report can be found in <a class="reference external" href="../../../coverage/index.html">LapsPython/coverage/index.html</a>
+and will be generated each time the unit test workflow is executed.</p>
+<p>In a total of 50 test cases, 94% coverage is achieved with subpackage-wise scores ranging from 88% to 100%. Out of 666 statements,
+only 43 are not covered by tests, most of which handle special cases not present in the current dataset or exceptions not raised by the current version.</p>
+<p><strong>Clean Code</strong></p>
+<p>The code achieves a PEP-8 score of 100% according to <a class="reference external" href="https://flake8.pycqa.org/en/latest/">Flake8</a> used with a large
+selection of extensions for stricter linting in compliance with modern Python standards and Clean Code conventions.
+In addition, <a class="reference external" href="http://www.mypy-lang.org/">Mypy</a> and <a class="reference external" href="https://bandit.readthedocs.io/en/latest/">Bandit</a>
+verify the absence of typing and security issues.</p>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h2>
+<p>LapsPython is evaluated on 2 different checkpoints of the <strong>re2</strong> (string editing) domain:</p>
+<ul class="simple">
+<li><p><strong>re2_test</strong>: A small checkpoint saved after 3 iterations of LAPS, including 75 synthesized programs in 18 tasks.</p></li>
+<li><p><strong>re2_best_dsl_language</strong>: A large checkpoint provided by the developers of LAPS, including 1646 synthesized programs in 346 tasks.</p></li>
+</ul>
+<p>The <strong>re2_test</strong> checkpoint is 100% solved by LapsPython, providing bug-free translations for all synthesized programs.</p>
+<p>In the <strong>re2_best_dsl_language</strong> checkpoint, 8% of tasks are solved, i.e., contain at least one program with a 100% bug-free translation.
+Present bugs are commonly a wrong resolution of variables: Invented primitives are called with wrong arguments or a wrong number of arguments.</p>
+<section id="example-wrong-translation">
+<h3>Example (Wrong Translation)<a class="headerlink" href="#example-wrong-translation" title="Permalink to this headline"></a></h3>
+<p><strong>Task:</strong> if there is any letter, add v after that</p>
+<p><strong>Program:</strong> <code class="docutils literal notranslate"><span class="pre">(lambda</span> <span class="pre">(#(lambda</span> <span class="pre">(lambda</span> <span class="pre">(_rflatten</span> <span class="pre">(map</span> <span class="pre">$0</span> <span class="pre">(_rsplit</span> <span class="pre">_rdot</span> <span class="pre">$1)))))</span> <span class="pre">$0</span> <span class="pre">(lambda</span> <span class="pre">(_rconcat</span> <span class="pre">$0</span> <span class="pre">_v))))</span></code></p>
+<p><strong>Generated Translation:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="k">def</span> <span class="nf">f8</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+    <span class="n">rsplit_1</span> <span class="o">=</span> <span class="n">__regex_split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">arg2</span><span class="p">)</span>
+    <span class="n">map_1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">rsplit_1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">map_1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">__regex_split</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">):</span>
+    <span class="c1"># Splits s2 on regex s1 as delimiter, including the matches</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Special case -- we override splitting on &quot;&quot; to be splitting on &quot;.&quot;</span>
+        <span class="c1"># to match OCaml.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">s1</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="n">s2</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="n">remaining</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">remaining</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">remaining</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">():</span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">()])</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="n">remaining</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">end</span><span class="p">():]</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="n">remaining</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">s2</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">re2_train_41_if_there_is_any_letter_add_v_after_that</span><span class="p">(</span><span class="n">arg1</span><span class="p">):</span>
+    <span class="n">rconcat_1</span> <span class="o">=</span> <span class="n">arg1</span> <span class="o">+</span> <span class="s1">&#39;v&#39;</span>
+    <span class="k">return</span> <span class="n">f8</span><span class="p">(</span><span class="n">f8_0</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">lx</span><span class="p">:</span> <span class="n">lx</span> <span class="o">+</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Fixed Translation:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># [...]</span>
+
+<span class="k">def</span> <span class="nf">re2_train_41_if_there_is_any_letter_add_v_after_that</span><span class="p">(</span><span class="n">arg1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">f8</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">lx</span><span class="p">:</span> <span class="n">lx</span> <span class="o">+</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christopher Brückner.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
