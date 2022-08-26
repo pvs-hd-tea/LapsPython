@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lapspython.utils &mdash; LapsPython 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> LapsPython
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LapsPython</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>lapspython.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lapspython.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions that do not fit in other modules.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">dill</span>
+
+<span class="kn">from</span> <span class="nn">dreamcoder.dreamcoder</span> <span class="kn">import</span> <span class="n">ECResult</span>
+<span class="kn">from</span> <span class="nn">lapspython.types</span> <span class="kn">import</span> <span class="n">CompactResult</span><span class="p">,</span> <span class="n">ParsedGrammar</span>
+
+
+<div class="viewcode-block" id="load_checkpoint"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.load_checkpoint">[docs]</a><span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ECResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Load training checkpoint.</span>
+
+<span class="sd">    :param filename: name of file in checkpoints directory, without extension</span>
+<span class="sd">    :type filename: string</span>
+<span class="sd">    :returns: e</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.pickle&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dill</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="json_dump"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.json_dump">[docs]</a><span class="k">def</span> <span class="nf">json_dump</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">grammar</span><span class="p">:</span> <span class="n">ParsedGrammar</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">CompactResult</span>  <span class="c1"># = None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Store grammar and best results in json file.</span>
+
+<span class="sd">    :param filename: File name in checkpoints folder without file extension.</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :param grammar: Grammar extracted and parsed from checkpoint.</span>
+<span class="sd">    :type grammar: ParsedGrammar</span>
+<span class="sd">    :param result: Result extracted and translated from checkpoint.</span>
+<span class="sd">    :type result: CompactResult, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.json&#39;</span>
+    <span class="n">json_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;grammar&#39;</span><span class="p">:</span> <span class="n">grammar</span><span class="o">.</span><span class="n">as_dict</span><span class="p">(),</span>
+        <span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">get_best</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">json_dict</span><span class="p">,</span> <span class="n">json_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">json_path</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="json_read"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.json_read">[docs]</a><span class="k">def</span> <span class="nf">json_read</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read grammar and results from json file.</span>
+
+<span class="sd">    :param filename: File name in checkpoints folder without file extension.</span>
+<span class="sd">    :type filename: str</span>
+<span class="sd">    :returns: {grammar, result} dictionary</span>
+<span class="sd">    :rytpe: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.json&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+            <span class="n">json_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+        <span class="n">grammar</span> <span class="o">=</span> <span class="n">json_dict</span><span class="p">[</span><span class="s1">&#39;grammar&#39;</span><span class="p">]</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">ParsedGrammar</span><span class="p">(</span><span class="n">grammar</span><span class="p">[</span><span class="s1">&#39;primitives&#39;</span><span class="p">],</span> <span class="n">grammar</span><span class="p">[</span><span class="s1">&#39;invented&#39;</span><span class="p">])</span>
+        <span class="n">json_dict</span><span class="p">[</span><span class="s1">&#39;grammar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
+        <span class="k">return</span> <span class="n">json_dict</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christopher Brückner.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
