@@ -237,7 +237,7 @@ class Translator:
         handle = str(invented)
         f_parsed = self.grammar.invented[handle]
         if f_parsed.source == '':
-            translator = Translator(self.grammar, self.mode)
+            translator = Translator(self.grammar)
             f_trans = translator.translate(f_parsed.program, f_parsed.name)
             f_parsed.source = f_trans.source
             f_parsed.args = f_trans.args

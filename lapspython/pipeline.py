@@ -44,7 +44,7 @@ class Pipeline:
         grammar = parser.parsed_grammar
 
         print('\nTranslating synthesized programs...', flush=True)
-        translator = Translator(grammar, mode)
+        translator = Translator(grammar)
         extractor = ProgramExtractor(result, translator)
         result = extractor.compact_result
 
