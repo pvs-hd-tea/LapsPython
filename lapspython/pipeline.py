@@ -37,6 +37,7 @@ class Pipeline:
             print('WARNING: Code verification for R not implemented')
         print('\nParsing library...', flush=True)
         parser = GrammarParser(result.grammars[-1], mode)
+
         json = json_read(json_path)
         if json != {}:
             new_invented = json['grammar'].invented
@@ -44,7 +45,7 @@ class Pipeline:
         grammar = parser.parsed_grammar
 
         print('\nTranslating synthesized programs...', flush=True)
-        translator = Translator(grammar, mode)
+        translator = Translator(grammar)
         extractor = ProgramExtractor(result, translator)
         result = extractor.compact_result
 
