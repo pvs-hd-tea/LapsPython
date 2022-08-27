@@ -13,4 +13,4 @@ pipenv sync
 pipenv run linting
 pipenv run typechecks
 pipenv run tests
-pipenv run demo.py
+pipenv run python demo.py
