@@ -55,7 +55,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#https://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
 </ul>
 
         </div>
@@ -105,19 +106,20 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="lapspython.translation.Translator.setup_logger">
 <span class="sig-name descname"><span class="pre">setup_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">logging.Logger</span></span></span><a class="reference internal" href="../_modules/lapspython/translation.html#Translator.setup_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.translation.Translator.setup_logger" title="Permalink to this definition"></a></dt>
-<dd><p>Write debug stack into translation.log in case of exception.</p>
+<dd><p>Set up a logger for exceptions caught during translation.</p>
+<p>rtype: logging.Logger</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lapspython.translation.Translator.log_exception">
 <span class="sig-name descname"><span class="pre">log_exception</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/translation.html#Translator.log_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.translation.Translator.log_exception" title="Permalink to this definition"></a></dt>
-<dd><p>Write logging message into translation.log.</p>
+<dd><p>Write current debug stack into translation.log.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lapspython.translation.Translator.translate">
 <span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dreamcoder.program.Program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="lapspython.types.html#lapspython.types.ParsedProgramBase" title="lapspython.types.ParsedProgramBase"><span class="pre">lapspython.types.ParsedProgramBase</span></a></span></span><a class="reference internal" href="../_modules/lapspython/translation.html#Translator.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.translation.Translator.translate" title="Permalink to this definition"></a></dt>
-<dd><p>Init variables and call recursive translation function.</p>
+<dd><p>Translate a synthesized program under the current grammar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -130,6 +132,17 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="lapspython.types.html#lapspython.types.ParsedProgram" title="lapspython.types.ParsedProgram">ParsedProgram</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lapspython.translation.Translator.translate_wrapper">
+<span class="sig-name descname"><span class="pre">translate_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">program</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dreamcoder.program.Program</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'body'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/translation.html#Translator.translate_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.translation.Translator.translate_wrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Redirect node to corresponding translation procedure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>program</strong> (<em>Subclass of dreamcoder.program.Program</em>) – Node of program tree.</p>
 </dd>
 </dl>
 </dd></dl>
