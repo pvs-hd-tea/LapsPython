@@ -41,7 +41,8 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#functionality">Functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development">Development</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
@@ -49,7 +50,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="/coverage/index.html#https://">Test Coverage Report</a></li>
 </ul>
 
         </div>
@@ -98,17 +100,33 @@
 </ol>
 <p>Please note that the LapsPython repository only contains the dreamcoder files necessary to run the LapsPython functionality. Compiled OCaml solvers and Moses, which are required to run LAPS, are not provided.</p>
 </section>
-<section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h2>
-<p>LapsPython is easy to use since all previously described steps are executed by a single <a class="reference internal" href="api/lapspython.pipeline.html"><span class="doc">Pipeline</span></a> object. You can either pass an ECResult object to <code class="docutils literal notranslate"><span class="pre">Pipeline.extract_translate()</span></code>, or the file name (exclusing the file extension) of a checkpoint to <code class="docutils literal notranslate"><span class="pre">Pipeline.from_checkpoint()</span></code>. Checkpoints need to be placed into the <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code> folder first.</p>
-<p>By default, LapsPython translates to Python. Alternatively, translation to R is possible by passing the argument <code class="docutils literal notranslate"><span class="pre">mode='R'</span></code> to the two pipeline functions. If you work with a new domain, it will be necessary to manually re-implement the Python primitives in R.</p>
-<p>Python primitives can be found found in <code class="docutils literal notranslate"><span class="pre">dreamcoder/domains/&lt;name&gt;/&lt;name&gt;Primitives.py</span></code>. R primitives require the same path and file name, but the <code class="docutils literal notranslate"><span class="pre">.R</span></code> file extension. LapsPython assumes the following conventions when loading primitives:</p>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline"></a></h2>
+<p>LapsPython is easy to use since all previously described steps are executed by a single <a class="reference internal" href="api/lapspython.pipeline.html"><span class="doc">Pipeline</span></a> object. You can either pass an ECResult object to <code class="docutils literal notranslate"><span class="pre">Pipeline.extract_translate()</span></code>, or the file name (excluding the file extension) of a checkpoint to <code class="docutils literal notranslate"><span class="pre">Pipeline.from_checkpoint()</span></code>. Checkpoints need to be placed into the <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code> folder first.</p>
+<p>By default, LapsPython translates to Python. Alternatively, translation to R is possible by passing the argument <code class="docutils literal notranslate"><span class="pre">mode='r'</span></code>. If you want to work with a new domain, it will be necessary to manually re-implement the required Python primitives in R.</p>
+<p>Python primitives can be found found in <code class="docutils literal notranslate"><span class="pre">dreamcoder/domains/&lt;domain&gt;/&lt;domain&gt;Primitives.py</span></code>. R primitives require the same path and file name but the <code class="docutils literal notranslate"><span class="pre">.R</span></code> file extension. LapsPython assumes the following conventions when parsing primitives:</p>
 <ul class="simple">
-<li><p>Python primitives start with 1 underscore, functions called by Python primitives start with 2 underscores.</p></li>
-<li><p>R primitives have the same names as their Python equivalents but without preceding underscores, and they are separated by at least 1 empty line.</p></li>
+<li><p>Python primitives start with 1 underscore. Functions called by Python primitives start with 2 underscores.</p></li>
+<li><p>R primitives have the same names as their Python equivalents but without preceding underscores. They are separated by at least 1 empty line.</p></li>
 </ul>
-<p>LapsPython pipelines <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">GrammarParser</span></a>, <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">ProgramExtractor</span></a>, <a class="reference internal" href="api/lapspython.translation.html"><span class="doc">Translator</span></a> and <a class="reference internal" href="api/lapspython.stats.html"><span class="doc">Statistics</span></a> objects. Results will be stored in a <code class="docutils literal notranslate"><span class="pre">checkpoints/&lt;name&gt;&lt;mode&gt;.json</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;</span></code> is the corresponding checkpoint name and <code class="docutils literal notranslate"><span class="pre">&lt;mode&gt;</span></code> can be <code class="docutils literal notranslate"><span class="pre">python</span></code> or <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
+<p>LapsPython pipelines <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">GrammarParser</span></a>, <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">ProgramExtractor</span></a>, <a class="reference internal" href="api/lapspython.translation.html"><span class="doc">Translator</span></a> and <a class="reference internal" href="api/lapspython.stats.html"><span class="doc">Statistics</span></a> objects. Results will be stored in a <code class="docutils literal notranslate"><span class="pre">checkpoints/&lt;checkpoint&gt;_&lt;mode&gt;.json</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;checkpoint&gt;</span></code> is the corresponding checkpoint name and <code class="docutils literal notranslate"><span class="pre">&lt;mode&gt;</span></code> can be <code class="docutils literal notranslate"><span class="pre">python</span></code> or <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
 <p>You notice that an invented primitive is translated incorrectly, resulting in many bad translations? You can fix it in the generated JSON file! It will be loaded the next you load the same checkpoint.</p>
+</section>
+<section id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this headline"></a></h2>
+<p>Most classes can be found in the <a class="reference internal" href="api/lapspython.types.html"><span class="doc">types module</span></a>:</p>
+<ul class="simple">
+<li><p>The parsing of Python primitives is handled by the <code class="docutils literal notranslate"><span class="pre">ParsedPrimitive</span></code> class, its R equivalent is the <code class="docutils literal notranslate"><span class="pre">ParsedRPrimitive</span></code> class.</p></li>
+<li><p>In analogy, invented primitives are parsed by <code class="docutils literal notranslate"><span class="pre">ParsedInvented</span></code> and <code class="docutils literal notranslate"><span class="pre">ParsedRInvented</span></code>. Since invented primitives are small programs, they are partially handled by the <code class="docutils literal notranslate"><span class="pre">Translator</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ParsedGrammar</span></code>, <code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code>, <code class="docutils literal notranslate"><span class="pre">ParsedRProgram</span></code>, <code class="docutils literal notranslate"><span class="pre">CompactFrontier</span></code> and <code class="docutils literal notranslate"><span class="pre">CompactResult</span></code> are mostly data classes and store important information from both LAPS and LapsPython in a more concise and usable format.</p></li>
+</ul>
+<p>The <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">extraction module</span></a> handles the extraction of grammars and synthesized programs. It works on data taken from an <code class="docutils literal notranslate"><span class="pre">ECResult</span></code> object which is saved as a checkpoint by LAPS.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GrammarParser</span></code> takes a grammar (found in <code class="docutils literal notranslate"><span class="pre">ECResult.productions</span></code>) and a mode (<code class="docutils literal notranslate"><span class="pre">'python'</span></code> or <code class="docutils literal notranslate"><span class="pre">'r'</span></code>) as arguments and returns a <code class="docutils literal notranslate"><span class="pre">ParsedGrammar</span></code> object, containing parsed primitives and parsed invented primitives in the given language.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ProgramExtractor</span></code> takes an <code class="docutils literal notranslate"><span class="pre">ECResult</span></code> object and a <code class="docutils literal notranslate"><span class="pre">Translator</span></code> object as arguments and returns a <code class="docutils literal notranslate"><span class="pre">CompactResult</span></code> object. It contains all synthesized programs, their translations and their task descriptions, categorized in HIT/MISS frontiers (MISS frontiers are tasks not solved by LAPS) and working/buggy translations, sorted by their best posterior probabilities. Without passing a <code class="docutils literal notranslate"><span class="pre">Translator</span></code> object, programs are extracted, but not translated.</p></li>
+</ul>
+<p>Since the translation is still flawed, a good entry-point to continue the development is the <code class="docutils literal notranslate"><span class="pre">Translator</span></code> class in the <a class="reference internal" href="api/lapspython.translation.html"><span class="doc">translation module</span></a>. A <code class="docutils literal notranslate"><span class="pre">Translator</span></code> takes a <code class="docutils literal notranslate"><span class="pre">ParsedGrammar</span></code> object as argument which it will base its translation on. It returns a <code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code> or <code class="docutils literal notranslate"><span class="pre">ParsedRProgram</span></code> object, depending on the language of the passed grammar.</p>
+<p>One further entry-point can be the <a class="reference internal" href="api/lapspython.types.html"><span class="doc">ParsedRProgram</span></a> class since it currently does not verify the correctness of R translations. The Python code verification in <code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code> can be used as a reference, but interaction with an R interpreter is necessary.</p>
 </section>
 </section>
 

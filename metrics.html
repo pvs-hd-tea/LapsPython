@@ -43,7 +43,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Metrics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#code-quality">Code Quality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#results">Results</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example-wrong-translation">Example (Wrong Translation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-flawed-translation">Example (Flawed Translation)</a></li>
 </ul>
 </li>
 </ul>
@@ -52,7 +52,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="/coverage/index.html#https://">Test Coverage Report</a></li>
 </ul>
 
         </div>
@@ -91,8 +92,8 @@
 <li><p>ratio of main code to test code: 1.80</p></li>
 </ul>
 <p><strong>Test Coverage</strong></p>
-<p>A detailed coverage report can be found in <a class="reference external" href="../../../coverage/index.html">LapsPython/coverage/index.html</a>
-and will be generated each time the unit test workflow is executed.</p>
+<p>A detailed coverage report can be found <a class="reference external" href="./coverage/index.html">here</a>
+and will be updated locally each time the <a class="reference internal" href="quickstart.html#ci"><span class="std std-ref">unit test workflow</span></a> is executed.</p>
 <p>In a total of 50 test cases, 94% coverage is achieved with subpackage-wise scores ranging from 88% to 100%. Out of 666 statements,
 only 43 are not covered by tests, most of which handle special cases not present in the current dataset or exceptions not raised by the current version.</p>
 <p><strong>Clean Code</strong></p>
@@ -111,8 +112,9 @@ verify the absence of typing and security issues.</p>
 <p>The <strong>re2_test</strong> checkpoint is 100% solved by LapsPython, providing bug-free translations for all synthesized programs.</p>
 <p>In the <strong>re2_best_dsl_language</strong> checkpoint, 8% of tasks are solved, i.e., contain at least one program with a 100% bug-free translation.
 Present bugs are commonly a wrong resolution of variables: Invented primitives are called with wrong arguments or a wrong number of arguments.</p>
-<section id="example-wrong-translation">
-<h3>Example (Wrong Translation)<a class="headerlink" href="#example-wrong-translation" title="Permalink to this headline"></a></h3>
+<p>These values are taken from the Python translations since code verification is not implemented for R. Judging by manual observation of a large sample of R translations, everything that works for Python also works for R.</p>
+<section id="example-flawed-translation">
+<h3>Example (Flawed Translation)<a class="headerlink" href="#example-flawed-translation" title="Permalink to this headline"></a></h3>
 <p><strong>Task:</strong> if there is any letter, add v after that</p>
 <p><strong>Program:</strong> <code class="docutils literal notranslate"><span class="pre">(lambda</span> <span class="pre">(#(lambda</span> <span class="pre">(lambda</span> <span class="pre">(_rflatten</span> <span class="pre">(map</span> <span class="pre">$0</span> <span class="pre">(_rsplit</span> <span class="pre">_rdot</span> <span class="pre">$1)))))</span> <span class="pre">$0</span> <span class="pre">(lambda</span> <span class="pre">(_rconcat</span> <span class="pre">$0</span> <span class="pre">_v))))</span></code></p>
 <p><strong>Generated Translation:</strong></p>
