@@ -43,7 +43,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#https://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
 </ul>
 
         </div>
@@ -90,7 +91,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grammar</span><span class="p">:</span> <span class="n">Grammar</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Optionally parse grammar if passed during construction.</span>
 
-<span class="sd">        :param grammar: A grammar induced inside main() or ecIterator().</span>
+<span class="sd">        :param grammar: A grammar induced by LAPS.</span>
 <span class="sd">        :type grammar: dreamcoder.grammar.Grammar, optional</span>
 <span class="sd">        :param mode: Whether to extract Python or R code, can &#39;python&#39; or &#39;r&#39;.</span>
 <span class="sd">        :type mode: string, optional</span>
@@ -109,7 +110,6 @@
 
 <span class="sd">        :param grammar: A grammar induced inside main() or ecIterator().</span>
 <span class="sd">        :type grammar: dreamcoder.grammar.Grammar</span>
-<span class="sd">        :returns: A ParsedGrammar object</span>
 <span class="sd">        :rtype: ParsedGrammar</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parsed_primitives</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -172,7 +172,7 @@
 
 
 <div class="viewcode-block" id="ProgramExtractor"><a class="viewcode-back" href="../../api/lapspython.extraction.html#lapspython.extraction.ProgramExtractor">[docs]</a><span class="k">class</span> <span class="nc">ProgramExtractor</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Extract and process synthesized programs.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Extract, parse and translate synthesized programs.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ECResult</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">translator</span><span class="p">:</span> <span class="n">Translator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -196,7 +196,6 @@
 <span class="sd">        :type result: dreamcoder.dreamcoder.ECResult</span>
 <span class="sd">        :param translator: Translator to translate programs during extraction.</span>
 <span class="sd">        :type translator: lapspython.translation.Translator, optional</span>
-<span class="sd">        :returns: A CompactResult object containing programs from checkpoint</span>
 <span class="sd">        :rtype: lapspython.types.CompactResult</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">hit_frontiers</span> <span class="o">=</span> <span class="p">{}</span>
