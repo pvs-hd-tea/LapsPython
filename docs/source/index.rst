@@ -42,7 +42,8 @@ Contents
 .. sidebar-links::
 
    GitHub Repository <https://github.com/pvs-hd-tea/LapsPython>
-   Test Coverage Report </LapsPython/coverage#https://>
+   Test Coverage Report </LapsPython/coverage#http://>
+   Presentations </LapsPython/presentations#http://>
 
 References
 ----------

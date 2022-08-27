@@ -16,9 +16,9 @@ LapsPython extends the pipeline of LAPS, a program synthesizer for input-output 
 
 This is where LapsPython comes into play. It can either be injected directly into the LAPS code and work with the constructed "ECResult" object, or simply load an arbitrary checkpoint. It will execute the following analoguous steps:
 
-#. The Python/R implementations of all primitives in the library are loaded.
-#. The invented primitives are translated.
-#. The synthesized programs are translated. The correctness of the translations is verified using the same input-output examples.
+#. The Python/R implementations of all pre-implemented primitives in the grammar are parsed.
+#. A translator is initialized using the parsed implementations as "backend" and translates the invented primitives.
+#. The synthesized programs are extracted and translated. The correctness of these translations is verified using the same input-output examples.
 #. Results are stored in a JSON file: The entire grammar including Python/R translations and all synthesized programs including the correct translation with the largest posterior probability as well as the incorrect translation with the largest posterior probability, if these exist.
 #. Descriptive statistics are computed: How many translations are correct, how many tasks are solved (i.e., have at least 1 correct translation), the min/max/mean/median percentage of correct translations per task.
 
@@ -30,29 +30,29 @@ LapsPython is easy to use since all previously described steps are executed by a
 
 By default, LapsPython translates to Python. Alternatively, translation to R is possible by passing the argument ``mode='r'``. If you want to work with a new domain, it will be necessary to manually re-implement the required Python primitives in R.
 
-Python primitives can be found found in ``dreamcoder/domains/<domain>/<domain>Primitives.py``. R primitives require the same path and file name but the ``.R`` file extension. LapsPython assumes the following conventions when parsing primitives:
+Python primitives can be found found in ``dreamcoder/domains/<domain>/<domain>Primitives.py``. R primitives require the same path and file name but the **.R** file extension. LapsPython assumes the following conventions when parsing primitives:
 
 * Python primitives start with 1 underscore. Functions called by Python primitives start with 2 underscores.
 * R primitives have the same names as their Python equivalents but without preceding underscores. They are separated by at least 1 empty line.
 
-LapsPython pipelines :doc:`GrammarParser <api/lapspython.extraction>`, :doc:`ProgramExtractor <api/lapspython.extraction>`, :doc:`Translator <api/lapspython.translation>` and :doc:`Statistics <api/lapspython.stats>` objects. Results will be stored in a ``checkpoints/<checkpoint>_<mode>.json`` where ``<checkpoint>`` is the corresponding checkpoint name and ``<mode>`` can be ``python`` or ``r``.
+LapsPython pipelines :doc:`GrammarParser <api/lapspython.extraction>`, :doc:`Translator <api/lapspython.translation>`, :doc:`ProgramExtractor <api/lapspython.extraction>` and :doc:`Statistics <api/lapspython.stats>` objects. Results are saved in ``checkpoints/<checkpoint>_<mode>.json`` where **<checkpoint>** is the corresponding checkpoint name and **<mode>** can be ``python`` or ``r``.
 
 You notice that an invented primitive is translated incorrectly, resulting in many bad translations? You can fix it in the generated JSON file! It will be loaded the next you load the same checkpoint.
 
 Development
 -----------
 
-Most classes can be found in the :doc:`types module <api/lapspython.types>`:
+Most classes can be found in the :doc:`lapspython.types <api/lapspython.types>` module:
 
-* The parsing of Python primitives is handled by the ``ParsedPrimitive`` class, its R equivalent is the ``ParsedRPrimitive`` class.
-* In analogy, invented primitives are parsed by ``ParsedInvented`` and ``ParsedRInvented``. Since invented primitives are small programs, they are partially handled by the ``Translator``.
+* The parsing of Python and R primitives is handled by ``ParsedPrimitive`` and ``ParsedRPrimitive``.
+* In analogy, invented primitives are parsed by ``ParsedInvented`` and ``ParsedRInvented``.
 * ``ParsedGrammar``, ``ParsedProgram``, ``ParsedRProgram``, ``CompactFrontier`` and ``CompactResult`` are mostly data classes and store important information from both LAPS and LapsPython in a more concise and usable format.
 
-The :doc:`extraction module <api/lapspython.extraction>` handles the extraction of grammars and synthesized programs. It works on data taken from an ``ECResult`` object which is saved as a checkpoint by LAPS.
+The :doc:`lapspython.extraction <api/lapspython.extraction>` module handles the extraction of grammars and synthesized programs. It works on data taken from an ``ECResult`` object which is saved as a checkpoint by LAPS.
 
-* ``GrammarParser`` takes a grammar (found in ``ECResult.productions``) and a mode (``'python'`` or ``'r'``) as arguments and returns a ``ParsedGrammar`` object, containing parsed primitives and parsed invented primitives in the given language.
-* ``ProgramExtractor`` takes an ``ECResult`` object and a ``Translator`` object as arguments and returns a ``CompactResult`` object. It contains all synthesized programs, their translations and their task descriptions, categorized in HIT/MISS frontiers (MISS frontiers are tasks not solved by LAPS) and working/buggy translations, sorted by their best posterior probabilities. Without passing a ``Translator`` object, programs are extracted, but not translated.
+* ``GrammarParser`` takes a grammar and a mode (``'python'`` or ``'r'``) as arguments and returns a ``ParsedGrammar``, containing all parsed primitives in the given language.
+* ``ProgramExtractor`` takes an ``ECResult`` and a ``Translator`` as arguments and returns a ``CompactResult``. It contains all synthesized programs, their translations and their task descriptions, categorized in HIT/MISS frontiers (MISS frontiers are tasks not solved by LAPS) and working/buggy translations, sorted by their best posterior probabilities.
 
-Since the translation is still flawed, a good entry-point to continue the development is the ``Translator`` class in the :doc:`translation module <api/lapspython.translation>`. A ``Translator`` takes a ``ParsedGrammar`` object as argument which it will base its translation on. It returns a ``ParsedProgram`` or ``ParsedRProgram`` object, depending on the language of the passed grammar.
+Since the translation is still flawed, a good entry-point to continue the development is the ``Translator`` class in the :doc:`lapspython.translation <api/lapspython.translation>` module. A ``Translator`` takes a ``ParsedGrammar`` object as argument which it will base its translation on. It returns a ``ParsedProgram`` or ``ParsedRProgram`` object, depending on the language of the passed grammar.
 
-One further entry-point can be the :doc:`ParsedRProgram <api/lapspython.types>` class since it currently does not verify the correctness of R translations. The Python code verification in ``ParsedProgram`` can be used as a reference, but interaction with an R interpreter is necessary.
+One further entry-point can be the :doc:`ParsedRProgram <api/lapspython.types>` class since it currently does not verify the correctness of R translations. The Python code verification in ``ParsedProgram`` can be used as a reference, interaction with an R interpreter is necessary.
