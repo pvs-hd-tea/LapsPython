@@ -12,9 +12,9 @@ from lapspython.types import CompactResult, ParsedGrammar
 def load_checkpoint(filename: str) -> ECResult:
     """Load training checkpoint.
 
-    :param filename: name of file in checkpoints directory, without extension
+    :param filename: Name of file in checkpoints directory, without extension
     :type filename: string
-    :returns: e
+    :returns: dreamcoder.dreamcoder.ECResult
     """
     with open(f'checkpoints/{filename}.pickle', 'rb') as handle:
         return dill.load(handle)
@@ -23,16 +23,16 @@ def load_checkpoint(filename: str) -> ECResult:
 def json_dump(
     filename: str,
     grammar: ParsedGrammar,
-    result: CompactResult  # = None
+    result: CompactResult
 ) -> None:
     """Store grammar and best results in json file.
 
     :param filename: File name in checkpoints folder without file extension.
     :type filename: str
     :param grammar: Grammar extracted and parsed from checkpoint.
-    :type grammar: ParsedGrammar
+    :type grammar: lapspython.types.ParsedGrammar
     :param result: Result extracted and translated from checkpoint.
-    :type result: CompactResult, optional
+    :type result: lapspython.types.CompactResult
     """
     json_path = f'checkpoints/{filename}.json'
     json_dict = {

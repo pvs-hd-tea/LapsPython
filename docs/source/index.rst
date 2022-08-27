@@ -27,7 +27,7 @@ Credits of package **dreamcoder** go to the contributors of `https://github.com/
    
    * dreamcoder/domains/text/textPrimitives.R
   
-Please note that the LapsPython repository only contains the dreamcoder files necessary to run the LapsPython functionality. Compiled OCaml solvers and Moses, which are required to run LAPS itself, are not provided.
+The LapsPython repository contains only the files necessary to run the LapsPython functionality. Compiled OCaml solvers and Moses, which are required to run LAPS itself, are system-dependent and not provided. They are not needed to run LapsPython, as it can interact with LAPS checkpoints. These checkpoints are provided.
 
 Contents
 --------
@@ -41,7 +41,8 @@ Contents
 
 .. sidebar-links::
 
-   GitHub <https://github.com/pvs-hd-tea/LapsPython>
+   GitHub Repository <https://github.com/pvs-hd-tea/LapsPython>
+   Test Coverage Report </LapsPython/coverage#https://>
 
 References
 ----------

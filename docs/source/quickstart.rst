@@ -75,7 +75,7 @@ You can run the following Pipenv scripts to execute the CI workflows also used b
 
    (lapspython) $ pipenv run tests
 
-This script runs unit tests implemented with `pytest <https://docs.pytest.org/en/7.1.x/>`_. In addition, it uses `pytest-cov <https://pytest-cov.readthedocs.io/en/latest/>`_ to generate a coverage report which will then be printed to the terminal and stored as HTML in `LapsPython/coverage/index.html <../../../coverage/index.html>`_.
+This script runs unit tests implemented with `pytest <https://docs.pytest.org/en/7.1.x/>`_. In addition, it uses `pytest-cov <https://pytest-cov.readthedocs.io/en/latest/>`_ to generate a coverage report which will then be printed to the terminal and stored as HTML `here <./coverage/index.html>`_ as part of the documentation.
 
 
 .. code-block:: console

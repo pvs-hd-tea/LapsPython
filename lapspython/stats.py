@@ -30,10 +30,10 @@ class Statistics:
         return '\n'.join([f'{k}:\t{v}' for k, v in self.stats.items()])
 
     def summarize(self, result: CompactResult) -> dict:
-        """Descriptive statistics for result.
+        """Compute descriptive statistics for given result.
 
         :param result: Translated checkpoint.
-        :type result: CompactResult
+        :type result: lapspython.types.CompactResult
         :returns: Descriptive statistics.
         :rtype: dict
         """
@@ -64,14 +64,24 @@ class Statistics:
         uniplot.histogram(percentages)
 
     def count_programs(self, result: CompactResult) -> int:
-        """Count totals number of programs across all tasks."""
+        """Count totals number of programs across all tasks.
+
+        :param result: Translated checkpoint.
+        :type result: lapspython.types.CompactResult
+        :rtype: int
+        """
         program_count: int = 0
         for frontier in result.hit_frontiers.values():
             program_count += len(frontier.programs)
         return program_count
 
     def count_translations(self, result: CompactResult) -> int:
-        """Count total number of correct translations across all tasks."""
+        """Count total number of correct translations across all tasks.
+
+        :param result: Translated checkpoint.
+        :type result: lapspython.types.CompactResult
+        :rtype: int
+        """
         translation_count: int = 0
         for frontier in result.hit_frontiers.values():
             translation_count += len(frontier.translations)
@@ -81,8 +91,7 @@ class Statistics:
         """Return percentage of correctly translated programs per frontier.
 
         :param result: Translated checkpoint.
-        :type result: CompactResult
-        :returns: Percentage of correct translations per frontier.
+        :type result: lapspython.types.CompactResult
         :rtype: List[float]
         """
         percentages: list = []
@@ -94,8 +103,7 @@ class Statistics:
         """Return percentage of correctly translated programs.
 
         :param result: Translated frontier (task).
-        :type result: CompactFrontier
-        :returns: Percentage of correct translations.
+        :type result: lapspython.types.CompactFrontier
         :rtype: float
         """
         return len(frontier.translations) / len(frontier.programs) * 100

@@ -16,10 +16,10 @@ Total lines of code, excluding comments, docstrings and blank lines:
 
 **Test Coverage**
 
-A detailed coverage report can be found in `LapsPython/coverage/index.html <../../../coverage/index.html>`_
-and will be generated each time the unit test workflow is executed.
+A detailed coverage report can be found `here <./coverage/index.html>`_
+and will be updated locally each time the :ref:`unit test workflow <ci>` is executed.
 
-In a total of 50 test cases, 94% coverage is achieved with subpackage-wise scores ranging from 88% to 100%. Out of 666 statements,
+In a total of 50 test cases, 94% coverage is achieved with module-wise scores ranging from 88% to 100%. Out of 666 statements,
 only 43 are not covered by tests, most of which handle special cases not present in the current dataset or exceptions not raised by the current version.
 
 **Clean Code**
@@ -42,8 +42,10 @@ The **re2_test** checkpoint is 100% solved by LapsPython, providing bug-free tra
 In the **re2_best_dsl_language** checkpoint, 8% of tasks are solved, i.e., contain at least one program with a 100% bug-free translation.
 Present bugs are commonly a wrong resolution of variables: Invented primitives are called with wrong arguments or a wrong number of arguments.
 
-Example (Wrong Translation)
-+++++++++++++++++++++++++++
+These values are taken from the Python translations since code verification is not implemented for R. Judging by manual observation of a large sample of R translations, everything that works for Python also works for R.
+
+Example (Flawed Translation)
+++++++++++++++++++++++++++++
 
 **Task:** if there is any letter, add v after that
 
