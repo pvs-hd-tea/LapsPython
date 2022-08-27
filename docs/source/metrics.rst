@@ -95,4 +95,4 @@ Example (Flawed Translation)
     # [...]
 
     def re2_train_41_if_there_is_any_letter_add_v_after_that(arg1):
-        return f8(arg1, lambda lx: lx + 'v')
+        return f8(lambda lx: lx + 'v', arg1)
