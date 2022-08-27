@@ -19,11 +19,11 @@ class Pipeline:
         mode: str = 'python',
         verbose: bool = True
     ) -> CompactResult:
-        """Extract and translate programs from a checkpoint.
+        """Extract and translate programs from a LAPS result.
 
-        :param result: Checkpoint loaded directly from the program.
+        :param result: A LAPS result.
         :type result: dreamcoder.dreamcoder.ECResult
-        :param json_path: Path to dump or read from json
+        :param json_path: Path to dump or read from json.
         :type json_path: string
         :returns: Extracted and translated programs
         :rtype: lapspython.types.CompactResult

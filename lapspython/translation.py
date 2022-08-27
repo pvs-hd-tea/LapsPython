@@ -37,7 +37,10 @@ class Translator:
         self.logger = self.setup_logger()
 
     def setup_logger(self) -> logging.Logger:
-        """Write debug stack into translation.log in case of exception."""
+        """Set up a logger for exceptions caught during translation.
+
+        rtype: logging.Logger
+        """
         logger = logging.getLogger(__name__)
         handler = logging.FileHandler('translation.log', 'w')
         handler.setLevel(logging.DEBUG)
@@ -46,7 +49,7 @@ class Translator:
         return logger
 
     def log_exception(self):
-        """Write logging message into translation.log."""
+        """Write current debug stack into translation.log."""
         self.logger.debug(f'{self.name}\n')
         for entry in self.debug_stack:
             self.logger.debug(entry)
@@ -56,7 +59,7 @@ class Translator:
         self.logger.debug(f'\n{traceback.format_exc()}\n')
 
     def translate(self, program: Program, name: str) -> ParsedProgramBase:
-        """Init variables and call recursive translation function.
+        """Translate a synthesized program under the current grammar.
 
         :param program: Abstraction/Invented at any depth of lambda expression
         :type program: subclass of dreamcoder.program.Program
@@ -77,7 +80,7 @@ class Translator:
         self.name = name
         self.debug_stack = []
 
-        self._translate_wrapper(program)
+        self.translate_wrapper(program)
 
         source = '\n'.join(self.code)
 
@@ -103,13 +106,11 @@ class Translator:
             self.dependencies
         )
 
-    def _translate_wrapper(self, program: Program, node_type: str = 'body'):
+    def translate_wrapper(self, program: Program, node_type: str = 'body'):
         """Redirect node to corresponding translation procedure.
 
         :param program: Node of program tree.
         :type program: Subclass of dreamcoder.program.Program
-        :returns:
-        :rtype: tuple
         """
         debug = (str(program), str(type(program)), node_type)
         self.debug_stack.append(', '.join(debug))
@@ -139,12 +140,12 @@ class Translator:
         raise ValueError(f'{node_type} node of type {type(program)}')
 
     def _translate_abstraction_body(self, abstraction: Abstraction) -> tuple:
-        parsed, args = self._translate_wrapper(abstraction.body)
+        parsed, args = self.translate_wrapper(abstraction.body)
         args = [f'lambda x: {args[0]}']
         return parsed, args
 
     def _translate_abstraction_x(self, abstraction: Abstraction) -> tuple:
-        parsed, args = self._translate_wrapper(abstraction.body)
+        parsed, args = self.translate_wrapper(abstraction.body)
 
         try:
             lambda_head = ''
@@ -167,8 +168,8 @@ class Translator:
         f = application.f
         x = application.x
 
-        _, x_args = self._translate_wrapper(x, 'x')
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
+        _, x_args = self.translate_wrapper(x, 'x')
+        f_parsed, f_args = self.translate_wrapper(f, 'f')
 
         return f_parsed, f_args + x_args
 
@@ -176,8 +177,8 @@ class Translator:
         f = application.f
         x = application.x
 
-        x_parsed, x_args = self._translate_wrapper(x, 'x')
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
+        x_parsed, x_args = self.translate_wrapper(x, 'x')
+        f_parsed, f_args = self.translate_wrapper(f, 'f')
 
         if x_args[-1][:3] == 'arg' and x_args[-1] not in self.args:
             new_x_arg = self.get_last_variable()
@@ -204,8 +205,8 @@ class Translator:
         f = application.f
         x = application.x
 
-        x_parsed, x_args = self._translate_wrapper(x, 'x')
-        f_parsed, f_args = self._translate_wrapper(f, 'f')
+        x_parsed, x_args = self.translate_wrapper(x, 'x')
+        f_parsed, f_args = self.translate_wrapper(f, 'f')
 
         x_args = f_args + x_args
 
