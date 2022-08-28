@@ -44,8 +44,8 @@ Present bugs are commonly a wrong resolution of variables: Invented primitives a
 
 These values are taken from the Python translations since code verification is not implemented for R. Judging by manual observation of a large sample of R translations, everything that works for Python also works for R.
 
-Example (Flawed Translation)
-++++++++++++++++++++++++++++
+Example
++++++++
 
 **Task:** if there is any letter, add v after that
 
