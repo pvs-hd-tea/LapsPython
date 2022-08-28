@@ -17,7 +17,7 @@ class GrammarParser:
     def __init__(self, grammar: Grammar = None, mode='python') -> None:
         """Optionally parse grammar if passed during construction.
 
-        :param grammar: A grammar induced inside main() or ecIterator().
+        :param grammar: A grammar induced by LAPS.
         :type grammar: dreamcoder.grammar.Grammar, optional
         :param mode: Whether to extract Python or R code, can 'python' or 'r'.
         :type mode: string, optional
@@ -36,7 +36,6 @@ class GrammarParser:
 
         :param grammar: A grammar induced inside main() or ecIterator().
         :type grammar: dreamcoder.grammar.Grammar
-        :returns: A ParsedGrammar object
         :rtype: ParsedGrammar
         """
         parsed_primitives: dict = {}
@@ -99,7 +98,7 @@ class GrammarParser:
 
 
 class ProgramExtractor:
-    """Extract and process synthesized programs."""
+    """Extract, parse and translate synthesized programs."""
 
     def __init__(self, result: ECResult = None,
                  translator: Translator = None) -> None:
@@ -123,7 +122,6 @@ class ProgramExtractor:
         :type result: dreamcoder.dreamcoder.ECResult
         :param translator: Translator to translate programs during extraction.
         :type translator: lapspython.translation.Translator, optional
-        :returns: A CompactResult object containing programs from checkpoint
         :rtype: lapspython.types.CompactResult
         """
         hit_frontiers = {}

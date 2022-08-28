@@ -47,7 +47,7 @@ class ParsedType(ABC):
     def parse_argument_types(cls, arg_types: TypeConstructor) -> list:
         """Flatten inferred nested type structure of primitive.
 
-        :param arg_types:Inferred types.
+        :param arg_types: Inferred types.
         :type arg_types: dreamcoder.type.TypeConstructor
         :returns: Flat list of inferred types.
         :rtype: list
@@ -61,7 +61,7 @@ class ParsedType(ABC):
     def resolve_variables(self, args: list, return_name: str) -> str:
         """Substitute default arguments in source.
 
-        :param args: List of new argument names (number must be equal)
+        :param args: List of new argument names.
         :type args: list
         :param return_name: Variable name to replace the return statement with
         :type return_name: string
@@ -84,7 +84,14 @@ class ParsedType(ABC):
         return new_source
 
     def replace_return_statement(self, return_name, source):
-        """Substiture return with variable assignment."""
+        """Substitute return statement with variable assignment.
+
+        :param return_name: Variable name to replace return with.
+        :type return_name: string
+        :param source: Source code to apply substitution to.
+        :type source: string
+        :rtype: string
+        """
         pass  # pragma: no cover
 
 
@@ -101,22 +108,6 @@ class ParsedPythonType(ParsedType):
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
         return header + indented_body + '\n'
 
-    def resolve_lambdas(self) -> Primitive:
-        """Remove lambda functions from source and extend list of arguments.
-
-        :returns: New, cleaner parsed primitive
-        :rtype: ParsedPrimitive
-        """
-        new_primitive = copy.copy(self)
-        pattern = r'lambda (\S+): '
-        new_primitive.args = self.args + re.findall(pattern, self.source)
-        new_primitive.source = re.sub(pattern, '', self.source)
-        return new_primitive
-
-    def replace_return_statement(self, return_name, source):
-        """Substiture return with variable assignment."""
-        return re.sub('return', f'{return_name} =', source)
-
 
 class ParsedRType(ParsedType):
     """Abstract base class for R parsing."""
@@ -130,14 +121,6 @@ class ParsedRType(ParsedType):
         header = f'{self.name} <- function({", ".join(self.args)}) \u007b\n'
         indented_body = re.sub(r'^', '    ', self.source, flags=re.MULTILINE)
         return header + indented_body + '\n}\n'
-
-    def resolve_lambdas(self):
-        """No lambdas in R, but required for backwards compatibility."""
-        return self
-
-    def replace_return_statement(self, return_name, source):
-        """Substiture return with variable assignment."""
-        return re.sub(r'return\((.+)\)', fr'{return_name} <- \1', source)
 
 
 class ParsedPrimitive(ParsedPythonType):
@@ -219,6 +202,29 @@ class ParsedPrimitive(ParsedPythonType):
         functions = inspect.getmembers(module, inspect.isfunction)
         dependent_functions = [f for f in functions if f[0][:2] == '__']
         return [(f[0], inspect.getsource(f[1])) for f in dependent_functions]
+
+    def resolve_lambdas(self) -> 'ParsedPrimitive':
+        """Remove lambda functions from source and extend list of arguments.
+
+        :returns: New, cleaner parsed primitive
+        :rtype: lapspython.types.ParsedPrimitive
+        """
+        new_primitive = copy.copy(self)
+        pattern = r'lambda (\S+): '
+        new_primitive.args = self.args + re.findall(pattern, self.source)
+        new_primitive.source = re.sub(pattern, '', self.source)
+        return new_primitive
+
+    def replace_return_statement(self, return_name, source) -> str:
+        """Substitute return statement with variable assignment.
+
+        :param return_name: Variable name to replace return with.
+        :type return_name: string
+        :param source: Source code to apply substitution to.
+        :type source: string
+        :rtype: string
+        """
+        return re.sub('return', f'{return_name} =', source)
 
 
 class ParsedRPrimitive(ParsedRType):
@@ -330,6 +336,21 @@ class ParsedRPrimitive(ParsedRType):
             return []
         args = match[0][1:-1]
         return args.split(', ')
+
+    def resolve_lambdas(self) -> 'ParsedRPrimitive':
+        """No lambdas in R, but required for backwards compatibility."""
+        return self
+
+    def replace_return_statement(self, return_name, source):
+        """Substitute return statement with variable assignment.
+
+        :param return_name: Variable name to replace return with.
+        :type return_name: string
+        :param source: Source code to apply substitution to.
+        :type source: string
+        :rtype: string
+        """
+        return re.sub(r'return\((.+)\)', fr'{return_name} <- \1', source)
 
 
 class ParsedInvented(ParsedPythonType):
