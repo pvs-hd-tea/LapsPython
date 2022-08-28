@@ -55,7 +55,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#https://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
 </ul>
 
         </div>
@@ -148,10 +149,17 @@
 <dt class="sig sig-object py" id="lapspython.types.ParsedType.parse_argument_types">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_argument_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dreamcoder.type.TypeConstructor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedType.parse_argument_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedType.parse_argument_types" title="Permalink to this definition"></a></dt>
 <dd><p>Flatten inferred nested type structure of primitive.</p>
-<p>:param arg_types:Inferred types.
-:type arg_types: dreamcoder.type.TypeConstructor
-:returns: Flat list of inferred types.
-:rtype: list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arg_types</strong> (<em>dreamcoder.type.TypeConstructor</em>) – Inferred types.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Flat list of inferred types.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -161,7 +169,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<em>list</em>) – List of new argument names (number must be equal)</p></li>
+<li><p><strong>args</strong> (<em>list</em>) – List of new argument names.</p></li>
 <li><p><strong>return_name</strong> (<em>string</em>) – Variable name to replace the return statement with</p></li>
 </ul>
 </dd>
@@ -177,7 +185,18 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="lapspython.types.ParsedType.replace_return_statement">
 <span class="sig-name descname"><span class="pre">replace_return_statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedType.replace_return_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedType.replace_return_statement" title="Permalink to this definition"></a></dt>
-<dd><p>Substiture return with variable assignment.</p>
+<dd><p>Substitute return statement with variable assignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_name</strong> (<em>string</em>) – Variable name to replace return with.</p></li>
+<li><p><strong>source</strong> (<em>string</em>) – Source code to apply substitution to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -186,44 +205,12 @@
 <dt class="sig sig-object py" id="lapspython.types.ParsedPythonType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lapspython.types.</span></span><span class="sig-name descname"><span class="pre">ParsedPythonType</span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedPythonType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedPythonType" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract base class for python parsing.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="lapspython.types.ParsedPythonType.resolve_lambdas">
-<span class="sig-name descname"><span class="pre">resolve_lambdas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dreamcoder.program.Primitive</span></span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedPythonType.resolve_lambdas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedPythonType.resolve_lambdas" title="Permalink to this definition"></a></dt>
-<dd><p>Remove lambda functions from source and extend list of arguments.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>New, cleaner parsed primitive</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#lapspython.types.ParsedPrimitive" title="lapspython.types.ParsedPrimitive">ParsedPrimitive</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lapspython.types.ParsedPythonType.replace_return_statement">
-<span class="sig-name descname"><span class="pre">replace_return_statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedPythonType.replace_return_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedPythonType.replace_return_statement" title="Permalink to this definition"></a></dt>
-<dd><p>Substiture return with variable assignment.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="lapspython.types.ParsedRType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lapspython.types.</span></span><span class="sig-name descname"><span class="pre">ParsedRType</span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedRType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedRType" title="Permalink to this definition"></a></dt>
 <dd><p>Abstract base class for R parsing.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="lapspython.types.ParsedRType.resolve_lambdas">
-<span class="sig-name descname"><span class="pre">resolve_lambdas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedRType.resolve_lambdas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedRType.resolve_lambdas" title="Permalink to this definition"></a></dt>
-<dd><p>No lambdas in R, but required for backwards compatibility.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lapspython.types.ParsedRType.replace_return_statement">
-<span class="sig-name descname"><span class="pre">replace_return_statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedRType.replace_return_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedRType.replace_return_statement" title="Permalink to this definition"></a></dt>
-<dd><p>Substiture return with variable assignment.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -277,6 +264,37 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lapspython.types.ParsedPrimitive.resolve_lambdas">
+<span class="sig-name descname"><span class="pre">resolve_lambdas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#lapspython.types.ParsedPrimitive" title="lapspython.types.ParsedPrimitive"><span class="pre">lapspython.types.ParsedPrimitive</span></a></span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedPrimitive.resolve_lambdas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedPrimitive.resolve_lambdas" title="Permalink to this definition"></a></dt>
+<dd><p>Remove lambda functions from source and extend list of arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>New, cleaner parsed primitive</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#lapspython.types.ParsedPrimitive" title="lapspython.types.ParsedPrimitive">lapspython.types.ParsedPrimitive</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lapspython.types.ParsedPrimitive.replace_return_statement">
+<span class="sig-name descname"><span class="pre">replace_return_statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedPrimitive.replace_return_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedPrimitive.replace_return_statement" title="Permalink to this definition"></a></dt>
+<dd><p>Substitute return statement with variable assignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_name</strong> (<em>string</em>) – Variable name to replace return with.</p></li>
+<li><p><strong>source</strong> (<em>string</em>) – Source code to apply substitution to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
 </dd>
 </dl>
 </dd></dl>
@@ -345,6 +363,29 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>source</strong> (<em>string</em>) – Function code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lapspython.types.ParsedRPrimitive.resolve_lambdas">
+<span class="sig-name descname"><span class="pre">resolve_lambdas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#lapspython.types.ParsedRPrimitive" title="lapspython.types.ParsedRPrimitive"><span class="pre">lapspython.types.ParsedRPrimitive</span></a></span></span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedRPrimitive.resolve_lambdas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedRPrimitive.resolve_lambdas" title="Permalink to this definition"></a></dt>
+<dd><p>No lambdas in R, but required for backwards compatibility.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lapspython.types.ParsedRPrimitive.replace_return_statement">
+<span class="sig-name descname"><span class="pre">replace_return_statement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lapspython/types.html#ParsedRPrimitive.replace_return_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lapspython.types.ParsedRPrimitive.replace_return_statement" title="Permalink to this definition"></a></dt>
+<dd><p>Substitute return statement with variable assignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_name</strong> (<em>string</em>) – Variable name to replace return with.</p></li>
+<li><p><strong>source</strong> (<em>string</em>) – Source code to apply substitution to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
 </dd>
 </dl>
 </dd></dl>

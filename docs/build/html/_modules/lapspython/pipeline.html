@@ -43,7 +43,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#https://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
 </ul>
 
         </div>
@@ -92,11 +93,11 @@
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;python&#39;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompactResult</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Extract and translate programs from a checkpoint.</span>
+        <span class="sd">&quot;&quot;&quot;Extract and translate programs from a LAPS result.</span>
 
-<span class="sd">        :param result: Checkpoint loaded directly from the program.</span>
+<span class="sd">        :param result: A LAPS result.</span>
 <span class="sd">        :type result: dreamcoder.dreamcoder.ECResult</span>
-<span class="sd">        :param json_path: Path to dump or read from json</span>
+<span class="sd">        :param json_path: Path to dump or read from json.</span>
 <span class="sd">        :type json_path: string</span>
 <span class="sd">        :returns: Extracted and translated programs</span>
 <span class="sd">        :rtype: lapspython.types.CompactResult</span>

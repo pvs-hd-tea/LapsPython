@@ -43,7 +43,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#https://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
 </ul>
 
         </div>
@@ -85,9 +86,9 @@
 <div class="viewcode-block" id="load_checkpoint"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.load_checkpoint">[docs]</a><span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ECResult</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Load training checkpoint.</span>
 
-<span class="sd">    :param filename: name of file in checkpoints directory, without extension</span>
+<span class="sd">    :param filename: Name of file in checkpoints directory, without extension</span>
 <span class="sd">    :type filename: string</span>
-<span class="sd">    :returns: e</span>
+<span class="sd">    :returns: dreamcoder.dreamcoder.ECResult</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.pickle&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dill</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span></div>
@@ -96,16 +97,16 @@
 <div class="viewcode-block" id="json_dump"><a class="viewcode-back" href="../../api/lapspython.utils.html#lapspython.utils.json_dump">[docs]</a><span class="k">def</span> <span class="nf">json_dump</span><span class="p">(</span>
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">grammar</span><span class="p">:</span> <span class="n">ParsedGrammar</span><span class="p">,</span>
-    <span class="n">result</span><span class="p">:</span> <span class="n">CompactResult</span>  <span class="c1"># = None</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">CompactResult</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Store grammar and best results in json file.</span>
 
 <span class="sd">    :param filename: File name in checkpoints folder without file extension.</span>
 <span class="sd">    :type filename: str</span>
 <span class="sd">    :param grammar: Grammar extracted and parsed from checkpoint.</span>
-<span class="sd">    :type grammar: ParsedGrammar</span>
+<span class="sd">    :type grammar: lapspython.types.ParsedGrammar</span>
 <span class="sd">    :param result: Result extracted and translated from checkpoint.</span>
-<span class="sd">    :type result: CompactResult, optional</span>
+<span class="sd">    :type result: lapspython.types.CompactResult</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;checkpoints/</span><span class="si">{filename}</span><span class="s1">.json&#39;</span>
     <span class="n">json_dict</span> <span class="o">=</span> <span class="p">{</span>

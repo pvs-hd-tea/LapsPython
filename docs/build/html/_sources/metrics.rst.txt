@@ -19,7 +19,7 @@ Total lines of code, excluding comments, docstrings and blank lines:
 A detailed coverage report can be found `here <./coverage/index.html>`_
 and will be updated locally each time the :ref:`unit test workflow <ci>` is executed.
 
-In a total of 50 test cases, 94% coverage is achieved with subpackage-wise scores ranging from 88% to 100%. Out of 666 statements,
+In a total of 50 test cases, 94% coverage is achieved with module-wise scores ranging from 88% to 100%. Out of 666 statements,
 only 43 are not covered by tests, most of which handle special cases not present in the current dataset or exceptions not raised by the current version.
 
 **Clean Code**
