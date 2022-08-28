@@ -33,7 +33,7 @@ By default, LapsPython translates to Python. Alternatively, translation to R is 
 Python primitives can be found found in ``dreamcoder/domains/<domain>/<domain>Primitives.py``. R primitives require the same path and file name but the **.R** file extension. LapsPython assumes the following conventions when parsing primitives:
 
 * Python primitives start with 1 underscore. Functions called by Python primitives start with 2 underscores.
-* R primitives have the same names as their Python equivalents but without preceding underscores. They are separated by at least 1 empty line.
+* R primitives have the same names as their Python equivalents but without preceding underscores. They are separated by at least 1 empty line. The left brace **{** is in the same line as the function header.
 
 LapsPython pipelines :doc:`GrammarParser <api/lapspython.extraction>`, :doc:`Translator <api/lapspython.translation>`, :doc:`ProgramExtractor <api/lapspython.extraction>` and :doc:`Statistics <api/lapspython.stats>` objects. Results are saved in ``checkpoints/<checkpoint>_<mode>.json`` where **<checkpoint>** is the corresponding checkpoint name and **<mode>** can be ``python`` or ``r``.
 
@@ -56,3 +56,5 @@ The :doc:`lapspython.extraction <api/lapspython.extraction>` module handles the 
 Since the translation is still flawed, a good entry-point to continue the development is the ``Translator`` class in the :doc:`lapspython.translation <api/lapspython.translation>` module. A ``Translator`` takes a ``ParsedGrammar`` object as argument which it will base its translation on. It returns a ``ParsedProgram`` or ``ParsedRProgram`` object, depending on the language of the passed grammar.
 
 One further entry-point can be the :doc:`ParsedRProgram <api/lapspython.types>` class since it currently does not verify the correctness of R translations. The Python code verification in ``ParsedProgram`` can be used as a reference, interaction with an R interpreter is necessary.
+
+An extension to any language is possible by translating the Python primitives to this language. The LapsPython code itself could be extended by either adding more modes to the ``mode`` argument (currently supporting ``'python'`` and ``'r'`` as values) or by replacing it with a ``file_extension`` argument.
