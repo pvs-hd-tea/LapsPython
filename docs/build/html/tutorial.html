@@ -51,8 +51,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pvs-hd-tea.github.io/LapsPython/coverage/">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pvs-hd-tea.github.io/LapsPython/presentations/">Presentations</a></li>
 </ul>
 
         </div>
@@ -107,7 +107,7 @@
 <p>Python primitives can be found found in <code class="docutils literal notranslate"><span class="pre">dreamcoder/domains/&lt;domain&gt;/&lt;domain&gt;Primitives.py</span></code>. R primitives require the same path and file name but the <strong>.R</strong> file extension. LapsPython assumes the following conventions when parsing primitives:</p>
 <ul class="simple">
 <li><p>Python primitives start with 1 underscore. Functions called by Python primitives start with 2 underscores.</p></li>
-<li><p>R primitives have the same names as their Python equivalents but without preceding underscores. They are separated by at least 1 empty line.</p></li>
+<li><p>R primitives have the same names as their Python equivalents but without preceding underscores. They are separated by at least 1 empty line. The left brace <strong>{</strong> is in the same line as the function header.</p></li>
 </ul>
 <p>LapsPython pipelines <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">GrammarParser</span></a>, <a class="reference internal" href="api/lapspython.translation.html"><span class="doc">Translator</span></a>, <a class="reference internal" href="api/lapspython.extraction.html"><span class="doc">ProgramExtractor</span></a> and <a class="reference internal" href="api/lapspython.stats.html"><span class="doc">Statistics</span></a> objects. Results are saved in <code class="docutils literal notranslate"><span class="pre">checkpoints/&lt;checkpoint&gt;_&lt;mode&gt;.json</span></code> where <strong>&lt;checkpoint&gt;</strong> is the corresponding checkpoint name and <strong>&lt;mode&gt;</strong> can be <code class="docutils literal notranslate"><span class="pre">python</span></code> or <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
 <p>You notice that an invented primitive is translated incorrectly, resulting in many bad translations? You can fix it in the generated JSON file! It will be loaded the next you load the same checkpoint.</p>
@@ -127,6 +127,7 @@
 </ul>
 <p>Since the translation is still flawed, a good entry-point to continue the development is the <code class="docutils literal notranslate"><span class="pre">Translator</span></code> class in the <a class="reference internal" href="api/lapspython.translation.html"><span class="doc">lapspython.translation</span></a> module. A <code class="docutils literal notranslate"><span class="pre">Translator</span></code> takes a <code class="docutils literal notranslate"><span class="pre">ParsedGrammar</span></code> object as argument which it will base its translation on. It returns a <code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code> or <code class="docutils literal notranslate"><span class="pre">ParsedRProgram</span></code> object, depending on the language of the passed grammar.</p>
 <p>One further entry-point can be the <a class="reference internal" href="api/lapspython.types.html"><span class="doc">ParsedRProgram</span></a> class since it currently does not verify the correctness of R translations. The Python code verification in <code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code> can be used as a reference, interaction with an R interpreter is necessary.</p>
+<p>An extension to any language is possible by translating the Python primitives to this language. The LapsPython code itself could be extended by either adding more modes to the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument (currently supporting <code class="docutils literal notranslate"><span class="pre">'python'</span></code> and <code class="docutils literal notranslate"><span class="pre">'r'</span></code> as values) or by replacing it with a <code class="docutils literal notranslate"><span class="pre">file_extension</span></code> argument.</p>
 </section>
 </section>
 

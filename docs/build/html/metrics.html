@@ -43,7 +43,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Metrics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#code-quality">Code Quality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#results">Results</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#example-flawed-translation">Example (Flawed Translation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
 </ul>
 </li>
 </ul>
@@ -53,8 +53,8 @@
 <p class="caption" role="heading"><span class="caption-text">Links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/pvs-hd-tea/LapsPython">GitHub Repository</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/coverage#http://">Test Coverage Report</a></li>
-<li class="toctree-l1"><a class="reference external" href="/LapsPython/presentations#http://">Presentations</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pvs-hd-tea.github.io/LapsPython/coverage/">Test Coverage Report</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pvs-hd-tea.github.io/LapsPython/presentations/">Presentations</a></li>
 </ul>
 
         </div>
@@ -114,8 +114,8 @@ verify the absence of typing and security issues.</p>
 <p>In the <strong>re2_best_dsl_language</strong> checkpoint, 8% of tasks are solved, i.e., contain at least one program with a 100% bug-free translation.
 Present bugs are commonly a wrong resolution of variables: Invented primitives are called with wrong arguments or a wrong number of arguments.</p>
 <p>These values are taken from the Python translations since code verification is not implemented for R. Judging by manual observation of a large sample of R translations, everything that works for Python also works for R.</p>
-<section id="example-flawed-translation">
-<h3>Example (Flawed Translation)<a class="headerlink" href="#example-flawed-translation" title="Permalink to this headline"></a></h3>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline"></a></h3>
 <p><strong>Task:</strong> if there is any letter, add v after that</p>
 <p><strong>Program:</strong> <code class="docutils literal notranslate"><span class="pre">(lambda</span> <span class="pre">(#(lambda</span> <span class="pre">(lambda</span> <span class="pre">(_rflatten</span> <span class="pre">(map</span> <span class="pre">$0</span> <span class="pre">(_rsplit</span> <span class="pre">_rdot</span> <span class="pre">$1)))))</span> <span class="pre">$0</span> <span class="pre">(lambda</span> <span class="pre">(_rconcat</span> <span class="pre">$0</span> <span class="pre">_v))))</span></code></p>
 <p><strong>Generated Translation:</strong></p>
@@ -157,7 +157,7 @@ Present bugs are commonly a wrong resolution of variables: Invented primitives a
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># [...]</span>
 
 <span class="k">def</span> <span class="nf">re2_train_41_if_there_is_any_letter_add_v_after_that</span><span class="p">(</span><span class="n">arg1</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">f8</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">lx</span><span class="p">:</span> <span class="n">lx</span> <span class="o">+</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f8</span><span class="p">(</span><span class="k">lambda</span> <span class="n">lx</span><span class="p">:</span> <span class="n">lx</span> <span class="o">+</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="n">arg1</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
